@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>واژه‌نامه انرژی ساختمان — Kooch Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F0E4; --paper-deep:#EAE5D4; --ink:#1E2A24; --ink-soft:#4C5A52;
+    --emerald:#12A874; --emerald-deep:#0B3C2E; --emerald-pale:#DFF5EC;
+    --line:#D9D2BC;
+    --mono:'IBM Plex Mono',monospace; --sans:'Vazirmatn',sans-serif;
+    --shadow-sm: 0 1px 2px rgba(20,30,25,.06), 0 2px 10px rgba(20,30,25,.05);
+    --shadow-md: 0 4px 10px rgba(20,30,25,.08), 0 14px 34px rgba(20,30,25,.09);
+    --radius:10px; --radius-sm:6px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.8; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+  a{color:inherit;}
+  ::selection{background:var(--emerald); color:#fff;}
+  :focus-visible{outline:3px solid var(--emerald); outline-offset:2px;}
+
+  header.top{border-bottom:1px solid var(--line); background:#fff; padding:14px 0;}
+  .nav-row{display:flex; align-items:center; justify-content:space-between; gap:16px;}
+  .nav-brand{display:flex; align-items:center; gap:10px; font-weight:800; font-size:15.5px; text-decoration:none;}
+  .nav-brand .dot{width:9px; height:9px; border-radius:50%; background:var(--emerald); flex:0 0 auto;}
+  .nav-back{font-size:13px; color:var(--ink-soft); text-decoration:none; font-family:var(--mono);}
+  .nav-back:hover{color:var(--emerald-deep);}
+
+  .hero{padding:56px 0 34px;}
+  .eyebrow{font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; color:var(--emerald-deep); text-transform:uppercase; font-weight:600; margin:0 0 14px;}
+  h1{font-size:clamp(26px,4vw,38px); font-weight:800; letter-spacing:-.015em; margin:0 0 14px; max-width:680px;}
+  h1 em{font-style:normal; color:var(--emerald);}
+  .hero-sub{font-size:15.5px; color:var(--ink-soft); max-width:600px; margin:0 0 30px;}
+
+  .search-box{position:relative; max-width:560px;}
+  .search-box input{
+    width:100%; font-family:var(--sans); font-size:16px; padding:16px 52px 16px 18px;
+    border:1.5px solid var(--line); border-radius:var(--radius); background:#fff; color:var(--ink);
+    box-shadow:var(--shadow-sm); transition:box-shadow .15s, border-color .15s;
+  }
+  .search-box input:focus{outline:none; border-color:var(--emerald); box-shadow:0 0 0 4px var(--emerald-pale);}
+  .search-box .icon{position:absolute; top:50%; right:18px; transform:translateY(-50%); color:var(--ink-soft); pointer-events:none;}
+  .result-count{font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-top:10px;}
+  .result-count b{color:var(--emerald-deep);}
+
+  .filters{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 8px;}
+  .filter-pill{
+    font-family:var(--mono); font-size:11.5px; padding:7px 14px; border-radius:20px; border:1px solid var(--line);
+    background:#fff; color:var(--ink-soft); cursor:pointer; transition:all .15s; white-space:nowrap;
+  }
+  .filter-pill:hover{border-color:var(--emerald);}
+  .filter-pill.active{background:var(--emerald-deep); color:#fff; border-color:var(--emerald-deep);}
+
+  main{padding:20px 0 90px;}
+  .term-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin-top:18px;}
+  .term-card{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:18px 20px;
+    box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s;
+  }
+  .term-card:hover{transform:translateY(-2px); box-shadow:var(--shadow-md);}
+  .term-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;}
+  .term-en{font-family:var(--mono); font-size:13px; font-weight:600; color:var(--emerald-deep); letter-spacing:-.01em;}
+  .term-cat{font-family:var(--mono); font-size:9.5px; background:var(--emerald-pale); color:var(--emerald-deep); padding:2px 8px; border-radius:10px; white-space:nowrap; flex:0 0 auto;}
+  .term-fa{font-size:15.5px; font-weight:700; margin:0 0 6px;}
+  .term-def{font-size:13px; color:var(--ink-soft); margin:0;}
+
+  .empty-state{text-align:center; padding:60px 20px; color:var(--ink-soft);}
+  .empty-state .big{font-size:32px; margin-bottom:10px;}
+
+  .disclosure{
+    background:var(--emerald-pale); border:1px solid #BFE6D5; border-radius:var(--radius-sm);
+    padding:16px 18px; font-size:12.5px; color:var(--ink-soft); margin-top:26px; line-height:1.85;
+  }
+  .disclosure b{color:var(--emerald-deep);}
+
+  footer{border-top:1px solid var(--line); padding:24px 0; font-family:var(--mono); font-size:11px; color:var(--ink-soft); text-align:center;}
+
+  @media (max-width:600px){
+    .term-grid{grid-template-columns:1fr;}
+    .hero{padding:36px 0 24px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap nav-row">
+    <a class="nav-brand" href="#"><span class="dot"></span> Kooch Team</a>
+    <a class="nav-back" href="koochteam-site.html">← بازگشت به سایت</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <p class="eyebrow">منبع: پیوست ۱ مبحث ۱۹ / ویرایش پنجم (۱۴۰۴)</p>
+    <h1>واژه‌نامه <em>انرژی ساختمان</em></h1>
+    <p class="hero-sub">دنبال معنی یه اصطلاح فنی تو مبحث ۱۹ یا مهندسی انرژی ساختمان می‌گردی؟ اینجا رو بگرد — بیش از ۹۰ اصطلاح، از U-Value تا Blower Door.</p>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="اصطلاح رو تایپ کن… مثلاً ISCOP، هوابندی، U-Value" autocomplete="off">
+      <span class="icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </span>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+    <div class="filters" id="filters"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="term-grid" id="termGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="big">🔍</div>
+    <p>اصطلاحی با این مشخصات پیدا نشد. جست‌وجوی دیگه‌ای امتحان کن.</p>
+  </div>
+  <div class="disclosure">
+    <b>یادآوری:</b> فهرست اصطلاحات از پیوست ۱ مبحث ۱۹ (ویرایش پنجم) گرفته شده، اما توضیحات فارسیِ خودِ پیوست به‌صورت متنِ قابل‌استخراج در دسترس نبود؛ بنابراین تعریف‌های زیر بر پایه‌ی مراجع عمومی مهندسی انرژی ساختمان (نظیر ASHRAE) نوشته شده‌اند، نه ترجمه‌ی مستقیم سند رسمی. در صورت مشاهده‌ی مغایرت با متن رسمی پیوست ۱، لطفاً به ما اطلاع دهید.
+  </div>
+</main>
+
+<footer>KOOCH TEAM — واژه‌نامه انرژی ساختمان — بر پایه پیوست ۱ مبحث ۱۹</footer>
+
+<script>
+const TERMS = [
+  {en:"DHW (Domestic Hot Water)", fa:"آب گرم مصرفی", def:"آب گرمی که برای مصارف بهداشتی و روزمره (شست‌وشو، حمام) در ساختمان تامین می‌شود، جدا از آب گرم سیستم گرمایش.", cat:"تاسیسات مکانیکی"},
+  {en:"Weather", fa:"داده‌های هواشناسی", def:"داده‌های اقلیمی محلی (دما، رطوبت، تابش) که مبنای محاسبات بار حرارتی و انرژی ساختمان قرار می‌گیرد.", cat:"کلیات انرژی"},
+  {en:"LCA (Life Cycle Assessment)", fa:"ارزیابی چرخه عمر", def:"روشی برای بررسی اثرات زیست‌محیطی یک ساختمان یا محصول از استخراج مواد اولیه تا تخریب نهایی.", cat:"کلیات انرژی"},
+  {en:"Energy Retrofit", fa:"بهسازی انرژی", def:"اصلاح و ارتقای ساختمان‌های موجود برای کاهش مصرف انرژی، مثل عایق‌کاری یا تعویض تجهیزات.", cat:"کلیات انرژی"},
+  {en:"Climate", fa:"اقلیم", def:"شرایط جوی بلندمدت یک منطقه که مبنای دسته‌بندی اقلیمی ساختمان (مثل 3A، 4B) قرار می‌گیرد.", cat:"کلیات انرژی"},
+  {en:"Economizer", fa:"اکونومایزر", def:"سیستمی در تاسیسات تهویه که از هوای خنک بیرون به‌جای برودت مکانیکی استفاده می‌کند تا انرژی صرفه‌جویی شود.", cat:"تاسیسات مکانیکی"},
+  {en:"Genetic Algorithm", fa:"الگوریتم ژنتیک", def:"روش بهینه‌سازی محاسباتی الهام‌گرفته از تکامل زیستی، برای یافتن بهترین طرح انرژی ساختمان.", cat:"شبیه‌سازی و داده"},
+  {en:"Data Transition", fa:"انتقال داده", def:"جابه‌جایی داده‌های عملکردی ساختمان بین سامانه‌ها یا پروتکل‌های مختلف.", cat:"شبیه‌سازی و داده"},
+  {en:"Heat Transmittance", fa:"ضریب انتقال حرارت", def:"میزان گرمایی که از واحد سطح یک جزء ساختمانی در واحد زمان عبور می‌کند (همان U-Value).", cat:"پوسته ساختمان"},
+  {en:"Primary Energy (Source Energy)", fa:"انرژی اولیه", def:"کل انرژی مصرف‌شده از منبع اولیه (مثل سوخت فسیلی در نیروگاه)، پیش از تبدیل به انرژی نهایی قابل‌استفاده در ساختمان.", cat:"کلیات انرژی"},
+  {en:"Energy Meter", fa:"کنتور انرژی", def:"دستگاه اندازه‌گیری میزان مصرف انرژی (برق، گاز و ...) در یک مدار یا ساختمان.", cat:"برق و اندازه‌گیری"},
+  {en:"Final Energy (Site Energy)", fa:"انرژی نهایی", def:"انرژی‌ای که واقعاً در محل ساختمان مصرف می‌شود (مثل برق یا گاز روی کنتور)، پیش از احتساب تلفات تولید و انتقال.", cat:"کلیات انرژی"},
+  {en:"Embodied Energy", fa:"انرژی نهفته", def:"مجموع انرژی مصرف‌شده برای استخراج، فرآوری، حمل و ساخت مصالح ساختمانی.", cat:"کلیات انرژی"},
+  {en:"Renewable Energies", fa:"انرژی‌های تجدیدپذیر", def:"منابع انرژی پایان‌ناپذیر مانند خورشیدی، بادی و زمین‌گرمایی که در مبحث ۱۹ سهمی الزامی از تامین انرژی ساختمان دارند.", cat:"انرژی تجدیدپذیر"},
+  {en:"Cyber Security", fa:"امنیت سایبری", def:"حفاظت از سامانه‌های هوشمند ساختمان (BMS، IoT) در برابر نفوذ و دستکاری داده.", cat:"شبیه‌سازی و داده"},
+  {en:"IoT (Internet of Things)", fa:"اینترنت اشیا", def:"شبکه‌ای از حسگرها و تجهیزات متصل به اینترنت که داده‌های ساختمان را جمع‌آوری و کنترل می‌کنند.", cat:"شبیه‌سازی و داده"},
+  {en:"Thermal Inertia", fa:"اینرسی حرارتی", def:"توانایی جرم ساختمان (بتن، آجر) در ذخیره و تاخیر انتقال گرما، که نوسان دمای داخلی را کاهش می‌دهد.", cat:"پوسته ساختمان"},
+  {en:"Thermal Comfort", fa:"آسایش حرارتی", def:"شرایطی که در آن اکثر افراد از دما و رطوبت محیط داخلی رضایت دارند.", cat:"پوسته ساختمان"},
+  {en:"TSPR (Total System Performance Ratio)", fa:"نسبت عملکرد کل سامانه", def:"شاخصی ترکیبی برای ارزیابی بازده کل یک سامانه تهویه مطبوع، فراتر از بازده تک‌تجهیزات.", cat:"تاسیسات مکانیکی"},
+  {en:"ISCOP (Integrated Seasonal Coefficient of Performance)", fa:"ضریب عملکرد فصلی یکپارچه", def:"میانگین موزون بازده یک سیستم سرمایش/گرمایش در طول فصل، با احتساب تغییرات بار و دما.", cat:"تاسیسات مکانیکی"},
+  {en:"Inspection", fa:"بازرسی", def:"بررسی میدانی ساختمان یا تاسیسات برای تایید انطباق با الزامات طراحی و اجرا.", cat:"روش‌های ارزیابی"},
+  {en:"Opening", fa:"بازشو", def:"هر جزء قابل‌بازشدن در پوسته ساختمان مانند پنجره یا در، که مسیر ورود/خروج هوا و نور است.", cat:"پوسته ساختمان"},
+  {en:"Energy Recovery", fa:"بازیافت انرژی", def:"استحصال گرما یا برودت از هوای خروجی ساختمان برای پیش‌گرمایش/پیش‌سرمایش هوای ورودی.", cat:"تاسیسات مکانیکی"},
+  {en:"DALI (Digital Addressable Lighting Interface)", fa:"رابط روشنایی آدرس‌پذیر دیجیتال", def:"پروتکل استاندارد برای کنترل هوشمند و مجزای هر چراغ در یک سامانه روشنایی.", cat:"برق و اندازه‌گیری"},
+  {en:"Flat Roof", fa:"بام تخت", def:"سقف با شیب بسیار کم که در محاسبات حرارتی پوسته به‌طور جداگانه از بام شیب‌دار لحاظ می‌شود.", cat:"پوسته ساختمان"},
+  {en:"Pitched Roof", fa:"بام شیب‌دار", def:"سقفی با شیب محسوس که هندسه و انتقال حرارت متفاوتی نسبت به بام تخت دارد.", cat:"پوسته ساختمان"},
+  {en:"Capacitor Bank", fa:"بانک خازنی", def:"مجموعه خازن‌هایی که برای اصلاح ضریب توان و کاهش تلفات برق در تاسیسات الکتریکی نصب می‌شود.", cat:"برق و اندازه‌گیری"},
+  {en:"Ice Bank", fa:"مخزن ذخیره یخ", def:"سامانه ذخیره برودت به‌شکل یخ در ساعات کم‌مصرف، برای استفاده در ساعات اوج بار.", cat:"تاسیسات مکانیکی"},
+  {en:"Energy Label", fa:"برچسب انرژی", def:"نشان درجه‌بندی‌شده (مثل A تا D) که کارایی انرژی یک ساختمان یا تجهیز را نشان می‌دهد.", cat:"کلیات انرژی"},
+  {en:"Online", fa:"برخط", def:"اتصال زنده و پیوسته یک سامانه یا حسگر به شبکه برای انتقال داده در لحظه.", cat:"شبیه‌سازی و داده"},
+  {en:"Real Time", fa:"زمان واقعی", def:"پردازش یا نمایش داده بدون تاخیر محسوس، هم‌زمان با وقوع رویداد.", cat:"شبیه‌سازی و داده"},
+  {en:"Energy Efficiency", fa:"بهره‌وری انرژی", def:"نسبت خروجی مفید (مثل گرمایش) به انرژی ورودی مصرف‌شده برای تولید آن.", cat:"کلیات انرژی"},
+  {en:"AFUE (Annual Fuel Utilization Efficiency)", fa:"بازده سالانه مصرف سوخت", def:"شاخص بازده سالانه دیگ‌های گرمایشی با سوخت فسیلی، با احتساب تلفات راه‌اندازی و خاموشی.", cat:"تاسیسات مکانیکی"},
+  {en:"Rehabilitation (Renovation)", fa:"بازسازی", def:"مجموعه اقدامات برای بازگرداندن یا ارتقای عملکرد یک ساختمان موجود.", cat:"روش‌های ارزیابی"},
+  {en:"Optimization", fa:"بهینه‌سازی", def:"فرآیند یافتن بهترین ترکیب متغیرهای طراحی برای رسیدن به کمترین مصرف انرژی یا بیشترین عملکرد.", cat:"شبیه‌سازی و داده"},
+  {en:"Multi Objective Optimization", fa:"بهینه‌سازی چندهدفه", def:"بهینه‌سازی هم‌زمان چند معیار گاه متضاد، مثل هزینه، مصرف انرژی و آسایش حرارتی.", cat:"شبیه‌سازی و داده"},
+  {en:"Deep Metering", fa:"اندازه‌گیری عمیق", def:"ثبت جزئیات مصرف انرژی در سطح مدار یا تجهیز، فراتر از کنتور کلی ساختمان.", cat:"برق و اندازه‌گیری"},
+  {en:"Thermal Bridge", fa:"پل حرارتی", def:"نقطه یا مسیری در پوسته ساختمان با مقاومت حرارتی پایین‌تر از اطراف که باعث اتلاف حرارت متمرکز می‌شود.", cat:"پوسته ساختمان"},
+  {en:"Building Envelope", fa:"پوسته ساختمان", def:"مجموع اجزای جداکننده فضای داخلی از محیط بیرون: دیوار، سقف، کف، پنجره و در.", cat:"پوسته ساختمان"},
+  {en:"Opaque Building Envelope", fa:"پوسته غیرنورگذر", def:"بخش‌های تو‌پُر پوسته ساختمان (دیوار، سقف، کف) بدون امکان عبور نور.", cat:"پوسته ساختمان"},
+  {en:"Transparent Building Envelope / Fenestration", fa:"پوسته نورگذر", def:"بخش‌های شفاف پوسته ساختمان مانند پنجره و نورگیر که امکان عبور نور و گاه هوا را دارند.", cat:"پوسته ساختمان"},
+  {en:"Electrical Installations / Utilities", fa:"تاسیسات الکتریکی", def:"مجموعه سامانه‌های برق‌رسانی، روشنایی و توزیع قدرت در ساختمان.", cat:"برق و اندازه‌گیری"},
+  {en:"Mechanical Installations / Utilities", fa:"تاسیسات مکانیکی", def:"مجموعه سامانه‌های گرمایش، سرمایش، تهویه و آبرسانی ساختمان.", cat:"تاسیسات مکانیکی"},
+  {en:"Timer Light Switch", fa:"کلید روشنایی زمان‌دار", def:"کلیدی که پس از مدت‌زمان معین به‌صورت خودکار چراغ را خاموش می‌کند تا مصرف بی‌مورد کاهش یابد.", cat:"برق و اندازه‌گیری"},
+  {en:"Data Analysis", fa:"تحلیل داده", def:"پردازش داده‌های عملکردی ساختمان برای استخراج الگو و بهبود تصمیم‌گیری انرژی.", cat:"شبیه‌سازی و داده"},
+  {en:"Predictive Analysis", fa:"تحلیل پیش‌بینانه", def:"استفاده از داده‌های تاریخی برای پیش‌بینی مصرف یا عملکرد آینده ساختمان.", cat:"شبیه‌سازی و داده"},
+  {en:"Reactive Analysis", fa:"تحلیل واکنشی", def:"بررسی داده پس از وقوع یک رویداد یا انحراف، برای پاسخ سریع به مشکل.", cat:"شبیه‌سازی و داده"},
+  {en:"ACH (Air Change per Hour)", fa:"نرخ تعویض هوا در ساعت", def:"تعداد دفعاتی که حجم کامل هوای یک فضا در یک ساعت با هوای تازه یا نشتی جایگزین می‌شود.", cat:"هوابندی"},
+  {en:"Season Change Over", fa:"تغییر فصل عملکرد", def:"لحظه‌ی سوییچ سامانه تهویه مطبوع بین حالت گرمایش و سرمایش بر اساس فصل.", cat:"تاسیسات مکانیکی"},
+  {en:"Change of Occupancy", fa:"تغییر کاربری/اشغال", def:"تغییر در نوع یا میزان استفاده از فضا که بار حرارتی و انرژی مصرفی را تحت تاثیر قرار می‌دهد.", cat:"روش‌های ارزیابی"},
+  {en:"Active Power", fa:"توان اکتیو", def:"بخشی از توان الکتریکی که واقعاً به کار مفید (مثل روشنایی یا موتور) تبدیل می‌شود، بر حسب وات.", cat:"برق و اندازه‌گیری"},
+  {en:"Reactive Power", fa:"توان راکتیو", def:"توانی که بین منبع و بار نوسان می‌کند و کار مفید تولید نمی‌کند، اما بر ظرفیت شبکه اثر دارد.", cat:"برق و اندازه‌گیری"},
+  {en:"Apparent Power", fa:"توان ظاهری", def:"برآیند برداری توان اکتیو و راکتیو، بر حسب ولت‌آمپر (VA).", cat:"برق و اندازه‌گیری"},
+  {en:"Cooling/Heating Distribution", fa:"توزیع سرمایش/گرمایش", def:"شبکه لوله‌کشی یا کانال‌کشی که برودت یا گرمای تولیدشده را به فضاهای مختلف ساختمان می‌رساند.", cat:"تاسیسات مکانیکی"},
+  {en:"Sustainable Development", fa:"توسعه پایدار", def:"رویکردی که نیازهای امروز را بدون آسیب به توان نسل‌های آینده برای تامین نیازهایشان برآورده می‌کند.", cat:"کلیات انرژی"},
+  {en:"HVAC (Heating, Ventilation and Air-Conditioning)", fa:"گرمایش، تهویه و تهویه مطبوع", def:"مجموعه سامانه‌های کنترل دما، رطوبت و کیفیت هوای داخل ساختمان.", cat:"تاسیسات مکانیکی"},
+  {en:"Ventilation", fa:"تهویه", def:"فرآیند تعویض یا گردش هوای داخل ساختمان برای تامین هوای تازه و کنترل آلاینده‌ها.", cat:"تاسیسات مکانیکی"},
+  {en:"ASHRAE", fa:"انجمن مهندسان گرمایش، سرمایش و تهویه مطبوع آمریکا", def:"مرجع بین‌المللی استانداردهای HVAC که مبنای بسیاری از جداول اقلیمی و فنی مبحث ۱۹ نیز هست.", cat:"روش‌های ارزیابی"},
+  {en:"Ultrasonic Flow Meter", fa:"فلومتر آلتراسونیک", def:"دستگاه اندازه‌گیری دبی سیال با استفاده از امواج فراصوت، بدون نیاز به تماس مستقیم با جریان.", cat:"برق و اندازه‌گیری"},
+  {en:"PDCA (Plan-Do-Check-Act)", fa:"چرخه برنامه‌ریزی-اجرا-بررسی-اقدام", def:"چرخه مدیریتی برای بهبود مستمر عملکرد انرژی ساختمان در طول زمان.", cat:"روش‌های ارزیابی"},
+  {en:"As Built", fa:"نقشه چون‌ساخت", def:"مستندات نهایی که وضعیت واقعی ساخته‌شده ساختمان را (نه صرفاً طرح اولیه) ثبت می‌کند.", cat:"روش‌های ارزیابی"},
+  {en:"Energy Carrier", fa:"حامل انرژی", def:"هر ماده یا جریانی (برق، گاز، گازوئیل) که انرژی را برای مصرف نهایی منتقل می‌کند.", cat:"کلیات انرژی"},
+  {en:"MRE (Minimum Reporting Efficiency)", fa:"حداقل بازده قابل‌گزارش", def:"کمترین مقدار بازده تجهیز که برای گزارش‌دهی رسمی در استانداردهای انرژی پذیرفته می‌شود.", cat:"تاسیسات مکانیکی"},
+  {en:"ISMRE (Integrated Seasonal Minimum Reporting Efficiency)", fa:"حداقل بازده فصلی یکپارچه قابل‌گزارش", def:"نسخه فصلی و یکپارچه‌شده‌ی MRE که نوسانات بار در طول سال را لحاظ می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"Motion Detector", fa:"حسگر حرکت", def:"سنسوری که حضور فرد را در فضا تشخیص می‌دهد و می‌تواند روشنایی یا تهویه را خودکار کنترل کند.", cat:"کنترل و اتوماسیون"},
+  {en:"COV (Change of Value)", fa:"تغییر مقدار", def:"رویدادی که هنگام تغییر معنادار یک متغیر پایش‌شده (دما، فشار) در سامانه کنترل ثبت می‌شود.", cat:"کنترل و اتوماسیون"},
+  {en:"Glare", fa:"خیرگی", def:"نور بیش‌ازحد یا نامطلوب که باعث ناراحتی بینایی می‌شود؛ در طراحی نورگذر باید کنترل شود.", cat:"برق و اندازه‌گیری"},
+  {en:"Encrypted Data", fa:"داده رمزنگاری‌شده", def:"داده‌ای که برای حفظ امنیت با الگوریتم رمزنگاری غیرقابل‌خواندن شده است.", cat:"شبیه‌سازی و داده"},
+  {en:"Big Data", fa:"کلان‌داده", def:"حجم عظیمی از داده‌های عملکردی ساختمان که برای تحلیل الگو و بهینه‌سازی جمع‌آوری می‌شود.", cat:"شبیه‌سازی و داده"},
+  {en:"VSD (Variable Speed Drive)", fa:"درایو دور متغیر", def:"دستگاهی که سرعت موتور را متناسب با نیاز واقعی تنظیم می‌کند تا مصرف برق کاهش یابد.", cat:"برق و اندازه‌گیری"},
+  {en:"VFD (Variable Frequency Drive)", fa:"درایو فرکانس متغیر", def:"نوعی VSD که با تغییر فرکانس برق ورودی، سرعت موتور القایی را کنترل می‌کند.", cat:"برق و اندازه‌گیری"},
+  {en:"VVD (Variable Voltage Drive)", fa:"درایو ولتاژ متغیر", def:"روش کنترل سرعت موتور از طریق تغییر ولتاژ ورودی.", cat:"برق و اندازه‌گیری"},
+  {en:"Blower Door", fa:"در فن‌دار تست هوابندی", def:"دستگاه تست میدانی که با ایجاد اختلاف فشار، میزان نشت هوای پوسته ساختمان را اندازه می‌گیرد.", cat:"هوابندی"},
+  {en:"Data Perception", fa:"ادراک داده", def:"مرحله‌ی اولیه جمع‌آوری خام داده از حسگرها پیش از پردازش و تحلیل.", cat:"شبیه‌سازی و داده"},
+  {en:"UPS (Uninterruptible Power Supply)", fa:"منبع تغذیه بدون وقفه", def:"سامانه‌ای که در صورت قطع برق شهر، تغذیه پیوسته تجهیزات حساس را تضمین می‌کند.", cat:"برق و اندازه‌گیری"},
+  {en:"Cooling Set Point", fa:"نقطه تنظیم سرمایش", def:"دمای هدفی که سامانه سرمایش برای رسیدن به آن تلاش می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"Cooling Set Back Point", fa:"نقطه تنظیم برگشتی سرمایش", def:"دمای مجاز پایین‌تر (کم‌مصرف‌تر) در ساعات عدم‌اشغال فضا برای سامانه سرمایش.", cat:"تاسیسات مکانیکی"},
+  {en:"Heating Set Point", fa:"نقطه تنظیم گرمایش", def:"دمای هدفی که سامانه گرمایش برای رسیدن به آن تلاش می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"Heating Set Back Point", fa:"نقطه تنظیم برگشتی گرمایش", def:"دمای مجاز پایین‌تر در ساعات عدم‌اشغال فضا برای صرفه‌جویی در سامانه گرمایش.", cat:"تاسیسات مکانیکی"},
+  {en:"Digital Twin", fa:"دوقلوی دیجیتال", def:"مدل مجازی و به‌روز از ساختمان واقعی که برای شبیه‌سازی و پایش عملکرد استفاده می‌شود.", cat:"شبیه‌سازی و داده"},
+  {en:"Wall", fa:"دیوار", def:"جزء قائم پوسته یا تیغه‌ی داخلی ساختمان که در محاسبات حرارتی لحاظ می‌شود.", cat:"پوسته ساختمان"},
+  {en:"Curtain Wall", fa:"دیوار پوششی (کرتین‌وال)", def:"نمای غیرباربر شیشه‌ای یا فلزی که در جلوی اسکلت سازه نصب می‌شود؛ الزامات حرارتی خاص خود را دارد.", cat:"پوسته ساختمان"},
+  {en:"External Wall", fa:"دیوار خارجی", def:"دیواری که فضای داخلی را از محیط بیرون جدا می‌کند و مستقیماً در محاسبات پوسته دخیل است.", cat:"پوسته ساختمان"},
+  {en:"Energy Rating", fa:"رده‌بندی انرژی", def:"درجه‌بندی عملکرد انرژی ساختمان (مثل A تا D) بر پایه مصرف واقعی یا شبیه‌سازی‌شده.", cat:"کلیات انرژی"},
+  {en:"Digitalization", fa:"دیجیتالی‌سازی", def:"تبدیل فرآیندهای پایش و کنترل ساختمان به فرم دیجیتال و خودکار.", cat:"شبیه‌سازی و داده"},
+  {en:"Cooling Degree Day (CDD)", fa:"درجه‌روز سرمایش", def:"شاخصی که میزان نیاز به سرمایش یک منطقه را بر اساس اختلاف دمای روزانه از یک دمای مبنا محاسبه می‌کند.", cat:"کلیات انرژی"},
+  {en:"Heating Degree Day (HDD)", fa:"درجه‌روز گرمایش", def:"شاخصی مشابه CDD که میزان نیاز به گرمایش یک منطقه را نشان می‌دهد.", cat:"کلیات انرژی"},
+  {en:"Prescriptive Method", fa:"روش تجویزی", def:"روش انطباق با مبحث ۱۹ بر پایه رعایت حداقل/حداکثر مقادیر مشخص‌شده برای هر جزء (بدون نیاز به شبیه‌سازی کل ساختمان)؛ همان روشی که ابزار پیش‌ارزیابی این سایت بر اساس آن کار می‌کند.", cat:"روش‌های ارزیابی"},
+  {en:"Energy Performance Simulation Method", fa:"روش شبیه‌سازی عملکرد انرژی", def:"روش انطباق مبتنی بر مدل‌سازی کامل مصرف انرژی سالانه ساختمان و مقایسه با یک ساختمان مرجع.", cat:"روش‌های ارزیابی"},
+  {en:"Building Usable Area", fa:"زیربنای مفید ساختمان", def:"مساحت قابل‌استفاده ساختمان که مبنای محاسبات شاخص‌های انرژی مانند EUI قرار می‌گیرد.", cat:"روش‌های ارزیابی"},
+  {en:"Sub-metering", fa:"زیرکنتور", def:"نصب کنتور جداگانه برای هر بخش یا مصرف‌کننده‌ی خاص در کنار کنتور اصلی ساختمان.", cat:"برق و اندازه‌گیری"},
+  {en:"Near Zero Energy Building (nZEB)", fa:"ساختمان با انرژی نزدیک به صفر", def:"ساختمانی با مصرف انرژی بسیار پایین که بخش عمده نیاز باقی‌مانده را از منابع تجدیدپذیر تامین می‌کند.", cat:"nZEB و سبز"},
+  {en:"Very Low Energy Building", fa:"ساختمان با مصرف انرژی بسیار پایین", def:"رده‌ای از ساختمان‌ها با مصرف انرژی به‌مراتب کمتر از حداقل الزامات مبحث ۱۹.", cat:"nZEB و سبز"},
+  {en:"Low Energy Building", fa:"ساختمان کم‌مصرف", def:"ساختمانی که مصرف انرژی آن پایین‌تر از میانگین ساختمان‌های مشابه است اما به سطح nZEB نمی‌رسد.", cat:"nZEB و سبز"},
+  {en:"Building in accordance with the regulations", fa:"ساختمان منطبق با مقررات", def:"ساختمانی که حداقل الزامات مبحث ۱۹ را دقیقاً رعایت کرده، نه بیشتر و نه کمتر.", cat:"روش‌های ارزیابی"},
+  {en:"Existing Building", fa:"ساختمان موجود", def:"ساختمانی که پیش از اعمال ویرایش جدید مقررات ساخته شده و ممکن است الزامات متفاوتی برایش در نظر گرفته شود.", cat:"روش‌های ارزیابی"},
+  {en:"New Building", fa:"ساختمان نوساز", def:"ساختمانی که از ابتدا مطابق آخرین ویرایش مبحث ۱۹ طراحی و ساخته می‌شود.", cat:"روش‌های ارزیابی"},
+  {en:"Metering and Sub-metering System", fa:"سامانه اندازه‌گیری و زیرکنتور", def:"مجموعه کنتورهای اصلی و فرعی که مصرف انرژی ساختمان را در سطوح مختلف پایش می‌کنند.", cat:"برق و اندازه‌گیری"},
+  {en:"CCHP (Combined Cooling, Heat and Power)", fa:"تولید هم‌زمان برق، گرما و برودت", def:"سامانه‌ای که هم‌زمان برق، گرمایش و سرمایش را از یک منبع سوخت با بازده بالا تولید می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"CHP (Combined Heat and Power)", fa:"تولید هم‌زمان برق و گرما", def:"سامانه‌ای که به‌طور هم‌زمان برق و گرمای مفید را از یک منبع سوخت تولید می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"VAV (Variable Air Volume)", fa:"حجم هوای متغیر", def:"سامانه تهویه مطبوعی که دبی هوای ارسالی به هر منطقه را متناسب با نیاز واقعی تغییر می‌دهد.", cat:"تاسیسات مکانیکی"},
+  {en:"TES (Thermal Energy Storage)", fa:"ذخیره‌سازی انرژی حرارتی", def:"ذخیره گرما یا برودت (مثل مخزن آب گرم یا یخ) برای استفاده در زمان دیگر و کاهش بار اوج مصرف.", cat:"تاسیسات مکانیکی"},
+  {en:"Dimmer", fa:"دیمر", def:"کنترل‌کننده‌ای که شدت نور چراغ را به‌صورت پیوسته تنظیم می‌کند تا مصرف برق کاهش یابد.", cat:"برق و اندازه‌گیری"},
+  {en:"EMS (Energy Management System)", fa:"سامانه مدیریت انرژی", def:"نرم‌افزار/سخت‌افزاری که مصرف انرژی کل ساختمان را پایش، تحلیل و بهینه می‌کند.", cat:"کنترل و اتوماسیون"},
+  {en:"LMS (Lighting Management System)", fa:"سامانه مدیریت روشنایی", def:"سامانه کنترل هوشمند روشنایی ساختمان بر اساس حضور، نور روز و برنامه زمانی.", cat:"کنترل و اتوماسیون"},
+  {en:"BMS (Building Management System)", fa:"سامانه مدیریت ساختمان", def:"سامانه یکپارچه‌ای که تاسیسات مکانیکی، برقی و ایمنی ساختمان را به‌صورت مرکزی کنترل می‌کند.", cat:"کنترل و اتوماسیون"},
+  {en:"AC (Cooling/Air-Conditioning)", fa:"تهویه مطبوع/سرمایش", def:"سامانه یا واحدی که هوای فضا را خنک و شرایط آسایش حرارتی را تامین می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"HSPF (Heating Seasonal Performance Factor)", fa:"ضریب عملکرد فصلی گرمایش", def:"شاخص بازده فصلی پمپ‌های حرارتی در حالت گرمایش.", cat:"تاسیسات مکانیکی"},
+  {en:"EUI (Energy Usage Intensity)", fa:"شدت مصرف انرژی", def:"مصرف انرژی سالانه ساختمان تقسیم بر مساحت مفید آن، معمولاً بر حسب kWh بر مترمربع.", cat:"کلیات انرژی"},
+  {en:"Illuminance", fa:"شدت روشنایی", def:"میزان نور رسیده به واحد سطح، بر حسب لوکس؛ مبنای طراحی روشنایی داخلی.", cat:"برق و اندازه‌گیری"},
+  {en:"Low-E (Low Emissivity) Glass", fa:"شیشه کم‌گسیل", def:"شیشه‌ای با پوشش نازک فلزی که عبور تابش حرارتی مادون‌قرمز را کاهش می‌دهد و عایق‌بندی حرارتی پنجره را بهبود می‌بخشد.", cat:"پوسته ساختمان"},
+  {en:"Control Valve", fa:"شیر کنترل", def:"شیری که دبی سیال (آب، بخار) را برای تنظیم دما یا فشار در تاسیسات مکانیکی کنترل می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"2-Port Valve", fa:"شیر دوراهه", def:"شیر کنترلی با دو مسیر ورودی/خروجی که جریان را قطع یا وصل می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"3-Port Valve", fa:"شیر سه‌راهه", def:"شیر کنترلی با سه مسیر که می‌تواند جریان را مخلوط یا مسیردهی کند.", cat:"تاسیسات مکانیکی"},
+  {en:"PICV (Pressure Independent Control Valve)", fa:"شیر کنترل مستقل از فشار", def:"شیری که دبی تنظیم‌شده را صرف‌نظر از نوسانات فشار شبکه ثابت نگه می‌دارد.", cat:"تاسیسات مکانیکی"},
+  {en:"Heat Transmittance (U-Value)", fa:"ضریب انتقال حرارت (U)", def:"معیار اصلی عملکرد حرارتی جداره‌ها در مبحث ۱۹؛ هرچه کمتر باشد، عایق‌بندی بهتر است.", cat:"پوسته ساختمان"},
+  {en:"Solar Heat Gain Coefficient (SHGC)", fa:"ضریب دریافت حرارت خورشیدی", def:"نسبت انرژی خورشیدی که از پنجره عبور کرده و وارد فضای داخلی می‌شود؛ کنترل‌کننده‌ی اصلی بار سرمایشی تابستانی.", cat:"پوسته ساختمان"},
+  {en:"Coefficient of Performance (COP)", fa:"ضریب عملکرد", def:"نسبت انرژی مفید تولیدشده (گرمایش/سرمایش) به انرژی الکتریکی مصرفی یک تجهیز.", cat:"تاسیسات مکانیکی"},
+  {en:"Thermal Resistance (R-Value)", fa:"مقاومت حرارتی (R)", def:"معکوس ضریب هدایت حرارتی هر لایه؛ مبنای محاسبه‌گر R در روش تجویزی.", cat:"پوسته ساختمان"},
+  {en:"Thermal Conductivity (λ - Lambda Value)", fa:"ضریب هدایت حرارتی (λ)", def:"میزان توانایی یک ماده در انتقال گرما؛ هرچه کمتر باشد، ماده عایق بهتری است.", cat:"پوسته ساختمان"},
+  {en:"Building Floor", fa:"کف ساختمان", def:"جزء افقی پایینی پوسته که در تماس با خاک، زیرزمین یا فضای باز است و در محاسبات حرارتی لحاظ می‌شود.", cat:"پوسته ساختمان"},
+  {en:"Insulation", fa:"عایق", def:"ماده‌ای با هدایت حرارتی پایین که برای کاهش اتلاف/اکتساب گرما در پوسته ساختمان استفاده می‌شود.", cat:"پوسته ساختمان"},
+  {en:"Thermal Insulation", fa:"عایق حرارتی", def:"لایه یا سامانه‌ای که مقاومت حرارتی جداره را افزایش می‌دهد.", cat:"پوسته ساختمان"},
+  {en:"Valve Actuator", fa:"محرک شیر", def:"دستگاهی که فرمان کنترلی را به حرکت مکانیکی شیر تبدیل می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"On-Off Valve Actuator", fa:"محرک شیر قطع/وصل", def:"محرکی که شیر را فقط بین دو حالت کاملاً باز و کاملاً بسته حرکت می‌دهد.", cat:"تاسیسات مکانیکی"},
+  {en:"Modulating Valve Actuator", fa:"محرک شیر تناسبی", def:"محرکی که شیر را به‌صورت پیوسته و متناسب با نیاز، بین باز و بسته تنظیم می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"Building Elements", fa:"اجزای ساختمان", def:"تمام مولفه‌های سازنده‌ی ساختمان شامل دیوار، سقف، کف، پنجره و در.", cat:"پوسته ساختمان"},
+  {en:"Diagnosis", fa:"عیب‌یابی", def:"شناسایی علت افت عملکرد انرژی یا نقص در تاسیسات ساختمان.", cat:"روش‌های ارزیابی"},
+  {en:"Conditioned Space", fa:"فضای مشروط", def:"فضایی که به‌طور فعال گرمایش، سرمایش یا تهویه می‌شود.", cat:"پوسته ساختمان"},
+  {en:"Unconditioned Space", fa:"فضای نامشروط", def:"فضایی که تحت کنترل فعال گرمایشی/سرمایشی قرار ندارد، مثل انباری یا پارکینگ باز.", cat:"پوسته ساختمان"},
+  {en:"Air Lock", fa:"فضای هواپوش (ایرلاک)", def:"فضای واسط دو دره که از ورود مستقیم هوای بیرون به داخل ساختمان جلوگیری می‌کند.", cat:"هوابندی"},
+  {en:"BLDC (Brushless Direct Current)", fa:"موتور جریان مستقیم بدون جاروبک", def:"نوعی موتور الکتریکی با بازده بالا و تلفات کم، پرکاربرد در فن‌ها و پمپ‌های مدرن.", cat:"برق و اندازه‌گیری"},
+  {en:"EC/DC (Electronically Commutated DC)", fa:"موتور کموتاسیون الکترونیکی", def:"نوعی موتور DC با کنترل الکترونیکی که بازده انرژی بالایی در فن‌های تهویه دارد.", cat:"برق و اندازه‌گیری"},
+  {en:"Peak Shaving", fa:"تراشیدن اوج بار", def:"راهبردهایی برای کاهش مصرف برق در ساعات اوج شبکه، مثل استفاده از ذخیره انرژی.", cat:"برق و اندازه‌گیری"},
+  {en:"FLV (Full Load Value)", fa:"مقدار بار کامل", def:"بازده یا عملکرد یک تجهیز در شرایط بار ۱۰۰٪ (حداکثر ظرفیت).", cat:"تاسیسات مکانیکی"},
+  {en:"IPLV (Integrated Partial Load Value)", fa:"مقدار بار جزئی یکپارچه", def:"شاخص بازده وزنی یک تجهیز در بارهای جزئی مختلف (نه فقط بار کامل)، نمایانگر عملکرد واقعی‌تر در طول سال.", cat:"تاسیسات مکانیکی"},
+  {en:"Embodied Carbon", fa:"کربن نهفته", def:"انتشار گازهای گلخانه‌ای ناشی از تولید، حمل و ساخت مصالح ساختمانی، پیش از بهره‌برداری.", cat:"کلیات انرژی"},
+  {en:"Daylight Autonomy (DLA)", fa:"خودکفایی نور روز", def:"درصدی از ساعات کاری که یک فضا بدون نیاز به روشنایی مصنوعی، نور کافی از نور روز دریافت می‌کند.", cat:"برق و اندازه‌گیری"},
+  {en:"Spatial Daylight Autonomy (sDA)", fa:"خودکفایی نور روز مکانی", def:"نسخه‌ی مکانی DLA که درصد سطح یک فضا با نور روز کافی را نشان می‌دهد، نه فقط زمان.", cat:"برق و اندازه‌گیری"},
+  {en:"Switch", fa:"کلید", def:"عنصر قطع و وصل ساده در مدار روشنایی یا برق.", cat:"کنترل و اتوماسیون"},
+  {en:"Controller", fa:"کنترلر", def:"دستگاهی که بر اساس ورودی حسگرها، فرمان کنترلی به تجهیزات ساختمان صادر می‌کند.", cat:"کنترل و اتوماسیون"},
+  {en:"Room Controller", fa:"کنترلر اتاق", def:"کنترلر محلی که شرایط یک فضای مشخص (دما، روشنایی) را مدیریت می‌کند.", cat:"کنترل و اتوماسیون"},
+  {en:"DDC (Digital Direct Controller)", fa:"کنترلر دیجیتال مستقیم", def:"کنترلر برنامه‌پذیر دیجیتال که مستقیماً بر تجهیزات تاسیساتی فرمان می‌دهد.", cat:"کنترل و اتوماسیون"},
+  {en:"PLC (Programmable Logic Controller)", fa:"کنترلر منطقی برنامه‌پذیر", def:"کنترلر صنعتی قابل‌برنامه‌ریزی برای اتوماسیون فرآیندهای ساختمان.", cat:"کنترل و اتوماسیون"},
+  {en:"Heating", fa:"گرمایش", def:"فرآیند تامین گرمای مورد نیاز برای حفظ آسایش حرارتی داخل ساختمان.", cat:"تاسیسات مکانیکی"},
+  {en:"LED (Light Emitting Diode)", fa:"دیود نورافشان", def:"فناوری روشنایی پربازده و کم‌مصرف که در مبحث ۱۹ برای کاهش بار روشنایی توصیه می‌شود.", cat:"برق و اندازه‌گیری"},
+  {en:"PCM (Phase Changing Material)", fa:"مواد تغییر فاز", def:"موادی که با تغییر فاز (جامد به مایع) گرمای نهان زیادی ذخیره یا آزاد می‌کنند و به تعدیل دمای داخلی کمک می‌کنند.", cat:"پوسته ساختمان"},
+  {en:"On-Grid / Off-Grid", fa:"متصل به شبکه / مستقل از شبکه", def:"دو حالت اتصال سامانه تولید برق تجدیدپذیر ساختمان: متصل به شبکه سراسری یا کاملاً مستقل.", cat:"انرژی تجدیدپذیر"},
+  {en:"Comfort Zone", fa:"محدوده آسایش", def:"بازه‌ی دما و رطوبتی که اکثر افراد در آن احساس آسایش حرارتی می‌کنند.", cat:"پوسته ساختمان"},
+  {en:"BIM (Building Information Modelling)", fa:"مدل‌سازی اطلاعات ساختمان", def:"فرآیند ایجاد مدل دیجیتال چندبعدی ساختمان که اطلاعات فنی و انرژی را نیز در بر می‌گیرد.", cat:"روش‌های ارزیابی"},
+  {en:"Significant Energy User", fa:"مصرف‌کننده عمده انرژی", def:"تجهیز یا سامانه‌ای که سهم قابل‌توجهی از مصرف کل انرژی ساختمان را به خود اختصاص می‌دهد.", cat:"کلیات انرژی"},
+  {en:"Heat Resistance", fa:"مقاومت در برابر حرارت", def:"توانایی یک ماده یا جزء در تحمل دماهای بالا بدون افت عملکرد.", cat:"پوسته ساختمان"},
+  {en:"Dimmable Lights", fa:"چراغ‌های قابل‌تنظیم", def:"چراغ‌هایی که شدت نورشان با دیمر قابل تنظیم است.", cat:"برق و اندازه‌گیری"},
+  {en:"Control Logic", fa:"منطق کنترلی", def:"مجموعه قواعدی که نحوه‌ی واکنش سامانه کنترل به شرایط مختلف را تعیین می‌کند.", cat:"کنترل و اتوماسیون"},
+  {en:"EER (Energy Efficiency Ratio)", fa:"نسبت بازده انرژی", def:"نسبت ظرفیت سرمایش به توان مصرفی در یک شرایط کارکرد ثابت.", cat:"تاسیسات مکانیکی"},
+  {en:"SEER (Seasonal Energy Efficiency Ratio)", fa:"نسبت بازده انرژی فصلی", def:"نسخه‌ی فصلی EER که بازده را در طول یک فصل کامل با بارهای متغیر اندازه می‌گیرد.", cat:"تاسیسات مکانیکی"},
+  {en:"IEER (Integrated Energy Efficiency Ratio)", fa:"نسبت بازده انرژی یکپارچه", def:"شاخص بازده وزنی در چند سطح بار جزئی برای سامانه‌های سرمایش تجاری بزرگ‌تر.", cat:"تاسیسات مکانیکی"},
+  {en:"Projection Factor (PF)", fa:"ضریب سایه‌گیر", def:"نسبت عمق سایه‌بان به ارتفاع پنجره؛ در مبحث ۱۹ برای تعیین حداکثر SHGC مجاز استفاده می‌شود.", cat:"پوسته ساختمان"},
+  {en:"Air Leakage", fa:"نشت هوا", def:"عبور ناخواسته هوا از شکاف‌ها و درزهای پوسته ساختمان که باعث اتلاف انرژی می‌شود.", cat:"هوابندی"},
+  {en:"Exfiltration", fa:"نشت هوای خروجی", def:"خروج ناخواسته هوای داخل ساختمان به بیرون از طریق شکاف‌های پوسته.", cat:"هوابندی"},
+  {en:"Infiltration", fa:"نفوذ هوا", def:"ورود ناخواسته هوای بیرون به داخل ساختمان از طریق شکاف‌های پوسته.", cat:"هوابندی"},
+  {en:"Building Energy Simulation Software", fa:"نرم‌افزار شبیه‌سازی انرژی ساختمان", def:"ابزار محاسباتی که مصرف انرژی سالانه ساختمان را بر پایه مدل هندسی و تاسیساتی پیش‌بینی می‌کند.", cat:"روش‌های ارزیابی"},
+  {en:"Air Tightening", fa:"آب‌بندی هوا", def:"اقدامات اجرایی برای کاهش نشت و نفوذ هوا از پوسته ساختمان.", cat:"هوابندی"},
+  {en:"AHU (Air Handling Unit)", fa:"دستگاه هواساز", def:"واحد مرکزی تهویه مطبوع که هوا را می‌گیرد، تصفیه، سرد/گرم و توزیع می‌کند.", cat:"تاسیسات مکانیکی"},
+  {en:"Fresh Air", fa:"هوای تازه", def:"هوای بیرون که برای تامین کیفیت هوای داخل به داخل ساختمان وارد می‌شود.", cat:"تاسیسات مکانیکی"},
+  {en:"Free Cooling", fa:"سرمایش رایگان", def:"استفاده از هوای خنک بیرون به‌جای برودت مکانیکی هرگاه شرایط اقلیمی اجازه دهد.", cat:"تاسیسات مکانیکی"},
+  {en:"Exhaust Air", fa:"هوای تخلیه", def:"هوای آلوده یا مستعمل داخل ساختمان که به بیرون تخلیه می‌شود.", cat:"تاسیسات مکانیکی"},
+  {en:"Self-Learning", fa:"خودآموزی", def:"توانایی یک سامانه هوشمند در بهبود عملکرد خود بر پایه داده‌های جدید بدون برنامه‌نویسی مجدد.", cat:"شبیه‌سازی و داده"},
+  {en:"Deep Learning", fa:"یادگیری عمیق", def:"زیرشاخه‌ای از یادگیری ماشین با شبکه‌های عصبی چندلایه، برای پیش‌بینی دقیق‌تر مصرف انرژی.", cat:"شبیه‌سازی و داده"},
+  {en:"Machine Learning", fa:"یادگیری ماشین", def:"روش‌هایی که به کامپیوتر امکان می‌دهند از داده بیاموزد و بدون برنامه‌نویسی صریح، الگو پیدا کند.", cat:"شبیه‌سازی و داده"},
+];
+
+const CATS = [...new Set(TERMS.map(t=>t.cat))];
+let activeCat = "همه";
+
+function renderFilters(){
+  const el = document.getElementById('filters');
+  const pills = ["همه", ...CATS];
+  el.innerHTML = pills.map(c =>
+    `<button class="filter-pill${c===activeCat?' active':''}" data-cat="${c}">${c}</button>`
+  ).join('');
+  el.querySelectorAll('.filter-pill').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      activeCat = btn.getAttribute('data-cat');
+      renderFilters();
+      renderTerms();
+    });
+  });
+}
+
+function renderTerms(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const grid = document.getElementById('termGrid');
+  const empty = document.getElementById('emptyState');
+  const count = document.getElementById('resultCount');
+
+  let list = TERMS;
+  if(activeCat !== "همه") list = list.filter(t => t.cat === activeCat);
+  if(q) list = list.filter(t =>
+    t.en.toLowerCase().includes(q) || t.fa.includes(q) || t.def.includes(q)
+  );
+
+  count.innerHTML = `<b>${list.length}</b> اصطلاح از ${TERMS.length} مورد`;
+
+  if(list.length === 0){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = list.map(t => `
+    <div class="term-card">
+      <div class="term-head">
+        <span class="term-en">${t.en}</span>
+        <span class="term-cat">${t.cat}</span>
+      </div>
+      <p class="term-fa">${t.fa}</p>
+      <p class="term-def">${t.def}</p>
+    </div>
+  `).join('');
+}
+
+document.getElementById('searchInput').addEventListener('input', renderTerms);
+renderFilters();
+renderTerms();
+</script>
+</body>
+</html>
