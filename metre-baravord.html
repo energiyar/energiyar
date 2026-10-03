@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>[نسخه مستقل] متره و برآورد پوسته حرارتی | انرژی‌یار</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ---- سطوح ---- */
+    --bg:#F3F0E4;            /* پس‌زمینه کاغذی، هم‌خانواده با سایت اصلی */
+    --surface:#FFFFFF;
+    --surface-2:#EAE5D4;
+    --surface-sunk:#EAE5D4;
+
+    /* ---- متن ---- */
+    --ink:#1E2A24;
+    --ink-soft:#4C5A52;
+    --ink-faint:#637069;
+
+    /* ---- برند ---- */
+    --emerald:#12A874;
+    --emerald-deep:#0B3C2E;
+    --emerald-pale:#DFF5EC;
+    --emerald-line:#CCE7DA;
+
+    /* ---- معنایی ---- */
+    --pass:#1B7F52;  --pass-bg:#E9F5EE;
+    --fail:#A8342A;  --fail-bg:#FBECEA;
+    --wait:#8D9A93;  --wait-bg:#F2EFE6;
+
+    /* ---- خطوط ---- */
+    --line:#D9D2BC;
+    --line-soft:#E4DECB;
+
+    --sans:'IBM Plex Sans Arabic','Vazirmatn',sans-serif;
+    --mono:'IBM Plex Mono',monospace;   /* فقط برای اعداد و نویسه‌های لاتین */
+
+    --r-lg:12px; --r:9px; --r-sm:6px;
+    --sh-1:0 1px 2px rgba(20,30,25,.05), 0 1px 3px rgba(20,30,25,.04);
+    --sh-2:0 2px 6px rgba(20,30,25,.06), 0 12px 28px rgba(20,30,25,.07);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); font-size:15px; line-height:1.85;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:0 26px;}
+  ::selection{background:var(--emerald); color:#fff;}
+  :focus-visible{outline:2px solid var(--emerald); outline-offset:2px;}
+  /* اعداد لاتین و کدها با mono؛ متن فارسی هرگز با mono ست نمی‌شود */
+  .num, td.num, .lt{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+
+  /* ═══════════ سربرگ ═══════════ */
+  header.top .wrap{position:relative; z-index:1;}
+  .brand{display:flex; align-items:flex-start; gap:14px;}
+  .eyebrow{ font-size:12.5px; font-weight:600; letter-spacing:.06em;
+    color:var(--ink-faint); margin:0 0 12px; display:block; line-height:1.6; }
+  .eyebrow::before{content:none;}
+  
+  header.top h1{
+    font-size:clamp(21px,2.7vw,27px); font-weight:800; margin:0;
+    letter-spacing:normal; line-height:1.5; color:#fff;
+  }
+  .badges-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+  .source-badge{ font-size:12px; font-weight:500; color:#CFEBDD;
+    background:rgba(124,232,190,.10); border:1px solid rgba(124,232,190,.25);
+    padding:5px 12px; border-radius:var(--r-sm); white-space:nowrap; }
+
+
+  /* ═══════════ تب‌ها ═══════════ */
+  .tabbar{ display:flex; gap:2px; overflow-x:auto; scrollbar-width:none;
+    background:var(--emerald-deep); padding:0; }
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tabbar .wrap{display:flex; gap:2px;}
+  .tabbar button{ font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer;
+    background:none; border:none; color:#9FBCAE; white-space:nowrap;
+    padding:14px 16px; position:relative; transition:color .18s; }
+  .tabbar button::after{
+    content:""; position:absolute; inset-inline:10px; bottom:0; height:2px;
+    background:transparent; transition:background .18s;
+  }
+  .tabbar button:hover{color:#DDEEE6;}
+  .tabbar button.active{color:#fff; font-weight:700;}
+  .tabbar button.active::after{background:#4FE3AE;}
+  .tabbar button .dot{ width:7px; height:7px; border-radius:50%; background:#4FE3AE;
+    display:inline-block; flex:0 0 auto; }
+
+  /* ═══════════ پنل‌ها ═══════════ */
+  main{padding:30px 0 70px;}
+  .panel{ background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--r); padding:28px 30px; margin-bottom:18px; box-shadow:none; }
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .section-tag{ display:block; font-size:13px; font-weight:700; color:var(--emerald-deep);
+    background:none; border:0; border-bottom:1px solid var(--emerald-line); border-radius:0;
+    padding:0 0 12px; margin:0 0 22px; letter-spacing:normal; }
+  .panel h2{
+    font-size:21px; font-weight:800; margin:0 0 6px; letter-spacing:normal; line-height:1.5;
+  }
+  .panel h3{
+    font-size:16px; font-weight:700; margin:30px 0 10px; line-height:1.6;
+    padding-bottom:9px; border-bottom:1px solid var(--line-soft);
+  }
+  .panel h3:first-of-type{margin-top:22px;}
+  .hint{font-size:13px; color:var(--ink-soft); margin:0 0 14px; line-height:1.8;}
+  .sub{font-size:13px; color:var(--ink-soft);}
+  .callout{ background:var(--emerald-pale); border:1px solid var(--emerald-line);
+    border-radius:var(--r); padding:16px 18px; font-size:13.5px; color:var(--emerald-deep);
+    line-height:1.85; margin:16px 0; }
+
+  /* ═══════════ فرم ═══════════ */
+  .grid2{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+  @media (max-width:820px){ .grid3,.grid4{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .grid2,.grid3,.grid4{grid-template-columns:1fr;} }
+
+  .field{display:flex; flex-direction:column; gap:7px; min-width:0;}
+  .field label{font-size:12.5px; font-weight:600; color:var(--ink-soft); line-height:1.6;}
+  input, select{
+    font-family:var(--sans); font-size:14px; color:var(--ink);
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm);
+    padding:10px 13px; width:100%; transition:border-color .15s, box-shadow .15s;
+  }
+  input[type=number]{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+  input::placeholder{color:var(--ink-faint); font-family:var(--sans);}
+  input:hover, select:hover{border-color:#C9C2AC;}
+  input:focus, select:focus{
+    outline:none; border-color:var(--emerald);
+    box-shadow:0 0 0 3px rgba(14,148,104,.14);
+  }
+  input:disabled{background:var(--surface-sunk); color:var(--ink-faint); cursor:not-allowed;}
+  select{
+    appearance:none; background-image:
+      linear-gradient(45deg,transparent 50%, var(--ink-faint) 50%),
+      linear-gradient(135deg, var(--ink-faint) 50%, transparent 50%);
+    background-position:left 16px top 50%, left 11px top 50%;
+    background-size:5px 5px, 5px 5px; background-repeat:no-repeat; padding-left:34px;
+  }
+
+  .city-search-wrap{position:relative;}
+  .city-opt, .mat-opt{
+    padding:9px 13px; cursor:pointer; font-size:13.5px; border-bottom:1px solid var(--line-soft);
+  }
+  .city-opt:hover, .mat-opt:hover{background:var(--emerald-pale);}
+
+  /* ═══════════ جدول‌ها ═══════════ */
+  .spec-table{
+    width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px;
+    border:1px solid var(--line); border-radius:var(--r); overflow:hidden; margin-bottom:18px;
+  }
+  .spec-table th{
+    background:var(--surface-2); color:var(--ink-soft);
+    font-size:12px; font-weight:700; text-align:right;
+    padding:11px 14px; border-bottom:1px solid var(--line);
+  }
+  .spec-table td{
+    padding:10px 14px; border-bottom:1px solid var(--line-soft); vertical-align:middle;
+  }
+  .spec-table tr:last-child td{border-bottom:none;}
+  .spec-table tr:hover td{background:var(--surface-2);}
+  .spec-table input{padding:8px 11px; font-size:13.5px;}
+
+  .ref-val{
+    font-family:var(--mono); font-variant-numeric:tabular-nums;
+    font-size:15px; font-weight:600; color:var(--emerald-deep);
+    background:var(--emerald-pale); border:1px solid var(--emerald-line);
+    border-radius:var(--r-sm); padding:6px 11px;
+    display:inline-flex; align-items:baseline; gap:6px; direction:ltr;
+  }
+  .ref-val small{font-family:var(--sans); font-size:10.5px; font-weight:500; color:var(--emerald); direction:rtl;}
+
+  .verdict-cell{
+    font-size:12.5px; font-weight:700; white-space:nowrap;
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 11px; border-radius:100px; line-height:1.7;
+  }
+  .verdict-cell.v-pass{color:var(--pass); background:var(--pass-bg);}
+  .verdict-cell.v-fail{color:var(--fail); background:var(--fail-bg);}
+  .verdict-cell.v-pending{color:var(--wait); background:var(--wait-bg);}
+
+  /* ═══════════ دکمه‌ها ═══════════ */
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:26px; align-items:center;}
+  .nav-btn{
+    font-family:var(--sans); font-size:13.5px; font-weight:700; cursor:pointer;
+    background:var(--emerald-deep); color:#fff; border:1px solid var(--emerald-deep);
+    border-radius:var(--r-sm); padding:11px 20px;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:background .15s, border-color .15s, transform .12s;
+  }
+  .nav-btn:hover{background:#0E4A39; border-color:#0E4A39;}
+  .nav-btn:active{transform:translateY(1px);}
+  .nav-btn.ghost{background:transparent; color:var(--emerald-deep); border-color:var(--line);}
+  .nav-btn.ghost:hover{background:var(--emerald-pale); border-color:var(--emerald-line);}
+  .nav-btn.secondary{background:var(--surface-2); color:var(--ink); border-color:var(--line);}
+  .nav-btn.secondary:hover{background:var(--surface-sunk);}
+  .nav-btn.small{font-size:12.5px; padding:8px 15px;}
+  .icon-btn{
+    background:none; border:1px solid var(--line); border-radius:var(--r-sm);
+    color:var(--ink-faint); cursor:pointer; padding:5px 10px; font-size:13px;
+    transition:color .15s, border-color .15s, background .15s;
+  }
+  .icon-btn:hover{color:var(--fail); border-color:#E2B8B2; background:var(--fail-bg);}
+
+  /* ═══════════ محاسبه‌گر R ═══════════ */
+  .layer-total{
+    display:flex; justify-content:space-between; align-items:center; gap:16px;
+    background:var(--emerald-deep); color:#fff; border-radius:var(--r);
+    padding:18px 22px; margin-top:18px;
+  }
+  .lt-label{font-size:13.5px; font-weight:600; color:#A9C4B7;}
+  .lt-val{
+    font-family:var(--mono); font-variant-numeric:tabular-nums;
+    font-size:26px; font-weight:700; color:#fff; direction:ltr;
+  }
+
+  /* ═══════════ گزارش ═══════════ */
+  .report{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-2);
+  }
+  .report-head{
+    background:var(--emerald-deep); color:#fff; padding:26px 34px;
+  }
+  .report-head-row{display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;}
+  .report-title{font-size:20px; font-weight:800; margin:0 0 4px; line-height:1.5;}
+  .report-sub{font-size:13px; color:#A9C4B7; margin:0;}
+  .report-meta{font-size:12px; color:#A9C4B7; text-align:left; line-height:2; font-variant-numeric:tabular-nums;}
+  .report-body{padding:30px 34px;}
+  .project-fields{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:26px;}
+  @media (max-width:700px){ .project-fields{grid-template-columns:1fr;} }
+
+  .verdict-block{
+    display:grid; grid-template-columns:auto 1fr; gap:26px; align-items:center;
+    border:1px solid var(--line); border-radius:var(--r); padding:24px;
+    margin-bottom:26px; background:var(--surface-2);
+  }
+  @media (max-width:600px){ .verdict-block{grid-template-columns:1fr; text-align:center; justify-items:center;} }
+  .stamp-circle{
+    width:96px; height:96px; border-radius:50%; border:2.5px solid currentColor;
+    flex:0 0 auto; display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background:var(--surface);
+  }
+  .stamp-circle.pass{color:var(--pass);} .stamp-circle.fail{color:var(--fail);} .stamp-circle.pending{color:var(--wait);}
+  .stamp-circle .stamp-icon{font-size:30px; line-height:1;}
+  .stamp-circle .stamp-text{font-size:10px; font-weight:700; margin-top:3px;}
+  .verdict-detail .vd-title{font-size:18px; font-weight:800; margin:0 0 5px; line-height:1.5;}
+  .verdict-detail .vd-desc{font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.8;}
+  .verdict-score{font-size:13px; color:var(--ink-soft); margin-top:12px;}
+  .verdict-score b{font-family:var(--mono); font-size:19px; color:var(--ink); direction:ltr;}
+
+  .cat-summary{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:26px;}
+  @media (max-width:700px){ .cat-summary{grid-template-columns:1fr;} }
+  .cat-card{ border:1px solid var(--line); border-radius:var(--r-sm); padding:16px 18px;
+    background:var(--surface); }
+  .cat-card .cc-label{font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:10px;}
+  .cat-card .cc-bar{height:6px; background:var(--surface-sunk); border-radius:3px; overflow:hidden; margin-bottom:9px;}
+  .cat-card .cc-bar-fill{height:100%; background:var(--pass); border-radius:3px; transition:width .3s ease;}
+  .cat-card .cc-bar-fill.hasfail{background:var(--fail);}
+  .cat-card .cc-nums{font-family:var(--mono); font-size:12px; display:flex; justify-content:space-between; direction:ltr;}
+
+  .report-table-title{
+    font-size:14.5px; font-weight:700; margin:0 0 12px; padding-bottom:9px;
+    border-bottom:2px solid var(--emerald);
+  }
+  table.report-table{
+    width:100%; border-collapse:separate; border-spacing:0; font-size:12.5px; margin-bottom:24px;
+    border:1px solid var(--line); border-radius:var(--r); overflow:hidden;
+  }
+  table.report-table th{
+    background:var(--surface-2); color:var(--ink-soft); font-size:11.5px; font-weight:700;
+    padding:10px 12px; text-align:right; border-bottom:1px solid var(--line);
+  }
+  table.report-table td{padding:9px 12px; border-bottom:1px solid var(--line-soft);}
+  table.report-table tr:last-child td{border-bottom:none;}
+  table.report-table td.num{text-align:center; direction:ltr;}
+  table.report-table td.verdict{font-weight:700; text-align:center; white-space:nowrap;}
+  table.report-table td.verdict.pass{color:var(--pass);}
+  table.report-table td.verdict.fail{color:var(--fail);}
+  table.report-table td.verdict.pending{color:var(--wait);}
+
+  .signoff{display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:32px; padding-top:22px; border-top:1px dashed var(--line);}
+  @media (max-width:600px){ .signoff{grid-template-columns:1fr;} }
+  .signoff .sig-box{font-size:12.5px; color:var(--ink-soft);}
+  .signoff .sig-line{border-bottom:1px solid var(--ink); height:44px; margin-bottom:7px;}
+
+  .report-footnote{
+    background:var(--surface-2); color:var(--ink-soft); border-top:1px solid var(--line);
+    font-size:12.5px; padding:20px 34px; line-height:1.9;
+  }
+  .report-footnote b{color:var(--ink);}
+
+  .lead-box{ border:1px solid var(--emerald-line); border-radius:var(--r);
+    background:var(--emerald-pale); padding:20px 22px; }
+  .lead-box h4{margin:0 0 6px; font-size:15px; font-weight:800; color:var(--emerald-deep);}
+  .lead-box p{font-size:13px; color:var(--ink-soft); margin:0 0 16px; line-height:1.8;}
+
+
+  /* ---- نشان انرژی‌یار و پیوند بازگشت ---- */
+  .back-link:hover{color:#fff;}
+  .brand-mark img{width:26px; height:26px; object-fit:contain; display:block;}
+  .brand-mark-lg img{width:34px; height:34px;}
+  .report-brand{display:flex; align-items:flex-start; gap:14px; min-width:0;}
+  .report-brand .brand-mark{width:38px; height:38px; flex:0 0 auto;}
+  .report-brand .brand-mark img{width:25px; height:25px;}
+  footer{border-top:1px solid var(--line); background:var(--surface-2); font-size:12.5px;
+         color:var(--ink-soft); line-height:1.9; padding:26px 0 34px;}
+  .foot-brand{display:flex; align-items:center; gap:9px; margin-bottom:10px;
+              font-weight:800; font-size:14.5px; color:var(--ink);}
+  .foot-brand img{width:24px; height:24px; object-fit:contain;}
+  @media (max-width:560px){ .brand-mark-lg img{width:28px; height:28px;}
+  }
+
+  /* ---- پیمایش مرحله‌به‌مرحله ---- */
+  .step-nav{
+    display:flex; justify-content:space-between; align-items:center; gap:14px;
+    flex-wrap:wrap; margin:-6px 0 26px; padding:16px 22px;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r);
+  }
+  .step-nav .step-count{font-size:12.5px; color:var(--ink-faint); font-weight:500;}
+  .step-nav .step-actions{display:flex; gap:10px; flex-wrap:wrap;}
+  .nav-btn .chev{display:inline-block; transition:transform .15s ease;}
+  .nav-btn:hover .chev{transform:translateX(-3px);}
+  .nav-btn.ghost:hover .chev{transform:translateX(3px);}
+  @media (max-width:560px){
+    .step-nav{flex-direction:column-reverse; align-items:stretch;}
+    .step-nav .step-actions{flex-direction:column-reverse;}
+    .step-nav .nav-btn{justify-content:center;}
+    .step-nav .step-count{text-align:center;}
+  }
+
+  .sheet-header, .sheet-footer{display:none;}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+
+  @media print{
+    @page{ size:A4; margin:0; }
+
+    .tabbar, .btn-row, .step-nav, .no-print, header.top, .head-bar, footer{display:none !important;}
+    .tab-panel{display:none !important;}
+    .tab-panel#tab-report{display:block !important;}
+    main{padding:0 !important;}
+    .wrap{max-width:none; padding:0;}
+    body{background:#fff; font-size:11pt;}
+
+    /* ---- سربرگ و پاصفحه تکرارشونده در همه صفحات ---- */
+    body{display:table; width:100%; margin:0;}
+    .sheet-header{display:table-header-group !important;}
+    .sheet-footer{display:table-footer-group !important;}
+    main{display:table-row-group;}
+    .sheet-header, .sheet-footer{
+      background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+    
+    
+    .sh-inner{
+      display:flex; align-items:center; justify-content:space-between; gap:18px;
+      padding-bottom:9px; border-bottom:2px solid #0B3C2E;
+    }
+    .sh-brand{display:flex; align-items:center; gap:12px; min-width:0;}
+    .sh-logo{width:44px; height:44px; object-fit:contain; flex:0 0 auto;}
+    .sh-name{font-size:16pt; font-weight:800; color:#0B3C2E; line-height:1.35;}
+    .sh-desc{font-size:7.6pt; color:#5A6862; line-height:1.6; max-width:78mm;}
+    .sh-doc{text-align:left; flex:0 0 auto;}
+    .sh-doc-t{font-size:9pt; font-weight:700; color:#17201C; line-height:1.5;}
+    .sh-doc-s{font-size:7.6pt; color:#8D9A93; line-height:1.5;}
+    .sf-inner{
+      display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;
+      padding-top:8px; border-top:1px solid #DDD7C6;
+      font-size:8pt; color:#5A6862;
+    }
+    .sf-item b{font-weight:700; color:#0B3C2E; margin-left:5px; font-size:7.4pt;}
+    .sf-sep{width:3px; height:3px; border-radius:50%; background:#C9C2AC; display:inline-block;}
+
+    /* ---- خود گزارش ---- */
+    .report{border:none; border-radius:0; box-shadow:none;}
+    .report-head{
+      background:#fff !important; color:#17201C !important;
+      padding:0 0 14px; border-bottom:1px solid #DDD7C6; margin-bottom:18px;
+    }
+    .report-brand .brand-mark{display:none;}
+    .report-title{color:#0B3C2E; font-size:15pt;}
+    .report-sub, .report-meta{color:#5A6862;}
+    .report-meta{font-size:8pt;}
+    .report-body{padding:0;}
+    .report-footnote{background:#fff; padding:14px 0 0; font-size:8pt;}
+
+    .project-fields input{border:none; border-bottom:1px solid #DDD7C6; border-radius:0; padding:4px 0;}
+    .project-fields label{font-size:8pt;}
+
+    /* ---- جلوگیری از شکستن نامناسب بین صفحات ---- */
+    .verdict-block, .cat-card, .signoff, .report-footnote{break-inside:avoid; page-break-inside:avoid;}
+    table.report-table{break-inside:auto;}
+    table.report-table thead{display:table-header-group;}
+    table.report-table tr{break-inside:avoid; page-break-inside:avoid;}
+    tr.cat-row{break-after:avoid; page-break-after:avoid;}
+    .report-table-title{break-after:avoid; page-break-after:avoid;}
+  
+    /* ---- فاصله‌های صفحه: حاشیه @page صفر است، پس padding جایش را می‌گیرد ---- */
+    .sheet-header .sh-inner{padding:11mm 15mm 4mm !important;}
+    .sheet-footer .sf-inner{padding:4mm 15mm 9mm !important;}
+    .tab-panel#tab-report{padding:0 15mm 4mm !important;}
+}
+  .lead-box h3{margin:0 0 6px; font-size:15px; font-weight:800; color:var(--emerald-deep);}
+
+  /* ---------- گذار بین صفحه‌ها (هماهنگ با styles.css) ---------- */
+  @view-transition{ navigation:auto; }
+  ::view-transition-old(root){animation:vtOut .22s cubic-bezier(.4,0,1,1) both;}
+  ::view-transition-new(root){animation:vtIn .34s cubic-bezier(0,0,.2,1) both;}
+  @keyframes vtOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-6px);}}
+  @keyframes vtIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  header.site-nav{view-transition-name:eyHeader;}
+  ::view-transition-group(eyHeader){animation-duration:.24s;}
+  ::view-transition-old(eyHeader), ::view-transition-new(eyHeader){animation:none;}
+  @media (prefers-reduced-motion:reduce){
+    ::view-transition-old(root), ::view-transition-new(root){animation:none;}
+  }
+
+
+  /* ---------- سربرگ صفحه، هم‌شکل با بقیه سایت ---------- */
+  .hero{padding:52px 0 30px; background:var(--bg);}
+  .hero h1{
+    font-size:clamp(26px,3.6vw,38px); font-weight:800; line-height:1.4;
+    letter-spacing:-.015em; color:var(--ink); margin:0 0 14px; max-width:20ch;
+  }
+  .hero h1 em{font-style:normal; color:var(--emerald-deep);}
+  .hero-sub{font-size:15px; line-height:1.95; color:var(--ink-soft); max-width:660px; margin:0;}
+
+  /* نوار تب‌ها: چسبیده زیر سربرگ، با خط جداکننده */
+  .tabbar-wrap{
+    position:sticky; top:var(--navh,88px); z-index:40;
+    background:var(--bg);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    margin-top:26px;
+  }
+  .tabbar-wrap .tabbar{max-width:1240px; margin:0 auto; padding:0 24px; background:transparent;}
+  .tabbar button{color:var(--ink-soft);}
+  .tabbar button:hover{color:var(--ink);}
+  .tabbar button.active{color:var(--emerald-deep); font-weight:700;}
+  .tabbar button.active::after{background:var(--emerald);}
+  .tabbar button .dot{background:var(--emerald);}
+  @media (max-width:820px){
+    .hero{padding:34px 0 22px;}
+    .tabbar-wrap .tabbar{padding:0 18px;}
+  }
+
+
+  /* ---------- نوار بالای صفحه، هم‌شکل با واژه‌نامه و مقالات ---------- */
+  header.site-nav{
+    position:sticky; top:0; z-index:65;
+    background:rgba(255,255,255,.97); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  header.site-nav .nav-row{
+    display:flex; align-items:center; justify-content:space-between; gap:18px;
+    max-width:1240px; margin:0 auto; padding:12px 28px;
+  }
+  .nav-brand{display:flex; align-items:center; text-decoration:none;}
+  .nav-brand img{width:auto; height:64px; object-fit:contain; display:block;}
+  .nav-links{display:flex; gap:20px; flex-wrap:wrap;}
+  .nav-links a{
+    font-family:var(--sans); font-size:13.5px; font-weight:600;
+    color:var(--ink-soft); text-decoration:none; padding:4px 0;
+    border-bottom:2px solid transparent; transition:color .18s;
+  }
+  .nav-links a:hover{color:var(--emerald-deep);}
+  @media (max-width:820px){
+    header.site-nav .nav-row{padding:9px 18px; gap:10px;}
+    .nav-brand img{height:46px;}
+    .nav-links{gap:13px;}
+    .nav-links a{font-size:12.5px;}
+  }
+
+
+  /* ---------- گزارش: هر دسته یک بخش شماره‌دار ---------- */
+  .rcat{margin:0 0 26px;}
+  .rcat:last-of-type{margin-bottom:8px;}
+  .rcat-head{
+    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+    margin:0 0 10px; padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+    font-size:14px; font-weight:700; color:var(--ink);
+  }
+  .rcat-n{
+    font-family:var(--mono); font-size:11.5px; font-weight:600;
+    color:var(--emerald-deep); letter-spacing:.04em;
+  }
+  .rcat-t{flex:1 1 auto; min-width:0;}
+  .rcat-meta{font-size:11.5px; font-weight:500; color:var(--ink-faint); font-variant-numeric:tabular-nums;}
+  .rc-chip{
+    font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:100px;
+    border:1px solid transparent; white-space:nowrap;
+  }
+  .rc-chip.pass{color:var(--pass); background:var(--pass-bg); border-color:#CBE5D6;}
+  .rc-chip.fail{color:var(--fail); background:var(--fail-bg); border-color:#EED2CE;}
+  .rc-chip.pending{color:var(--wait); background:var(--wait-bg); border-color:var(--line);}
+  .rcat .report-table{margin-bottom:0;}
+  .rcat-empty{
+    text-align:center; color:var(--ink-soft); padding:22px;
+    border:1px dashed var(--line); border-radius:var(--r-sm); font-size:13px;
+  }
+
+  /* ---------- چاپ / PDF ---------- */
+  @media print{
+    .rcat{break-inside:auto; page-break-inside:auto;}
+    .rcat-head{break-after:avoid; page-break-after:avoid;}
+    /* سرستون‌ها روی هر صفحه تکرار می‌شوند */
+    .report-table thead{display:table-header-group;}
+    .report-table tfoot{display:table-footer-group;}
+    .report-table tr{break-inside:avoid; page-break-inside:avoid;}
+    .report{border:0; box-shadow:none; border-radius:0;}
+    .rc-chip{border:1px solid #bbb;}
+  }
+
+
+  /* ---------- اکشن چاپ ---------- */
+  .print-row{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    padding:16px 0 4px; margin-top:8px; border-top:1px solid var(--line);
+  }
+  .print-tip{
+    margin:0; font-size:12px; line-height:1.8; color:var(--ink-faint);
+    flex:1 1 260px; min-width:0;
+  }
+
+  .demo{background:#FBF1E6;border:1px solid #EBD9BE;border-radius:var(--r-sm);
+    padding:12px 15px;font-size:12.5px;line-height:1.95;color:#8A5A1E;margin:16px 0}
+  .demo b{color:#6E4714}
+  .el-row{display:grid;grid-template-columns:1.5fr .8fr .8fr .8fr auto;gap:10px;
+    align-items:end;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+  @media(max-width:860px){.el-row{grid-template-columns:1fr 1fr}}
+  .lay-row{display:grid;grid-template-columns:2fr .7fr auto;gap:9px;align-items:end;
+    padding:9px 0;border-bottom:1px solid var(--paper-deep)}
+  @media(max-width:700px){.lay-row{grid-template-columns:1fr 1fr}}
+  .x{all:unset;cursor:pointer;color:var(--ink-faint);font-size:17px;padding:0 7px;line-height:1}
+  .x:hover{color:#B4402F}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px}
+  .kpi .v{font-family:var(--sans);font-size:24px;font-weight:700;color:var(--emerald-deep);
+    line-height:1.25;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:11.5px;color:var(--ink-faint);margin-top:5px;line-height:1.6}
+  .ok{color:var(--pass);font-weight:700}
+  .no{color:var(--fail);font-weight:700}
+  .wait{color:var(--ink-faint);font-weight:600}
+  .el-box{border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px;
+    margin-bottom:14px;background:var(--surface)}
+  .el-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--line)}
+  .el-name{font-size:14.5px;font-weight:700}
+  .el-sum{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+
+<div class="hero no-print">
+  <div class="wrap">
+    <p class="eyebrow">نسخه مستقل برای بررسی · به سایت اضافه نشده</p>
+    <h1>متره و برآورد <em>پوسته حرارتی</em></h1>
+    <p class="hero-sub">مساحت، حجم و وزن لایه‌های جداره را از روی ابعاد ساختمان حساب می‌کند، با مصالح دارای گواهی‌نامه، و در کنار آن انطباق با حداقل مقاومت حرارتی مبحث ۱۹ را کنترل می‌کند.</p>
+  </div>
+</div>
+
+<div class="tabbar-wrap no-print"><div class="tabbar" id="tabbar"></div></div>
+
+<main class="wrap">
+
+  <div class="tab-panel active" id="tab-1">
+    <section class="panel">
+      <span class="section-tag">مشخصات پروژه</span>
+      <h2>ابعاد و اقلیم</h2>
+      <p class="hint">رده اقلیمی از همان فهرست پیوست «۲» مبحث ۱۹ خوانده می‌شود.</p>
+      <div class="grid3">
+        <div class="field"><label for="city">شهر پروژه</label><select id="city"></select>
+          <span class="hint" id="zoneOut"></span></div>
+        <div class="field"><label for="floors">تعداد طبقات</label>
+          <input type="number" id="floors" value="4" min="1" step="1"></div>
+        <div class="field"><label for="hgt">ارتفاع هر طبقه (m)</label>
+          <input type="number" id="hgt" value="3" min="2" step="0.1"></div>
+        <div class="field"><label for="plA">طول پلان (m)</label>
+          <input type="number" id="plA" value="18" min="1" step="0.5"></div>
+        <div class="field"><label for="plB">عرض پلان (m)</label>
+          <input type="number" id="plB" value="12" min="1" step="0.5"></div>
+        <div class="field"><label for="wwr">نسبت بازشو به دیوار (%)</label>
+          <input type="number" id="wwr" value="25" min="0" max="90" step="1">
+          <span class="hint" id="wwrSrc">مستقیم وارد شده — یا از جدول پایین حساب کنید</span></div>
+      </div>
+      <div class="callout" id="geoSum"></div>
+    </section>
+
+    <section class="panel">
+      <span class="section-tag">محاسبه نسبت بازشو</span>
+      <h2>بازشوها را وارد کنید تا نسبت محاسبه شود</h2>
+      <p class="hint">به‌جای حدس زدن درصد، ابعاد و تعداد هر نوع بازشو را وارد کنید. نسبت به‌صورت خودکار حساب و در مرحله قبل جایگزین می‌شود.</p>
+      <table>
+        <thead><tr><th style="width:30%">نوع بازشو</th><th class="num">عرض (m)</th>
+          <th class="num">ارتفاع (m)</th><th class="num">تعداد</th>
+          <th class="num">مساحت (m²)</th><th style="width:6%"></th></tr></thead>
+        <tbody id="winRows"></tbody>
+      </table>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="nav-btn small" type="button" onclick="addWin()">+ افزودن بازشو</button>
+        <button class="nav-btn small" type="button" onclick="applyWWR()">اعمال نسبت محاسبه‌شده ←</button>
+      </div>
+      <div class="callout" id="winSum"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel" id="tab-2">
+    <section class="panel">
+      <span class="section-tag">لایه‌های جداره</span>
+      <h2>ترکیب هر جداره</h2>
+      <p class="hint">برای هر جداره، لایه‌ها را از فهرست مصالح انتخاب و ضخامت را وارد کنید. مقاومت حرارتی هم‌زمان محاسبه می‌شود.</p>
+      <div id="elements"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel" id="tab-3">
+    <section class="panel">
+      <span class="section-tag">نرخ‌ها</span>
+      <h2>نرخ مصالح و اجرا</h2>
+      <div class="demo">
+        <b>DEMO DATA —</b> هیچ نرخ واقعی در پروژه انرژی‌یار وجود ندارد. اعداد زیر مقادیر نمونه‌اند و
+        <b>مرجع نیستند</b>. پیش از هر استفاده، نرخ روز را از فهرست‌بهای ابنیه یا نرخ‌نامه خودتان جایگزین کنید.
+      </div>
+      <div class="grid3" id="rates"></div>
+      <div class="field" style="max-width:320px;margin-top:16px">
+        <label for="waste">ضریب پرت اجرا (%)</label>
+        <input type="number" id="waste" value="7" min="0" max="40" step="1">
+        <span class="hint">DEMO — مقدار متعارف بین ۵ تا ۱۰٪</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="tab-panel" id="tab-4">
+    <div class="report" id="report"></div>
+    <div class="print-row no-print">
+      <button class="nav-btn" type="button" onclick="window.print()">چاپ / دریافت PDF</button>
+      <p class="print-tip">نسخه مستقل — برای بررسی پیش از افزودن به سایت.</p>
+    </div>
+  </div>
+
+  <div class="step-nav no-print" id="stepNav"></div>
+</main>
+
+<script>
+/* ============================================================
+   داده‌های استفاده‌شده
+   REUSED  : materials.json (۸۵ محصول گواهی‌نامه‌دار، تاریخ‌نگذشته)
+   REUSED  : R_TABLE و R_COLS و ZONE_MAP از tools/ayegh.html
+   REUSED  : MATS (مقادیر عمومی پیوست ۷) از tools/ayegh.html
+   REUSED  : فهرست شهرها و رده اقلیمی از solar-cities.json
+   DEMO    : نرخ‌ها، ضریب پرت، ضخامت‌های پیش‌فرض لایه‌ها
+   ============================================================ */
+const R_COLS  = ["0B","1B","2A/2B","3A/3B","4A/4B","5B/5C"];
+const R_TABLE = [{"e":"دیوار خارجی مجاور فضای باز","v":[1.09,1.16,1.16,1.43,1.69,1.96]},{"e":"دیوار مجاور فضای نیمه‌باز کنترل‌نشده","v":[0.91,0.97,0.97,1.19,1.41,1.64]},{"e":"دیوار مجاور خاک","v":[0.15,0.15,0.15,0.15,1.47,1.47]},{"e":"سقف مجاور فضای آزاد","v":[3.7,3.7,4.55,4.55,5.56,5.56]},{"e":"سقف مجاور فضای نیمه‌باز کنترل‌نشده","v":[3.13,3.13,3.85,3.85,4.55,4.55]},{"e":"کف مجاور هوای آزاد","v":[0.51,0.55,1.64,2.38,3.13,3.45]},{"e":"کف مجاور فضای نیمه‌باز کنترل‌نشده","v":[0.43,0.45,1.37,2.0,2.63,2.86]},{"e":"کف مجاور خاک","v":[0.26,0.26,0.27,0.27,0.28,0.28]}];
+const ZONE_MAP= {"0B":"0B","1B":"1B","2A":"2A/2B","2B":"2A/2B","3A":"3A/3B","3B":"3A/3B","4A":"4A/4B","4B":"4A/4B","5B":"5B/5C","5C":"5B/5C"};
+const MATS_GEN= [{"n":"اندود و ملات سیمانی متراکم (وزن مخصوص بیش از ۲۰۰۰)","c":1.8,"d":2000,"cat":"بتن و بنایی","cf":"official"},{"n":"اندود و ملات آهکی یا سیمانی معمولی (۱۸۰۰ تا ۲۰۰۰)","c":1.3,"d":1900,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن با سنگدانه متداول - متراکم (۲۳۰۰ تا ۲۶۰۰)","c":2.0,"d":2450,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن با سنگدانه متداول - متخلخل (۱۸۰۰ تا ۲۰۰۰)","c":1.15,"d":1900,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۸۰۰)","c":0.29,"d":800,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۷۵۰)","c":0.27,"d":750,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۷۰۰)","c":0.25,"d":700,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۶۵۰)","c":0.23,"d":650,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۶۰۰)","c":0.21,"d":600,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۵۵۰)","c":0.19,"d":550,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۵۰۰)","c":0.18,"d":500,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۴۵۰)","c":0.16,"d":450,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۴۰۰)","c":0.15,"d":400,"cat":"بتن و بنایی","cf":"official"},{"n":"سفال و کاشی (چگالی اسمی حدود ۱۶۰۰)","c":0.6,"d":1600,"cat":"بتن و بنایی","cf":"official"},{"n":"سفال و کاشی سبک (چگالی کمتر از ۱۰۰۰)","c":0.34,"d":900,"cat":"بتن و بنایی","cf":"official"},{"n":"بلوک سیمانی","c":1.0,"d":1400,"cat":"بتن و بنایی","cf":"est"},{"n":"گچ اندود داخلی (زنده یا کشته) — چگالی ۱۰۰۰ تا ۱۳۰۰","c":0.57,"d":1150,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ اندود داخلی — چگالی کمتر از ۱۰۰۰","c":0.4,"d":900,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ سخت با حداقل میزان آب لازم (۱۲۰۰ تا ۱۵۰۰)","c":0.56,"d":1350,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ (۹۰۰ تا ۱۲۰۰)","c":0.43,"d":1050,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ و خاک (۱۳۰۰ تا ۱۷۰۰)","c":1.1,"d":1500,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ قطعات پیش‌ساخته گچی با روکش مقوایی (۷۵۰ تا ۹۰۰)","c":0.25,"d":825,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ با سبک‌دانه یا الیاف معدنی / روکش مقوایی ضدآتش (۸۰۰ تا ۱۰۰۰)","c":0.25,"d":900,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ اندود با پرلیت یا ورمیکولیت — یک حجم برای یک حجم گچ","c":0.3,"d":750,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ اندود با پرلیت یا ورمیکولیت — دو حجم برای یک حجم گچ","c":0.18,"d":550,"cat":"بتن و بنایی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۵ تا ۲۵)","c":0.05,"d":20,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۲۵ تا ۴۰)","c":0.044,"d":32,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۴۰ تا ۱۰۰)","c":0.042,"d":70,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۰۰ تا ۱۲۵)","c":0.044,"d":112,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۲۵ تا ۱۵۰)","c":0.046,"d":137,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۵۰ تا ۱۷۵)","c":0.047,"d":162,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۷۵ تا ۲۰۰)","c":0.048,"d":187,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۷ تا ۱۰)","c":0.055,"d":8,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۱۰ تا ۱۵)","c":0.047,"d":12,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۱۵ تا ۲۰)","c":0.044,"d":17,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۲۰ تا ۳۰)","c":0.041,"d":25,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۳۰ تا ۴۰)","c":0.039,"d":35,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۴۰ تا ۸۰)","c":0.038,"d":60,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۸۰ تا ۱۲۰)","c":0.039,"d":100,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۱۲۰ تا ۱۵۰)","c":0.04,"d":135,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۷ تا ۱۰)","c":0.056,"d":8,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۰ تا ۱۳)","c":0.05,"d":11,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۳ تا ۱۵)","c":0.047,"d":14,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۵ تا ۱۹)","c":0.044,"d":17,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۹ تا ۲۴)","c":0.042,"d":21,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۲۴ تا ۲۹)","c":0.04,"d":26,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۲۹ تا ۴۰)","c":0.039,"d":34,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی بیش از ۴۰)","c":0.038,"d":45,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن اکسترود XPS — حفره هوا/گاز کربنیک، ضخامت ≤ ۶۰ میلی‌متر","c":0.041,"d":34,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن اکسترود XPS — حفره هوا/گاز کربنیک، ضخامت > ۶۰ میلی‌متر","c":0.046,"d":34,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن اکسترود XPS — با گاز HCFC","c":0.035,"d":32,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — صفحات ممتد، پوشش انعطاف‌پذیر نفوذپذیر","c":0.035,"d":33,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — صفحات ممتد، پوشش انعطاف‌پذیر آلومینیومی (> ۵۰ میکرون)","c":0.03,"d":33,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — صفحات برش‌خورده از بلوک","c":0.041,"d":50,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — تزریق‌شده بین دو ورق فلزی، منبسط با HCFC/پنتان","c":0.032,"d":48,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — تزریق‌شده بین دو ورق فلزی، هوا یا گاز کربنیک","c":0.035,"d":48,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌وینیل کلراید PVC منبسط‌شده (چگالی ۲۵ تا ۳۵)","c":0.031,"d":30,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌وینیل کلراید PVC منبسط‌شده (چگالی ۳۵ تا ۴۸)","c":0.034,"d":41,"cat":"عایق حرارتی","cf":"official"},{"n":"چوب طبیعی (چگالی متوسط)","c":0.15,"d":600,"cat":"چوب و مشتقات","cf":"official"},{"n":"تخته OSB (صفحات با تراشه‌های جهت‌یافته)","c":0.13,"d":650,"cat":"چوب و مشتقات","cf":"official"},{"n":"پلی وینیل کلراید PVC","c":0.17,"d":1390,"cat":"پلاستیک و پلیمر","cf":"official"},{"n":"پلی متیل متاکریلات PMMA (پلکسی‌گلاس)","c":0.18,"d":1180,"cat":"پلاستیک و پلیمر","cf":"official"},{"n":"شیشه","c":1.1,"d":2700,"cat":"سایر","cf":"official"},{"n":"اسفنج شیشه (شیشه متخلخل، چگالی ۱۲۰ تا ۱۳۰)","c":0.05,"d":125,"cat":"عایق حرارتی","cf":"official"},{"n":"فولاد","c":52.0,"d":7780,"cat":"فلزات","cf":"official"},{"n":"آلومینیوم","c":230.0,"d":2700,"cat":"فلزات","cf":"official"},{"n":"آلومینیوم آلیاژی سخت","c":160.0,"d":2800,"cat":"فلزات","cf":"official"},{"n":"مس","c":380.0,"d":8930,"cat":"فلزات","cf":"official"},{"n":"برنج","c":120.0,"d":8400,"cat":"فلزات","cf":"official"},{"n":"روی","c":110.0,"d":7200,"cat":"فلزات","cf":"official"},{"n":"آهن خالص","c":72.0,"d":7870,"cat":"فلزات","cf":"official"},{"n":"چدن","c":56.0,"d":7500,"cat":"فلزات","cf":"official"}];
+const CERT    = [{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی بهب — لیکا","lam":0.069,"cat":"اندود","d":250.0,"cert":1},{"n":"اندود گچ ساختمانی سبک وزن با عملکرد حرارتی بهبود — گیلان میکا","lam":0.071,"cat":"اندود","d":322.0,"cert":1},{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی بهب — سازه پوشش کانی","lam":0.081,"cat":"اندود","d":415.0,"cert":1},{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی بهب — گیلان میکا","lam":0.083,"cat":"اندود","d":457.0,"cert":1},{"n":"ملات سبک (رده LW) با مقاومت حرارتی بهبود یافته   — رامان فیدار سازه","lam":0.085,"cat":"اندود","d":333.0,"cert":1},{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی معم — شورلول ایرانیان","lam":0.14,"cat":"اندود","d":790.0,"cert":1},{"n":"بلوکهای بتنی سبک هوادار اتوکلاو شده — صنایع معادن و عمران رضوی (بیرجند)","lam":0.1217,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك های بتنی سبک هوادار اتوکلاو شده — صنایع معادن و عمران رضوی","lam":0.1418,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک هوادار اتوکلاوشده، با نام تجاري SI — سیلیس‌آرا","lam":0.149,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک هوادار اتوکلاو شده (AAC)؛ — تعاونی یاسین گستر ایساتیس","lam":0.1503,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک هوادار اتوکلاو شده (AAC)؛ — تعاونی یاسین گستر ایساتیس","lam":0.1518,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبك هوادار اتوکلاوشده غیرباربر (AAC-2) — صنایع خاک چینی ایران","lam":0.1596,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبك ديواري مجوف غيرباربر سه‌جداره، پنج — افق فردای پاسارگاد","lam":0.2628,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك سبك سيماني مجوف غيرباربر سه جداره پنج ‌سورا — تک سامان هور","lam":0.3641,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبكدانه مجوف غيرباربر سه جداره پنج ‌سو — گروه تک سامان هور","lam":0.3777,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک دیواري مجوف غیرباربر دوجداره سه سو — افق فرداي پاسارگاد","lam":0.5,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"پانل سفالی غیرباربر با سوراخ‌های افقی در اندازه‌ — آجرماشینی هادیان","lam":0.2574,"cat":"بلوک سفالی","d":null,"cert":1},{"n":"بلوک سفالی غیرباربر با سوراخ‌های افقی در اندازه  — تولیدی آجر سوفالین","lam":0.3077,"cat":"بلوک سفالی","d":null,"cert":1},{"n":"بلوک سفالی دیواری با سوراخ‌های قائم و چگالی کم ( — تولیدی و بازرگانی کیان بهساز","lam":0.3906,"cat":"بلوک سفالی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توپر در اندازه‎ه — ابنیه بیکران فرخ پی","lam":0.1323,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار ‌جداره همرا — آبادی گستران طرح روز","lam":0.142,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر چهار جداره در ا — ایستا سازه مرکزی","lam":0.1784,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — گروه تولیدی آذربان بلوک","lam":0.2216,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك  سيماني سبک ديواري غيرباربر توخالی ته‌پر با — لیکا","lam":0.2331,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك  سيماني سبک ديواري غيرباربر توخالی ته‌پر با — لیکا","lam":0.2365,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك  سيماني سبک ديواري غيرباربر توخالی ته‌پر با — لیکا","lam":0.2378,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — مصالح چی دند آذربایجان","lam":0.2404,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — کهکشان بلوک","lam":0.2423,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره در اند — ایستا سازه مرکزی","lam":0.2459,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره با یک  — ایستا سازه مرکزی","lam":0.2525,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی سه جداره  — سیروان اطلس کسری","lam":0.2534,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جدار در انداز — قطعات بتنی عمرانی اذین صنعت","lam":0.256,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — پایتخت اقتصادی ایرانیان","lam":0.2573,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — کهکشان بلوک","lam":0.265,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره در اند — فاخر صنعت آرتا","lam":0.266,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره در اند — بلوک سبک صفابخش","lam":0.2712,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — سهند بتن ایرانیان","lam":0.2747,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه‌جداره در اندا — قطعات بتنی نفیس پارت بینالود","lam":0.2799,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — خاک بتن زرین سبلان","lam":0.283,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی چهار جدار — قطعات بتن سبک دلیر","lam":0.2874,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك بتنی سبکدانه مجوف دیواری غيرباربر سه جداره  — نوین سبک‌ساز سبلان","lam":0.2894,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — قطعات بتنی آرش رهگذر","lam":0.2953,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر توخالی و سه جدا — آسیا بلوک غرب","lam":0.297,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — مشهد بتن ساز پارس","lam":0.2982,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — لیدا بتن شرق","lam":0.2994,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — آشیانه ققنوس باختر","lam":0.3151,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک سه جداره در اندازه های اسمی(20×1 — فرآورده های اترک بلوک","lam":0.3178,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی چهار جدار — سیوان اطلس کسری","lam":0.3356,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — مصالح ساختمانی سپاهان خشت ابهر","lam":0.3371,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — مبتکران سازه پرشیا","lam":0.3401,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — طوس خراسان","lam":0.3425,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — ساروج بنای افق شرق","lam":0.344,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — تواره توس","lam":0.3513,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی سه جداره  — نوین عیار بتن بهپویان","lam":0.3513,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توپر در اندازه‌ه — پویان پوشش فرانگر","lam":0.3538,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهارجداره در اند — فاخر صنعت آرتا","lam":0.3538,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — آروین ساران غرب","lam":0.3704,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی و سه‌جدار — بنیاد بتن خراسان","lam":0.3817,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه‌جداره در اندا — تولیدی معدنی پوکه صنعتی الیکا","lam":0.3827,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر دو‌جداره در اندا — تولیدی معدنی پوکه صنعتی الیکا","lam":0.3977,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره با کار — صنعتی و تولیدی آژند","lam":0.4043,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر دو جداره در اندا — طوس خراسان","lam":0.4274,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"عایق حرارتی تخته‌ای فوم پلی‌یورتان PIR با روکش آ — اینسولیشن پارس","lam":0.0212,"cat":"عایق حرارتی","d":55.0,"cert":1},{"n":"عایق حرارتی فوم الاستومری انعطاف پذیر رولی از جن — مهندسین سامان تهویه ایرانیان","lam":0.0324,"cat":"عایق حرارتی","d":33.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0325,"cat":"عایق حرارتی","d":40.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0332,"cat":"عایق حرارتی","d":40.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0332,"cat":"عایق حرارتی","d":41.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0333,"cat":"عایق حرارتی","d":39.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0333,"cat":"عایق حرارتی","d":39.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0335,"cat":"عایق حرارتی","d":42.0,"cert":1},{"n":"عایق حرارتی لوله‌ای فوم الاستومری از نوع NBR به  — سازه پايدار الهيه","lam":0.0338,"cat":"عایق حرارتی","d":58.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0338,"cat":"عایق حرارتی","d":46.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0338,"cat":"عایق حرارتی","d":46.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.034,"cat":"عایق حرارتی","d":42.0,"cert":1},{"n":"عایق حرارتی پشم سرباره تخته‌ای در اندازه‌های اسم — نگین عایق پوشش پارسیان","lam":0.0341,"cat":"عایق حرارتی","d":76.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — سازه پایدار الهیه","lam":0.0342,"cat":"عایق حرارتی","d":55.0,"cert":1},{"n":"سامانه مرکب عایق حرارتی بیرونی (ETICS) با نام تج — رهاورد ساختار اصیل","lam":0.0349,"cat":"عایق حرارتی","d":null,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — سازه پايدار الهيه","lam":0.0352,"cat":"عایق حرارتی","d":47.0,"cert":1},{"n":"عایق حرارتی فوم الاستومری رولی از نوع NBR در اند — مهراد لاستیک صنعت آریا","lam":0.0377,"cat":"عایق حرارتی","d":56.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — گروه صنعتی سانا عایق","lam":0.041,"cat":"عایق حرارتی","d":59.0,"cert":1},{"n":"فوم الاستومری NBR با ضخامت‌های 10، 15 میلی‌متر و — گروه صنعتی سانا عایق","lam":0.0607,"cat":"عایق حرارتی","d":428.0,"cert":1},{"n":"سبکدانه رس منبسط شده در اندازه اسمی 4-10 میلی‌مت — لیکا","lam":0.087,"cat":"عایق حرارتی","d":null,"cert":1},{"n":"بلوک سقفی پروفیل دار از جنس پلی استایرن منبسط شد — فرآورده های پیشرفته ساختمانی","lam":0.0339,"cat":"قالب ماندگار","d":null,"cert":1},{"n":"ساندویچ پانل با جداره از جنس بتن سبک، مسلح به می — مشاوره و بهسازی عمران و ساختمان مکان‌ساز پویا","lam":0.0827,"cat":"پانل","d":null,"cert":1},{"n":"پانل‌های سفالی غیرباربر با سوراخ‌های افقی در اند — آجر مهدیه نو ذاکری","lam":0.3476,"cat":"پانل","d":null,"cert":1}];
+const CITIES  = [{"c":"آبادان","z":"0B"},{"c":"آباده","z":"4B"},{"c":"آقاجاری","z":"0B"},{"c":"اراک","z":"4B"},{"c":"اردبیل","z":"5C"},{"c":"ارومیه","z":"4B"},{"c":"اصفهان","z":"4B"},{"c":"کرج","z":"3B"},{"c":"الیگودرز","z":"4A"},{"c":"بندر انزلی","z":"3A"},{"c":"اهر","z":"4B"},{"c":"اهواز","z":"0B"},{"c":"ایرانشهر","z":"0B"},{"c":"ایلام","z":"3A"},{"c":"بابلسر","z":"3A"},{"c":"بازرگان","z":"5B"},{"c":"بافت","z":"3B"},{"c":"بجنورد","z":"4B"},{"c":"بم","z":"1B"},{"c":"بندر بوشهر","z":"1B"},{"c":"بندر لنگه","z":"0B"},{"c":"بندر ماهشهر","z":"1B"},{"c":"بندرعباس","z":"0B"},{"c":"بیرجند","z":"3B"},{"c":"پارس‌آباد مغان","z":"3B"},{"c":"تبریز","z":"4B"},{"c":"تربت حیدریه","z":"4B"},{"c":"تهران","z":"3B"},{"c":"جاسک","z":"0B"},{"c":"چابهار","z":"0B"},{"c":"خرم‌آباد","z":"3A"},{"c":"خور","z":"2B"},{"c":"خوی","z":"4B"},{"c":"دیر","z":"0B"},{"c":"رامسر","z":"3A"},{"c":"رشت","z":"3A"},{"c":"زابل","z":"1B"},{"c":"زنجان","z":"4B"},{"c":"زاهدان","z":"2B"},{"c":"ساری","z":"3A"},{"c":"سبزوار","z":"2B"},{"c":"سراب","z":"5B"},{"c":"سراوان","z":"2B"},{"c":"سرخس","z":"2B"},{"c":"سقز","z":"4A"},{"c":"سمنان","z":"2B"},{"c":"سنندج","z":"4A"},{"c":"سیرجان","z":"3B"},{"c":"شاهرود","z":"4B"},{"c":"شهرکرد","z":"4A"},{"c":"شیراز","z":"3B"},{"c":"طبس","z":"2B"},{"c":"قائم‌شهر","z":"3A"},{"c":"قزوین","z":"4B"},{"c":"قم","z":"2B"},{"c":"قشم","z":"0B"},{"c":"قوچان","z":"4B"},{"c":"کاشان","z":"2B"},{"c":"کاشمر","z":"2B"},{"c":"کرمان","z":"3B"},{"c":"کرمانشاه","z":"4A"},{"c":"کهنوج","z":"0B"},{"c":"کیش","z":"0B"},{"c":"گچساران","z":"2A"},{"c":"گرگان","z":"3B"},{"c":"لار","z":"1B"},{"c":"مراغه","z":"4B"},{"c":"مشهد","z":"3B"},{"c":"مهاباد","z":"4A"},{"c":"میانه","z":"4B"},{"c":"نهبندان","z":"2B"},{"c":"نوشهر","z":"3A"},{"c":"همدان","z":"4A"},{"c":"یاسوج","z":"3A"},{"c":"یزد","z":"2B"}];
+
+const MATS = MATS_GEN.map(m=>({n:m.n, lam:m.c, cat:m.cat, d:m.d||null, cert:0})).concat(CERT);
+
+const FA = n => String(n).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]).replace(/,/g,'٬').replace(/\./g,'٫');
+const fmt=(v,d=1)=>FA(Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}));
+const money=v=>FA(Math.round(v).toLocaleString('en-US'));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+
+/* ---- DEMO DATA: نرخ‌ها. هیچ‌کدام از پروژه انرژی‌یار نیامده‌اند ---- */
+const RATES = [
+  {k:'wall',  n:'دیوارچینی و اندود (هر m²)',      v:1800000},
+  {k:'ins',   n:'عایق حرارتی (هر m³)',            v:9500000},
+  {k:'roof',  n:'اجرای سقف و عایق‌کاری (هر m²)',  v:2400000},
+  {k:'floor', n:'کف‌سازی (هر m²)',                v:1600000},
+  {k:'glaz',  n:'جداره نورگذر (هر m²)',           v:7200000}
+];
+
+const TABS=[{id:1,t:'مشخصات پروژه'},{id:2,t:'لایه‌های جداره'},{id:3,t:'نرخ‌ها'},{id:4,t:'گزارش متره'}];
+let tab=1;
+$('tabbar').innerHTML='<div class="wrap">'+TABS.map(t=>
+  `<button type="button" onclick="go(${t.id})" id="tb${t.id}">${t.t}</button>`).join('')+'</div>';
+function go(n){
+  tab=n;
+  TABS.forEach(t=>{
+    $('tab-'+t.id).classList.toggle('active',t.id===n);
+    $('tb'+t.id).classList.toggle('active',t.id===n);
+  });
+  if(n===4) report();
+  nav(); window.scrollTo({top:0,behavior:'smooth'});
+}
+function nav(){
+  const p=TABS.find(t=>t.id===tab-1), x=TABS.find(t=>t.id===tab+1);
+  $('stepNav').innerHTML=`<span class="step-count">مرحله ${FA(tab)} از ${FA(TABS.length)}</span>`+
+    '<span class="step-actions">'+
+    (p?`<button class="nav-btn ghost" type="button" onclick="go(${p.id})"><span class="chev">→</span> ${p.t}</button>`:'')+
+    (x?`<button class="nav-btn" type="button" onclick="go(${x.id})">${x.t} <span class="chev">←</span></button>`:'')+
+    '</span>';
+}
+
+/* ---- شهر و اقلیم ---- */
+$('city').innerHTML=CITIES.map((c,i)=>`<option value="${i}">${esc(c.c)} — رده ${c.z}</option>`).join('');
+function zone(){ const z=CITIES[+$('city').value].z; return ZONE_MAP[z]||z; }
+function zoneShow(){
+  const c=CITIES[+$('city').value];
+  $('zoneOut').textContent='رده اقلیمی رسمی: '+c.z+' (ستون '+zone()+' جدول ۱۹-۵-۱)';
+  geo();
+}
+$('city').addEventListener('change',zoneShow);
+
+/* ---- هندسه: متره سطوح ---- */
+function geo(){
+  const n=+$('floors').value||1, h=+$('hgt').value||3;
+  const a=+$('plA').value||0, b=+$('plB').value||0, wwr=(+$('wwr').value||0)/100;
+  const perim=2*(a+b);
+  const grossWall=perim*h*n;
+  const glaz=grossWall*wwr;
+  const wall=grossWall-glaz;
+  const plan=a*b;
+  const el=$('geoSum');
+  if(el) el.innerHTML=
+    `محیط پلان <b>${fmt(perim,1)}</b> m · دیوار ناخالص <b>${fmt(grossWall,0)}</b> m² · `+
+    `جداره نورگذر <b>${fmt(glaz,0)}</b> m² · دیوار خالص <b>${fmt(wall,0)}</b> m² · `+
+    `مساحت پلان <b>${fmt(plan,0)}</b> m²`;
+  return {wall,glaz,roof:plan,floor:plan,plan,perim,grossWall};
+}
+['floors','hgt','plA','plB','wwr'].forEach(id=>$(id).addEventListener('input',geo));
+
+/* ---- جداره‌ها و لایه‌ها ---- */
+/* فهرست جداره‌ها.
+   rIdx = سطر جدول ۱۹-۵-۱؛ null یعنی جداره الزام حرارتی ندارد
+   (مثل دیوار بین دو فضای گرم) ولی باید متره شود.
+   area = نحوه محاسبه مساحت: auto از هندسه، یا manual با ورودی کاربر.
+   DEMO: ترکیب و ضخامت پیش‌فرض لایه‌ها فقط نمونه شروع است. */
+const CATALOGUE=[
+  {k:'wall',      rIdx:0,    area:'wall',     name:'دیوار خارجی مجاور فضای باز',
+   def:[['اندود',20],['عایق حرارتی',50],['بلوک',200]]},
+  {k:'wallSemi',  rIdx:1,    area:'manual',   name:'دیوار مجاور فضای نیمه‌باز کنترل‌نشده',
+   def:[['اندود',20],['عایق حرارتی',40],['بلوک',200]]},
+  {k:'wallSoil',  rIdx:2,    area:'manual',   name:'دیوار مجاور خاک',
+   def:[['عایق حرارتی',30],['بلوک',200]]},
+  {k:'roof',      rIdx:3,    area:'plan',     name:'سقف مجاور فضای آزاد',
+   def:[['اندود',20],['عایق حرارتی',100]]},
+  {k:'roofSemi',  rIdx:4,    area:'manual',   name:'سقف مجاور فضای نیمه‌باز کنترل‌نشده',
+   def:[['اندود',20],['عایق حرارتی',80]]},
+  {k:'floorAir',  rIdx:5,    area:'manual',   name:'کف مجاور هوای آزاد',
+   def:[['عایق حرارتی',50]]},
+  {k:'floorSemi', rIdx:6,    area:'manual',   name:'کف مجاور فضای نیمه‌باز کنترل‌نشده',
+   def:[['عایق حرارتی',40]]},
+  {k:'floorSoil', rIdx:7,    area:'plan',     name:'کف مجاور خاک',
+   def:[['عایق حرارتی',30]]},
+  /* بدون الزام حرارتی — فقط متره */
+  {k:'wallWarm',  rIdx:null, area:'manual',   name:'دیوار مجاور فضای گرم (داخلی)',
+   def:[['اندود',20],['بلوک',100],['اندود',20]]},
+  {k:'floorMid',  rIdx:null, area:'between',  name:'کف و سقف بین طبقات',
+   def:[['اندود',20]]},
+  {k:'partition', rIdx:null, area:'manual',   name:'تیغه و دیوار جداکننده داخلی',
+   def:[['اندود',15],['بلوک',100],['اندود',15]]}
+];
+let state=[];
+function initElements(){
+  /* شروع با جداره‌های پرکاربرد؛ بقیه را کاربر اضافه می‌کند */
+  state=['wall','roof','floorSoil','wallWarm','floorMid'].map(k=>mkEl(k));
+  renderElements();
+}
+function mkEl(k){
+  const c=CATALOGUE.find(x=>x.k===k);
+  return {k:c.k, name:c.name, rIdx:c.rIdx, areaMode:c.area, manual:0,
+    layers:c.def.map(l=>{
+      const hit=MATS.find(m=>m.cat.indexOf(l[0])>=0)||MATS[0];
+      return {mi:MATS.indexOf(hit), t:l[1]};
+    })};
+}
+function areaOfEl(el,g){
+  if(el.areaMode==='wall')    return g.wall;
+  if(el.areaMode==='plan')    return g.plan;
+  if(el.areaMode==='between') return g.plan*Math.max(0,(+$('floors').value||1)-1);
+  return +el.manual||0;
+}
+function addEl(k){ if(!k) return; state.push(mkEl(k)); renderElements(); }
+function delEl(i){ state.splice(i,1); renderElements(); }
+function setManual(i,v){ state[i].manual=+v; renderElements(); }
+function renderElements(){
+  const g=geo();
+  $('elements').innerHTML=state.map((el,ei)=>{
+    const R=elR(el);
+    const A=areaOfEl(el,g);
+    let head;
+    if(el.rIdx===null){
+      head=`<span class="el-sum">R = ${fmt(R,2)} · <span class="wait">بدون الزام حرارتی</span></span>`;
+    } else {
+      const need=R_TABLE[el.rIdx].v[R_COLS.indexOf(zone())];
+      const v = R>=need?'<span class="ok">قبول</span>':'<span class="no">کمتر از حد</span>';
+      head=`<span class="el-sum">R = ${fmt(R,2)} در برابر حداقل ${fmt(need,2)} m²K/W &nbsp; ${v}</span>`;
+    }
+    const areaCell = el.areaMode==='manual'
+      ? `<div class="field" style="max-width:190px"><label>مساحت (m²)</label>
+           <input type="number" value="${el.manual||0}" min="0" step="1" oninput="setManual(${ei},this.value)"></div>`
+      : `<p class="hint" style="margin:0 0 10px">مساحت از هندسه: <b>${fmt(A,1)}</b> m²</p>`;
+    return `<div class="el-box">
+      <div class="el-head">
+        <span class="el-name">${esc(el.name)}</span>
+        ${head}
+        <button class="x" type="button" onclick="delEl(${ei})" aria-label="حذف جداره">×</button>
+      </div>
+      ${areaCell}
+      ${el.layers.map((L,li)=>`<div class="lay-row">
+        <div class="field"><label>مصالح لایه ${FA(li+1)}</label>
+          <select onchange="setMat(${ei},${li},this.value)">${matOptions(L.mi)}</select></div>
+        <div class="field"><label>ضخامت (mm)</label>
+          <input type="number" value="${L.t}" min="0" step="5" oninput="setTh(${ei},${li},this.value)"></div>
+        <button class="x" type="button" onclick="delLayer(${ei},${li})" aria-label="حذف لایه">×</button>
+      </div>`).join('')}
+      <button class="nav-btn small" type="button" style="margin-top:12px" onclick="addLayer(${ei})">+ افزودن لایه</button>
+    </div>`;
+  }).join('')
+  + `<div class="field" style="max-width:420px;margin-top:18px">
+       <label for="addEl">افزودن جداره دیگر</label>
+       <select id="addEl" onchange="addEl(this.value); this.value='';">
+         <option value="">انتخاب کنید…</option>
+         <optgroup label="دارای الزام جدول ۱۹-۵-۱">${
+           CATALOGUE.filter(c=>c.rIdx!==null).map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('')}</optgroup>
+         <optgroup label="بدون الزام حرارتی — فقط متره">${
+           CATALOGUE.filter(c=>c.rIdx===null).map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('')}</optgroup>
+       </select>
+     </div>`;
+}
+function matOptions(sel){
+  const gen=MATS.map((m,i)=>({m,i})).filter(o=>!o.m.cert);
+  const cer=MATS.map((m,i)=>({m,i})).filter(o=>o.m.cert);
+  const o=a=>a.map(x=>`<option value="${x.i}" ${x.i===sel?'selected':''}>${esc(x.m.n)} — λ ${x.m.lam}</option>`).join('');
+  return `<optgroup label="مقادیر عمومی — پیوست «۷»">${o(gen)}</optgroup>`+
+         `<optgroup label="محصولات دارای گواهی‌نامه فنی">${o(cer)}</optgroup>`;
+}
+function elR(el){
+  return el.layers.reduce((a,L)=>{
+    const m=MATS[L.mi]; const t=(L.t||0)/1000;
+    return a + (m && m.lam>0 ? t/m.lam : 0);
+  },0);
+}
+function setMat(e,l,v){ state[e].layers[l].mi=+v; renderElements(); }
+function setTh(e,l,v){ state[e].layers[l].t=+v; renderElements(); }
+function delLayer(e,l){ state[e].layers.splice(l,1); renderElements(); }
+function addLayer(e){ state[e].layers.push({mi:0,t:20}); renderElements(); }
+
+/* ---- نرخ‌ها ---- */
+$('rates').innerHTML=RATES.map(r=>
+  `<div class="field"><label for="r_${r.k}">${esc(r.n)}</label>
+   <input type="number" id="r_${r.k}" value="${r.v}" min="0" step="100000"></div>`).join('');
+
+/* ---- گزارش متره ---- */
+function report(){
+  const g=geo();
+  const waste=1+(+$('waste').value||0)/100;
+  const rate=k=>+$('r_'+k).value||0;
+  const areaOf={wall:g.wall, roof:g.roof, floor:g.floor};
+
+  let rows=[], totalCost=0, insVol=0, insWt=0, noDens=0;
+  state.forEach(el=>{
+    const A=areaOfEl(el,g);
+    el.layers.forEach(L=>{
+      const m=MATS[L.mi]; if(!m) return;
+      const vol=A*(L.t||0)/1000*waste;
+      const isIns=m.cat.indexOf('عایق')>=0;
+      if(isIns){ insVol+=vol; if(m.d) insWt+=vol*m.d; else noDens++; }
+      /* نرخ بر پایه نوع جداره؛ جداره‌های داخلی با نرخ دیوار حساب می‌شوند */
+      const rk = isIns ? 'ins'
+               : (el.k.indexOf('roof')>=0 ? 'roof'
+               : (el.k.indexOf('floor')>=0 ? 'floor' : 'wall'));
+      const cost = isIns ? vol*rate('ins') : A*waste*rate(rk);
+      totalCost+=cost;
+      rows.push([el.name, m.n, L.t, A*waste, vol, m.d? vol*m.d : null, cost, m.cert]);
+    });
+  });
+  const glazCost=g.glaz*waste*rate('glaz');
+  totalCost+=glazCost;
+
+  const kpi=[
+    ['مساحت کل جداره', fmt(g.wall+g.roof+g.floor+g.glaz,0), 'متر مربع، با پرت'],
+    ['حجم عایق', fmt(insVol,1), 'متر مکعب'],
+    ['وزن عایق', insWt? fmt(insWt,0):'—', insWt? 'کیلوگرم':'چگالی ناقص'],
+    ['برآورد هزینه', money(totalCost), 'تومان — DEMO']
+  ].map(k=>`<div class="kpi"><div class="v">${k[1]}</div><div class="l">${k[0]} · ${k[2]}</div></div>`).join('');
+
+  const tbl=rows.map(r=>`<tr>
+    <td>${esc(r[0])}</td>
+    <td>${esc(r[1])}${r[7]?' <span style="font-size:10px;color:var(--emerald-deep)">گواهی‌نامه‌دار</span>':''}</td>
+    <td class="num">${FA(r[2])}</td>
+    <td class="num">${fmt(r[3],1)}</td>
+    <td class="num">${fmt(r[4],2)}</td>
+    <td class="num">${r[5]!=null?fmt(r[5],0):'—'}</td>
+    <td class="num">${money(r[6])}</td></tr>`).join('');
+
+  const reg=state.filter(el=>el.rIdx!==null);
+  const unreg=state.filter(el=>el.rIdx===null);
+  const comp=reg.map(el=>{
+    const R=elR(el), need=R_TABLE[el.rIdx].v[R_COLS.indexOf(zone())];
+    return `<tr><td>${esc(el.name)}</td><td class="num">${fmt(need,2)}</td>
+      <td class="num">${fmt(R,2)}</td>
+      <td class="num">${R>=need?'<span class="ok">قبول</span>':'<span class="no">کمتر از حد</span>'}</td></tr>`;
+  }).join('') + unreg.map(el=>
+    `<tr><td>${esc(el.name)}</td><td class="num">—</td>
+      <td class="num">${fmt(elR(el),2)}</td>
+      <td class="num"><span class="wait">بدون الزام</span></td></tr>`).join('');
+
+  $('report').innerHTML=
+    `<div class="report-head"><div class="report-head-row">
+      <div><div class="report-brand">گزارش متره و برآورد پوسته حرارتی</div>
+      <div class="report-sub">${esc(CITIES[+$('city').value].c)} — رده اقلیمی ${esc(CITIES[+$('city').value].z)}</div></div>
+     </div></div>
+     <div class="report-body">
+      <div class="kpis">${kpi}</div>
+      <section class="rcat"><h4 class="rcat-head"><span class="rcat-n">۰۱</span>
+        <span class="rcat-t">متره لایه‌ها</span></h4>
+        <table class="report-table"><thead><tr>
+          <th>جداره</th><th>مصالح</th><th class="num">ضخامت (mm)</th>
+          <th class="num">مساحت (m²)</th><th class="num">حجم (m³)</th>
+          <th class="num">وزن (kg)</th><th class="num">هزینه (تومان)</th>
+        </tr></thead><tbody>${tbl}
+        <tr><td>جداره نورگذر</td><td>—</td><td class="num">—</td>
+            <td class="num">${fmt(g.glaz*waste,1)}</td><td class="num">—</td>
+            <td class="num">—</td><td class="num">${money(glazCost)}</td></tr>
+        </tbody></table>
+        ${noDens?`<p class="hint" style="margin-top:8px">${FA(noDens)} لایه چگالی عددی ندارد و در وزن محاسبه نشده است.</p>`:''}
+      </section>
+      <section class="rcat"><h4 class="rcat-head"><span class="rcat-n">۰۲</span>
+        <span class="rcat-t">کنترل انطباق با مبحث ۱۹</span></h4>
+        <table class="report-table"><thead><tr>
+          <th>جداره</th><th class="num">حداقل R جدول ۱۹-۵-۱</th>
+          <th class="num">R طرح</th><th class="num">نتیجه</th>
+        </tr></thead><tbody>${comp}</tbody></table>
+      </section>
+      <p class="report-footnote"><b>نرخ‌ها DEMO DATA هستند</b> و از پروژه انرژی‌یار نیامده‌اند؛ پیش از هر استناد با نرخ روز جایگزین شوند.
+      مقادیر λ و مقاومت حرارتی از مصالح دارای گواهی‌نامه و پیوست «۷» است. این خروجی برآورد اولیه است و جایگزین متره تفصیلی نیست.</p>
+     </div>`;
+}
+
+
+/* ---- محاسبه نسبت بازشو از روی ابعاد واقعی ---- */
+let wins=[{w:1.2,h:1.5,q:12},{w:0.8,h:1.2,q:8}];   /* DEMO: دو نوع نمونه */
+function renderWins(){
+  const g=geo();
+  let tot=0;
+  $('winRows').innerHTML=wins.map((x,i)=>{
+    const a=(+x.w||0)*(+x.h||0)*(+x.q||0); tot+=a;
+    return `<tr>
+      <td><input type="text" value="${esc(x.n||('بازشو '+FA(i+1)))}" oninput="setWin(${i},'n',this.value)"></td>
+      <td class="num"><input type="number" value="${x.w}" min="0" step="0.1" oninput="setWin(${i},'w',this.value)"></td>
+      <td class="num"><input type="number" value="${x.h}" min="0" step="0.1" oninput="setWin(${i},'h',this.value)"></td>
+      <td class="num"><input type="number" value="${x.q}" min="0" step="1" oninput="setWin(${i},'q',this.value)"></td>
+      <td class="num">${fmt(a,2)}</td>
+      <td><button class="x" type="button" onclick="delWin(${i})" aria-label="حذف">×</button></td>
+    </tr>`;
+  }).join('');
+  const ratio = g.grossWall>0 ? tot/g.grossWall*100 : 0;
+  $('winSum').innerHTML =
+    `مجموع سطح بازشو <b>${fmt(tot,2)}</b> m² · دیوار ناخالص <b>${fmt(g.grossWall,0)}</b> m² · `+
+    `نسبت بازشو <b>${fmt(ratio,1)}٪</b>`;
+  return ratio;
+}
+function setWin(i,k,v){ wins[i][k] = (k==='n') ? v : +v; renderWins(); }
+function delWin(i){ wins.splice(i,1); renderWins(); }
+function addWin(){ wins.push({w:1,h:1.2,q:1}); renderWins(); }
+function applyWWR(){
+  const r=renderWins();
+  $('wwr').value=Math.round(r*10)/10;
+  $('wwrSrc').textContent='از جدول بازشوها محاسبه شد';
+  geo(); renderElements();
+}
+['floors','hgt','plA','plB'].forEach(id=>$(id).addEventListener('input',renderWins));
+$('wwr').addEventListener('input',()=>{ $('wwrSrc').textContent='مستقیم وارد شده'; renderElements(); });
+
+zoneShow(); initElements(); renderWins(); nav();
+</script>
+</body>
+</html>
