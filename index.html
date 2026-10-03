@@ -7,650 +7,240 @@
 <title>[نسخه مستقل] متره و برآورد پوسته حرارتی | انرژی‌یار</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* ---- سطوح ---- */
-    --bg:#F3F0E4;            /* پس‌زمینه کاغذی، هم‌خانواده با سایت اصلی */
-    --surface:#FFFFFF;
-    --surface-2:#EAE5D4;
-    --surface-sunk:#EAE5D4;
-
-    /* ---- متن ---- */
-    --ink:#1E2A24;
-    --ink-soft:#4C5A52;
-    --ink-faint:#637069;
-
-    /* ---- برند ---- */
-    --emerald:#12A874;
-    --emerald-deep:#0B3C2E;
-    --emerald-pale:#DFF5EC;
-    --emerald-line:#CCE7DA;
-
-    /* ---- معنایی ---- */
-    --pass:#1B7F52;  --pass-bg:#E9F5EE;
-    --fail:#A8342A;  --fail-bg:#FBECEA;
-    --wait:#8D9A93;  --wait-bg:#F2EFE6;
-
-    /* ---- خطوط ---- */
-    --line:#D9D2BC;
-    --line-soft:#E4DECB;
-
+    --bg:#232A2D; --bg-2:#2B3336; --bg-3:#323B3E;
+    --ink:#E9F0EC; --ink-soft:#A8B5B1; --ink-faint:#8A9894;
+    --emerald:#12A874; --emerald-br:#2FD69B; --emerald-deep:#0B3C2E; --emerald-dim:#1B6B50;
+    --line:rgba(255,255,255,.10); --line-str:rgba(255,255,255,.18);
+    --amber:#E0A94B; --amber-bg:rgba(224,169,75,.10);
+    --pass:#3FD9A0; --fail:#FF6B52;
     --sans:'IBM Plex Sans Arabic','Vazirmatn',sans-serif;
-    --mono:'IBM Plex Mono',monospace;   /* فقط برای اعداد و نویسه‌های لاتین */
+    --r:10px; --r-sm:7px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.9;
+    font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 
-    --r-lg:12px; --r:9px; --r-sm:6px;
-    --sh-1:0 1px 2px rgba(20,30,25,.05), 0 1px 3px rgba(20,30,25,.04);
-    --sh-2:0 2px 6px rgba(20,30,25,.06), 0 12px 28px rgba(20,30,25,.07);
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:var(--sans); font-size:15px; line-height:1.85;
-    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-  }
-  .wrap{max-width:1120px; margin:0 auto; padding:0 26px;}
-  ::selection{background:var(--emerald); color:#fff;}
-  :focus-visible{outline:2px solid var(--emerald); outline-offset:2px;}
-  /* اعداد لاتین و کدها با mono؛ متن فارسی هرگز با mono ست نمی‌شود */
-  .num, td.num, .lt{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+  /* سربرگ */
+  .top{padding:44px 0 26px;border-bottom:1px solid var(--line)}
+  .kick{font-size:12px;font-weight:600;letter-spacing:.07em;color:var(--emerald-br);margin:0 0 12px}
+  h1{font-size:clamp(25px,3.4vw,34px);font-weight:800;line-height:1.4;letter-spacing:-.015em;
+    margin:0 0 12px;color:#fff;max-width:20ch}
+  .lead{font-size:15px;line-height:1.95;color:var(--ink-soft);max-width:660px;margin:0}
 
-  /* ═══════════ سربرگ ═══════════ */
-  header.top .wrap{position:relative; z-index:1;}
-  .brand{display:flex; align-items:flex-start; gap:14px;}
-  .eyebrow{ font-size:12.5px; font-weight:600; letter-spacing:.06em;
-    color:var(--ink-faint); margin:0 0 12px; display:block; line-height:1.6; }
-  .eyebrow::before{content:none;}
-  
-  header.top h1{
-    font-size:clamp(21px,2.7vw,27px); font-weight:800; margin:0;
-    letter-spacing:normal; line-height:1.5; color:#fff;
-  }
-  .badges-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
-  .source-badge{ font-size:12px; font-weight:500; color:#CFEBDD;
-    background:rgba(124,232,190,.10); border:1px solid rgba(124,232,190,.25);
-    padding:5px 12px; border-radius:var(--r-sm); white-space:nowrap; }
+  /* آکاردئون */
+  .ac{border-bottom:1px solid var(--line)}
+  .ac-head{all:unset;display:flex;align-items:center;gap:14px;width:100%;cursor:pointer;
+    padding:22px 2px;font-family:inherit;transition:color .18s}
+  .ac-head:hover{color:#fff}
+  .ac-head:focus-visible{outline:2px solid var(--emerald-br);outline-offset:-4px}
+  .ac-n{font-size:12px;font-weight:700;color:var(--emerald-br);min-width:26px;
+    font-variant-numeric:tabular-nums}
+  .ac-t{flex:1;font-size:16.5px;font-weight:700;color:var(--ink);text-align:start}
+  .ac-sub{font-size:12.5px;color:var(--ink-faint);font-weight:500}
+  .ac-ch{width:20px;height:20px;flex:0 0 auto;color:var(--ink-faint);transition:transform .28s ease}
+  .ac-head[aria-expanded="true"] .ac-ch{transform:rotate(180deg);color:var(--emerald-br)}
+  .ac-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s cubic-bezier(.22,.61,.36,1)}
+  .ac-body.open{grid-template-rows:1fr}
+  .ac-body > div{overflow:hidden;min-height:0}
+  .ac-in{padding:4px 2px 30px}
 
+  /* ورودی‌ها */
+  .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 20px}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 20px}
+  @media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .f{display:flex;flex-direction:column;gap:7px}
+  .f label{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+  .f .h{font-size:11.5px;color:var(--ink-faint);line-height:1.7}
+  input,select{font-family:inherit;font-size:14px;color:var(--ink);background:var(--bg-2);
+    border:1px solid var(--line-str);border-radius:var(--r-sm);padding:10px 12px;
+    min-height:44px;width:100%;transition:border-color .18s,background .18s}
+  input:hover,select:hover{background:var(--bg-3)}
+  input:focus,select:focus{outline:none;border-color:var(--emerald);background:var(--bg-3)}
+  input[type=number]{font-variant-numeric:tabular-nums}
+  select option,select optgroup{background:var(--bg-2);color:var(--ink)}
 
-  /* ═══════════ تب‌ها ═══════════ */
-  .tabbar{ display:flex; gap:2px; overflow-x:auto; scrollbar-width:none;
-    background:var(--emerald-deep); padding:0; }
-  .tabbar::-webkit-scrollbar{display:none;}
-  .tabbar .wrap{display:flex; gap:2px;}
-  .tabbar button{ font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer;
-    background:none; border:none; color:#9FBCAE; white-space:nowrap;
-    padding:14px 16px; position:relative; transition:color .18s; }
-  .tabbar button::after{
-    content:""; position:absolute; inset-inline:10px; bottom:0; height:2px;
-    background:transparent; transition:background .18s;
-  }
-  .tabbar button:hover{color:#DDEEE6;}
-  .tabbar button.active{color:#fff; font-weight:700;}
-  .tabbar button.active::after{background:#4FE3AE;}
-  .tabbar button .dot{ width:7px; height:7px; border-radius:50%; background:#4FE3AE;
-    display:inline-block; flex:0 0 auto; }
+  /* دکمه‌ها */
+  .btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;
+    justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:var(--r-sm);
+    font-family:inherit;font-size:13.5px;font-weight:700;transition:background .18s,color .18s}
+  .btn-p{background:var(--emerald);color:#06231A}
+  .btn-p:hover{background:var(--emerald-br)}
+  .btn-g{background:transparent;color:var(--ink-soft);border:1px solid var(--line-str)}
+  .btn-g:hover{background:var(--bg-2);color:var(--ink)}
+  .btn-s{min-height:36px;padding:0 14px;font-size:12.5px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .x{all:unset;cursor:pointer;color:var(--ink-faint);font-size:18px;padding:0 8px;line-height:1}
+  .x:hover{color:var(--fail)}
 
-  /* ═══════════ پنل‌ها ═══════════ */
-  main{padding:30px 0 70px;}
-  .panel{ background:var(--surface); border:1px solid var(--line);
-    border-radius:var(--r); padding:28px 30px; margin-bottom:18px; box-shadow:none; }
-  .tab-panel{display:none;}
-  .tab-panel.active{display:block;}
-  .section-tag{ display:block; font-size:13px; font-weight:700; color:var(--emerald-deep);
-    background:none; border:0; border-bottom:1px solid var(--emerald-line); border-radius:0;
-    padding:0 0 12px; margin:0 0 22px; letter-spacing:normal; }
-  .panel h2{
-    font-size:21px; font-weight:800; margin:0 0 6px; letter-spacing:normal; line-height:1.5;
-  }
-  .panel h3{
-    font-size:16px; font-weight:700; margin:30px 0 10px; line-height:1.6;
-    padding-bottom:9px; border-bottom:1px solid var(--line-soft);
-  }
-  .panel h3:first-of-type{margin-top:22px;}
-  .hint{font-size:13px; color:var(--ink-soft); margin:0 0 14px; line-height:1.8;}
-  .sub{font-size:13px; color:var(--ink-soft);}
-  .callout{ background:var(--emerald-pale); border:1px solid var(--emerald-line);
-    border-radius:var(--r); padding:16px 18px; font-size:13.5px; color:var(--emerald-deep);
-    line-height:1.85; margin:16px 0; }
+  /* جعبه‌ها */
+  .note{background:var(--bg-2);border-inline-start:2px solid var(--emerald);border-radius:0 var(--r-sm) var(--r-sm) 0;
+    padding:14px 16px;font-size:13px;line-height:1.95;color:var(--ink-soft);margin:18px 0}
+  .note b{color:var(--ink)}
+  .demo{background:var(--amber-bg);border:1px solid rgba(224,169,75,.28);border-radius:var(--r-sm);
+    padding:13px 16px;font-size:12.5px;line-height:1.95;color:var(--amber);margin:0 0 18px}
+  .demo b{color:#F0C87A}
 
-  /* ═══════════ فرم ═══════════ */
-  .grid2{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
-  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
-  .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
-  @media (max-width:820px){ .grid3,.grid4{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:560px){ .grid2,.grid3,.grid4{grid-template-columns:1fr;} }
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11.5px;font-weight:600;color:var(--ink-faint);text-align:start;
+    padding:10px 8px;border-bottom:1px solid var(--line-str)}
+  td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)}
+  td.num,th.num{text-align:end;font-variant-numeric:tabular-nums}
+  table input{min-height:36px;padding:7px 9px;font-size:13px}
 
-  .field{display:flex; flex-direction:column; gap:7px; min-width:0;}
-  .field label{font-size:12.5px; font-weight:600; color:var(--ink-soft); line-height:1.6;}
-  input, select{
-    font-family:var(--sans); font-size:14px; color:var(--ink);
-    background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm);
-    padding:10px 13px; width:100%; transition:border-color .15s, box-shadow .15s;
-  }
-  input[type=number]{font-family:var(--mono); font-variant-numeric:tabular-nums;}
-  input::placeholder{color:var(--ink-faint); font-family:var(--sans);}
-  input:hover, select:hover{border-color:#C9C2AC;}
-  input:focus, select:focus{
-    outline:none; border-color:var(--emerald);
-    box-shadow:0 0 0 3px rgba(14,148,104,.14);
-  }
-  input:disabled{background:var(--surface-sunk); color:var(--ink-faint); cursor:not-allowed;}
-  select{
-    appearance:none; background-image:
-      linear-gradient(45deg,transparent 50%, var(--ink-faint) 50%),
-      linear-gradient(135deg, var(--ink-faint) 50%, transparent 50%);
-    background-position:left 16px top 50%, left 11px top 50%;
-    background-size:5px 5px, 5px 5px; background-repeat:no-repeat; padding-left:34px;
-  }
-
-  .city-search-wrap{position:relative;}
-  .city-opt, .mat-opt{
-    padding:9px 13px; cursor:pointer; font-size:13.5px; border-bottom:1px solid var(--line-soft);
-  }
-  .city-opt:hover, .mat-opt:hover{background:var(--emerald-pale);}
-
-  /* ═══════════ جدول‌ها ═══════════ */
-  .spec-table{
-    width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px;
-    border:1px solid var(--line); border-radius:var(--r); overflow:hidden; margin-bottom:18px;
-  }
-  .spec-table th{
-    background:var(--surface-2); color:var(--ink-soft);
-    font-size:12px; font-weight:700; text-align:right;
-    padding:11px 14px; border-bottom:1px solid var(--line);
-  }
-  .spec-table td{
-    padding:10px 14px; border-bottom:1px solid var(--line-soft); vertical-align:middle;
-  }
-  .spec-table tr:last-child td{border-bottom:none;}
-  .spec-table tr:hover td{background:var(--surface-2);}
-  .spec-table input{padding:8px 11px; font-size:13.5px;}
-
-  .ref-val{
-    font-family:var(--mono); font-variant-numeric:tabular-nums;
-    font-size:15px; font-weight:600; color:var(--emerald-deep);
-    background:var(--emerald-pale); border:1px solid var(--emerald-line);
-    border-radius:var(--r-sm); padding:6px 11px;
-    display:inline-flex; align-items:baseline; gap:6px; direction:ltr;
-  }
-  .ref-val small{font-family:var(--sans); font-size:10.5px; font-weight:500; color:var(--emerald); direction:rtl;}
-
-  .verdict-cell{
-    font-size:12.5px; font-weight:700; white-space:nowrap;
-    display:inline-flex; align-items:center; gap:6px;
-    padding:5px 11px; border-radius:100px; line-height:1.7;
-  }
-  .verdict-cell.v-pass{color:var(--pass); background:var(--pass-bg);}
-  .verdict-cell.v-fail{color:var(--fail); background:var(--fail-bg);}
-  .verdict-cell.v-pending{color:var(--wait); background:var(--wait-bg);}
-
-  /* ═══════════ دکمه‌ها ═══════════ */
-  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:26px; align-items:center;}
-  .nav-btn{
-    font-family:var(--sans); font-size:13.5px; font-weight:700; cursor:pointer;
-    background:var(--emerald-deep); color:#fff; border:1px solid var(--emerald-deep);
-    border-radius:var(--r-sm); padding:11px 20px;
-    display:inline-flex; align-items:center; gap:8px;
-    transition:background .15s, border-color .15s, transform .12s;
-  }
-  .nav-btn:hover{background:#0E4A39; border-color:#0E4A39;}
-  .nav-btn:active{transform:translateY(1px);}
-  .nav-btn.ghost{background:transparent; color:var(--emerald-deep); border-color:var(--line);}
-  .nav-btn.ghost:hover{background:var(--emerald-pale); border-color:var(--emerald-line);}
-  .nav-btn.secondary{background:var(--surface-2); color:var(--ink); border-color:var(--line);}
-  .nav-btn.secondary:hover{background:var(--surface-sunk);}
-  .nav-btn.small{font-size:12.5px; padding:8px 15px;}
-  .icon-btn{
-    background:none; border:1px solid var(--line); border-radius:var(--r-sm);
-    color:var(--ink-faint); cursor:pointer; padding:5px 10px; font-size:13px;
-    transition:color .15s, border-color .15s, background .15s;
-  }
-  .icon-btn:hover{color:var(--fail); border-color:#E2B8B2; background:var(--fail-bg);}
-
-  /* ═══════════ محاسبه‌گر R ═══════════ */
-  .layer-total{
-    display:flex; justify-content:space-between; align-items:center; gap:16px;
-    background:var(--emerald-deep); color:#fff; border-radius:var(--r);
-    padding:18px 22px; margin-top:18px;
-  }
-  .lt-label{font-size:13.5px; font-weight:600; color:#A9C4B7;}
-  .lt-val{
-    font-family:var(--mono); font-variant-numeric:tabular-nums;
-    font-size:26px; font-weight:700; color:#fff; direction:ltr;
-  }
-
-  /* ═══════════ گزارش ═══════════ */
-  .report{
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-2);
-  }
-  .report-head{
-    background:var(--emerald-deep); color:#fff; padding:26px 34px;
-  }
-  .report-head-row{display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;}
-  .report-title{font-size:20px; font-weight:800; margin:0 0 4px; line-height:1.5;}
-  .report-sub{font-size:13px; color:#A9C4B7; margin:0;}
-  .report-meta{font-size:12px; color:#A9C4B7; text-align:left; line-height:2; font-variant-numeric:tabular-nums;}
-  .report-body{padding:30px 34px;}
-  .project-fields{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:26px;}
-  @media (max-width:700px){ .project-fields{grid-template-columns:1fr;} }
-
-  .verdict-block{
-    display:grid; grid-template-columns:auto 1fr; gap:26px; align-items:center;
-    border:1px solid var(--line); border-radius:var(--r); padding:24px;
-    margin-bottom:26px; background:var(--surface-2);
-  }
-  @media (max-width:600px){ .verdict-block{grid-template-columns:1fr; text-align:center; justify-items:center;} }
-  .stamp-circle{
-    width:96px; height:96px; border-radius:50%; border:2.5px solid currentColor;
-    flex:0 0 auto; display:flex; align-items:center; justify-content:center; flex-direction:column;
-    background:var(--surface);
-  }
-  .stamp-circle.pass{color:var(--pass);} .stamp-circle.fail{color:var(--fail);} .stamp-circle.pending{color:var(--wait);}
-  .stamp-circle .stamp-icon{font-size:30px; line-height:1;}
-  .stamp-circle .stamp-text{font-size:10px; font-weight:700; margin-top:3px;}
-  .verdict-detail .vd-title{font-size:18px; font-weight:800; margin:0 0 5px; line-height:1.5;}
-  .verdict-detail .vd-desc{font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.8;}
-  .verdict-score{font-size:13px; color:var(--ink-soft); margin-top:12px;}
-  .verdict-score b{font-family:var(--mono); font-size:19px; color:var(--ink); direction:ltr;}
-
-  .cat-summary{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:26px;}
-  @media (max-width:700px){ .cat-summary{grid-template-columns:1fr;} }
-  .cat-card{ border:1px solid var(--line); border-radius:var(--r-sm); padding:16px 18px;
-    background:var(--surface); }
-  .cat-card .cc-label{font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:10px;}
-  .cat-card .cc-bar{height:6px; background:var(--surface-sunk); border-radius:3px; overflow:hidden; margin-bottom:9px;}
-  .cat-card .cc-bar-fill{height:100%; background:var(--pass); border-radius:3px; transition:width .3s ease;}
-  .cat-card .cc-bar-fill.hasfail{background:var(--fail);}
-  .cat-card .cc-nums{font-family:var(--mono); font-size:12px; display:flex; justify-content:space-between; direction:ltr;}
-
-  .report-table-title{
-    font-size:14.5px; font-weight:700; margin:0 0 12px; padding-bottom:9px;
-    border-bottom:2px solid var(--emerald);
-  }
-  table.report-table{
-    width:100%; border-collapse:separate; border-spacing:0; font-size:12.5px; margin-bottom:24px;
-    border:1px solid var(--line); border-radius:var(--r); overflow:hidden;
-  }
-  table.report-table th{
-    background:var(--surface-2); color:var(--ink-soft); font-size:11.5px; font-weight:700;
-    padding:10px 12px; text-align:right; border-bottom:1px solid var(--line);
-  }
-  table.report-table td{padding:9px 12px; border-bottom:1px solid var(--line-soft);}
-  table.report-table tr:last-child td{border-bottom:none;}
-  table.report-table td.num{text-align:center; direction:ltr;}
-  table.report-table td.verdict{font-weight:700; text-align:center; white-space:nowrap;}
-  table.report-table td.verdict.pass{color:var(--pass);}
-  table.report-table td.verdict.fail{color:var(--fail);}
-  table.report-table td.verdict.pending{color:var(--wait);}
-
-  .signoff{display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:32px; padding-top:22px; border-top:1px dashed var(--line);}
-  @media (max-width:600px){ .signoff{grid-template-columns:1fr;} }
-  .signoff .sig-box{font-size:12.5px; color:var(--ink-soft);}
-  .signoff .sig-line{border-bottom:1px solid var(--ink); height:44px; margin-bottom:7px;}
-
-  .report-footnote{
-    background:var(--surface-2); color:var(--ink-soft); border-top:1px solid var(--line);
-    font-size:12.5px; padding:20px 34px; line-height:1.9;
-  }
-  .report-footnote b{color:var(--ink);}
-
-  .lead-box{ border:1px solid var(--emerald-line); border-radius:var(--r);
-    background:var(--emerald-pale); padding:20px 22px; }
-  .lead-box h4{margin:0 0 6px; font-size:15px; font-weight:800; color:var(--emerald-deep);}
-  .lead-box p{font-size:13px; color:var(--ink-soft); margin:0 0 16px; line-height:1.8;}
-
-
-  /* ---- نشان انرژی‌یار و پیوند بازگشت ---- */
-  .back-link:hover{color:#fff;}
-  .brand-mark img{width:26px; height:26px; object-fit:contain; display:block;}
-  .brand-mark-lg img{width:34px; height:34px;}
-  .report-brand{display:flex; align-items:flex-start; gap:14px; min-width:0;}
-  .report-brand .brand-mark{width:38px; height:38px; flex:0 0 auto;}
-  .report-brand .brand-mark img{width:25px; height:25px;}
-  footer{border-top:1px solid var(--line); background:var(--surface-2); font-size:12.5px;
-         color:var(--ink-soft); line-height:1.9; padding:26px 0 34px;}
-  .foot-brand{display:flex; align-items:center; gap:9px; margin-bottom:10px;
-              font-weight:800; font-size:14.5px; color:var(--ink);}
-  .foot-brand img{width:24px; height:24px; object-fit:contain;}
-  @media (max-width:560px){ .brand-mark-lg img{width:28px; height:28px;}
-  }
-
-  /* ---- پیمایش مرحله‌به‌مرحله ---- */
-  .step-nav{
-    display:flex; justify-content:space-between; align-items:center; gap:14px;
-    flex-wrap:wrap; margin:-6px 0 26px; padding:16px 22px;
-    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r);
-  }
-  .step-nav .step-count{font-size:12.5px; color:var(--ink-faint); font-weight:500;}
-  .step-nav .step-actions{display:flex; gap:10px; flex-wrap:wrap;}
-  .nav-btn .chev{display:inline-block; transition:transform .15s ease;}
-  .nav-btn:hover .chev{transform:translateX(-3px);}
-  .nav-btn.ghost:hover .chev{transform:translateX(3px);}
-  @media (max-width:560px){
-    .step-nav{flex-direction:column-reverse; align-items:stretch;}
-    .step-nav .step-actions{flex-direction:column-reverse;}
-    .step-nav .nav-btn{justify-content:center;}
-    .step-nav .step-count{text-align:center;}
-  }
-
-  .sheet-header, .sheet-footer{display:none;}
-
-  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
-
-  @media print{
-    @page{ size:A4; margin:0; }
-
-    .tabbar, .btn-row, .step-nav, .no-print, header.top, .head-bar, footer{display:none !important;}
-    .tab-panel{display:none !important;}
-    .tab-panel#tab-report{display:block !important;}
-    main{padding:0 !important;}
-    .wrap{max-width:none; padding:0;}
-    body{background:#fff; font-size:11pt;}
-
-    /* ---- سربرگ و پاصفحه تکرارشونده در همه صفحات ---- */
-    body{display:table; width:100%; margin:0;}
-    .sheet-header{display:table-header-group !important;}
-    .sheet-footer{display:table-footer-group !important;}
-    main{display:table-row-group;}
-    .sheet-header, .sheet-footer{
-      background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    }
-    
-    
-    .sh-inner{
-      display:flex; align-items:center; justify-content:space-between; gap:18px;
-      padding-bottom:9px; border-bottom:2px solid #0B3C2E;
-    }
-    .sh-brand{display:flex; align-items:center; gap:12px; min-width:0;}
-    .sh-logo{width:44px; height:44px; object-fit:contain; flex:0 0 auto;}
-    .sh-name{font-size:16pt; font-weight:800; color:#0B3C2E; line-height:1.35;}
-    .sh-desc{font-size:7.6pt; color:#5A6862; line-height:1.6; max-width:78mm;}
-    .sh-doc{text-align:left; flex:0 0 auto;}
-    .sh-doc-t{font-size:9pt; font-weight:700; color:#17201C; line-height:1.5;}
-    .sh-doc-s{font-size:7.6pt; color:#8D9A93; line-height:1.5;}
-    .sf-inner{
-      display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;
-      padding-top:8px; border-top:1px solid #DDD7C6;
-      font-size:8pt; color:#5A6862;
-    }
-    .sf-item b{font-weight:700; color:#0B3C2E; margin-left:5px; font-size:7.4pt;}
-    .sf-sep{width:3px; height:3px; border-radius:50%; background:#C9C2AC; display:inline-block;}
-
-    /* ---- خود گزارش ---- */
-    .report{border:none; border-radius:0; box-shadow:none;}
-    .report-head{
-      background:#fff !important; color:#17201C !important;
-      padding:0 0 14px; border-bottom:1px solid #DDD7C6; margin-bottom:18px;
-    }
-    .report-brand .brand-mark{display:none;}
-    .report-title{color:#0B3C2E; font-size:15pt;}
-    .report-sub, .report-meta{color:#5A6862;}
-    .report-meta{font-size:8pt;}
-    .report-body{padding:0;}
-    .report-footnote{background:#fff; padding:14px 0 0; font-size:8pt;}
-
-    .project-fields input{border:none; border-bottom:1px solid #DDD7C6; border-radius:0; padding:4px 0;}
-    .project-fields label{font-size:8pt;}
-
-    /* ---- جلوگیری از شکستن نامناسب بین صفحات ---- */
-    .verdict-block, .cat-card, .signoff, .report-footnote{break-inside:avoid; page-break-inside:avoid;}
-    table.report-table{break-inside:auto;}
-    table.report-table thead{display:table-header-group;}
-    table.report-table tr{break-inside:avoid; page-break-inside:avoid;}
-    tr.cat-row{break-after:avoid; page-break-after:avoid;}
-    .report-table-title{break-after:avoid; page-break-after:avoid;}
-  
-    /* ---- فاصله‌های صفحه: حاشیه @page صفر است، پس padding جایش را می‌گیرد ---- */
-    .sheet-header .sh-inner{padding:11mm 15mm 4mm !important;}
-    .sheet-footer .sf-inner{padding:4mm 15mm 9mm !important;}
-    .tab-panel#tab-report{padding:0 15mm 4mm !important;}
-}
-  .lead-box h3{margin:0 0 6px; font-size:15px; font-weight:800; color:var(--emerald-deep);}
-
-  /* ---------- گذار بین صفحه‌ها (هماهنگ با styles.css) ---------- */
-  @view-transition{ navigation:auto; }
-  ::view-transition-old(root){animation:vtOut .22s cubic-bezier(.4,0,1,1) both;}
-  ::view-transition-new(root){animation:vtIn .34s cubic-bezier(0,0,.2,1) both;}
-  @keyframes vtOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-6px);}}
-  @keyframes vtIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-  header.site-nav{view-transition-name:eyHeader;}
-  ::view-transition-group(eyHeader){animation-duration:.24s;}
-  ::view-transition-old(eyHeader), ::view-transition-new(eyHeader){animation:none;}
-  @media (prefers-reduced-motion:reduce){
-    ::view-transition-old(root), ::view-transition-new(root){animation:none;}
-  }
-
-
-  /* ---------- سربرگ صفحه، هم‌شکل با بقیه سایت ---------- */
-  .hero{padding:52px 0 30px; background:var(--bg);}
-  .hero h1{
-    font-size:clamp(26px,3.6vw,38px); font-weight:800; line-height:1.4;
-    letter-spacing:-.015em; color:var(--ink); margin:0 0 14px; max-width:20ch;
-  }
-  .hero h1 em{font-style:normal; color:var(--emerald-deep);}
-  .hero-sub{font-size:15px; line-height:1.95; color:var(--ink-soft); max-width:660px; margin:0;}
-
-  /* نوار تب‌ها: چسبیده زیر سربرگ، با خط جداکننده */
-  .tabbar-wrap{
-    position:sticky; top:var(--navh,88px); z-index:40;
-    background:var(--bg);
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-    margin-top:26px;
-  }
-  .tabbar-wrap .tabbar{max-width:1240px; margin:0 auto; padding:0 24px; background:transparent;}
-  .tabbar button{color:var(--ink-soft);}
-  .tabbar button:hover{color:var(--ink);}
-  .tabbar button.active{color:var(--emerald-deep); font-weight:700;}
-  .tabbar button.active::after{background:var(--emerald);}
-  .tabbar button .dot{background:var(--emerald);}
-  @media (max-width:820px){
-    .hero{padding:34px 0 22px;}
-    .tabbar-wrap .tabbar{padding:0 18px;}
-  }
-
-
-  /* ---------- نوار بالای صفحه، هم‌شکل با واژه‌نامه و مقالات ---------- */
-  header.site-nav{
-    position:sticky; top:0; z-index:65;
-    background:rgba(255,255,255,.97); backdrop-filter:blur(6px);
-    border-bottom:1px solid var(--line);
-  }
-  header.site-nav .nav-row{
-    display:flex; align-items:center; justify-content:space-between; gap:18px;
-    max-width:1240px; margin:0 auto; padding:12px 28px;
-  }
-  .nav-brand{display:flex; align-items:center; text-decoration:none;}
-  .nav-brand img{width:auto; height:64px; object-fit:contain; display:block;}
-  .nav-links{display:flex; gap:20px; flex-wrap:wrap;}
-  .nav-links a{
-    font-family:var(--sans); font-size:13.5px; font-weight:600;
-    color:var(--ink-soft); text-decoration:none; padding:4px 0;
-    border-bottom:2px solid transparent; transition:color .18s;
-  }
-  .nav-links a:hover{color:var(--emerald-deep);}
-  @media (max-width:820px){
-    header.site-nav .nav-row{padding:9px 18px; gap:10px;}
-    .nav-brand img{height:46px;}
-    .nav-links{gap:13px;}
-    .nav-links a{font-size:12.5px;}
-  }
-
-
-  /* ---------- گزارش: هر دسته یک بخش شماره‌دار ---------- */
-  .rcat{margin:0 0 26px;}
-  .rcat:last-of-type{margin-bottom:8px;}
-  .rcat-head{
-    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
-    margin:0 0 10px; padding-bottom:8px;
-    border-bottom:1px solid var(--line);
-    font-size:14px; font-weight:700; color:var(--ink);
-  }
-  .rcat-n{
-    font-family:var(--mono); font-size:11.5px; font-weight:600;
-    color:var(--emerald-deep); letter-spacing:.04em;
-  }
-  .rcat-t{flex:1 1 auto; min-width:0;}
-  .rcat-meta{font-size:11.5px; font-weight:500; color:var(--ink-faint); font-variant-numeric:tabular-nums;}
-  .rc-chip{
-    font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:100px;
-    border:1px solid transparent; white-space:nowrap;
-  }
-  .rc-chip.pass{color:var(--pass); background:var(--pass-bg); border-color:#CBE5D6;}
-  .rc-chip.fail{color:var(--fail); background:var(--fail-bg); border-color:#EED2CE;}
-  .rc-chip.pending{color:var(--wait); background:var(--wait-bg); border-color:var(--line);}
-  .rcat .report-table{margin-bottom:0;}
-  .rcat-empty{
-    text-align:center; color:var(--ink-soft); padding:22px;
-    border:1px dashed var(--line); border-radius:var(--r-sm); font-size:13px;
-  }
-
-  /* ---------- چاپ / PDF ---------- */
-  @media print{
-    .rcat{break-inside:auto; page-break-inside:auto;}
-    .rcat-head{break-after:avoid; page-break-after:avoid;}
-    /* سرستون‌ها روی هر صفحه تکرار می‌شوند */
-    .report-table thead{display:table-header-group;}
-    .report-table tfoot{display:table-footer-group;}
-    .report-table tr{break-inside:avoid; page-break-inside:avoid;}
-    .report{border:0; box-shadow:none; border-radius:0;}
-    .rc-chip{border:1px solid #bbb;}
-  }
-
-
-  /* ---------- اکشن چاپ ---------- */
-  .print-row{
-    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-    padding:16px 0 4px; margin-top:8px; border-top:1px solid var(--line);
-  }
-  .print-tip{
-    margin:0; font-size:12px; line-height:1.8; color:var(--ink-faint);
-    flex:1 1 260px; min-width:0;
-  }
-
-  .demo{background:#FBF1E6;border:1px solid #EBD9BE;border-radius:var(--r-sm);
-    padding:12px 15px;font-size:12.5px;line-height:1.95;color:#8A5A1E;margin:16px 0}
-  .demo b{color:#6E4714}
-  .el-row{display:grid;grid-template-columns:1.5fr .8fr .8fr .8fr auto;gap:10px;
-    align-items:end;padding:12px 0;border-bottom:1px solid var(--line-soft)}
-  @media(max-width:860px){.el-row{grid-template-columns:1fr 1fr}}
-  .lay-row{display:grid;grid-template-columns:2fr .7fr auto;gap:9px;align-items:end;
-    padding:9px 0;border-bottom:1px solid var(--paper-deep)}
-  @media(max-width:700px){.lay-row{grid-template-columns:1fr 1fr}}
-  .x{all:unset;cursor:pointer;color:var(--ink-faint);font-size:17px;padding:0 7px;line-height:1}
-  .x:hover{color:#B4402F}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
-  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
-  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px}
-  .kpi .v{font-family:var(--sans);font-size:24px;font-weight:700;color:var(--emerald-deep);
-    line-height:1.25;font-variant-numeric:tabular-nums}
-  .kpi .l{font-size:11.5px;color:var(--ink-faint);margin-top:5px;line-height:1.6}
+  /* جداره‌ها */
+  .el{border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
+    padding:18px 20px;margin-bottom:14px}
+  .el-h{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+  .el-n{font-size:14.5px;font-weight:700;color:var(--ink)}
+  .el-s{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+  .lay{display:grid;grid-template-columns:2fr .7fr auto;gap:10px;align-items:end;
+    padding:10px 0;border-bottom:1px solid var(--line)}
+  @media(max-width:700px){.lay{grid-template-columns:1fr 1fr}}
   .ok{color:var(--pass);font-weight:700}
   .no{color:var(--fail);font-weight:700}
   .wait{color:var(--ink-faint);font-weight:600}
-  .el-box{border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px;
-    margin-bottom:14px;background:var(--surface)}
-  .el-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
-    padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--line)}
-  .el-name{font-size:14.5px;font-weight:700}
-  .el-sum{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+
+  /* نتیجه */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 24px}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--bg-2);border:1px solid var(--line-str);border-radius:var(--r-sm);padding:17px 19px}
+  .kpi .v{font-size:25px;font-weight:700;color:var(--emerald-br);line-height:1.25;
+    font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:11.5px;color:var(--ink-faint);margin-top:6px;line-height:1.6}
+  .rsec{margin-bottom:28px}
+  .rsec h4{display:flex;align-items:baseline;gap:10px;font-size:14px;font-weight:700;color:var(--ink);
+    margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line-str)}
+  .rsec h4 span{font-size:11.5px;font-weight:600;color:var(--emerald-br)}
+  .foot{font-size:12px;line-height:1.95;color:var(--ink-faint);padding:22px 0 50px}
 </style>
 </head>
 <body>
 
-<div class="hero no-print">
-  <div class="wrap">
-    <p class="eyebrow">نسخه مستقل برای بررسی · به سایت اضافه نشده</p>
-    <h1>متره و برآورد <em>پوسته حرارتی</em></h1>
-    <p class="hero-sub">مساحت، حجم و وزن لایه‌های جداره را از روی ابعاد ساختمان حساب می‌کند، با مصالح دارای گواهی‌نامه، و در کنار آن انطباق با حداقل مقاومت حرارتی مبحث ۱۹ را کنترل می‌کند.</p>
+<div class="wrap">
+  <div class="top">
+    <p class="kick">نسخه مستقل برای بررسی · به سایت اضافه نشده</p>
+    <h1>متره و برآورد پوسته حرارتی</h1>
+    <p class="lead">مساحت، حجم و وزن لایه‌های جداره را از روی ابعاد ساختمان حساب می‌کند، با مصالح دارای گواهی‌نامه، و در کنار آن انطباق با حداقل مقاومت حرارتی مبحث ۱۹ را کنترل می‌کند.</p>
   </div>
-</div>
 
-<div class="tabbar-wrap no-print"><div class="tabbar" id="tabbar"></div></div>
-
-<main class="wrap">
-
-  <div class="tab-panel active" id="tab-1">
-    <section class="panel">
-      <span class="section-tag">مشخصات پروژه</span>
-      <h2>ابعاد و اقلیم</h2>
-      <p class="hint">رده اقلیمی از همان فهرست پیوست «۲» مبحث ۱۹ خوانده می‌شود.</p>
-      <div class="grid3">
-        <div class="field"><label for="city">شهر پروژه</label><select id="city"></select>
-          <span class="hint" id="zoneOut"></span></div>
-        <div class="field"><label for="floors">تعداد طبقات</label>
-          <input type="number" id="floors" value="4" min="1" step="1"></div>
-        <div class="field"><label for="hgt">ارتفاع هر طبقه (m)</label>
-          <input type="number" id="hgt" value="3" min="2" step="0.1"></div>
-        <div class="field"><label for="plA">طول پلان (m)</label>
-          <input type="number" id="plA" value="18" min="1" step="0.5"></div>
-        <div class="field"><label for="plB">عرض پلان (m)</label>
-          <input type="number" id="plB" value="12" min="1" step="0.5"></div>
-        <div class="field"><label for="wwr">نسبت بازشو به دیوار (%)</label>
-          <input type="number" id="wwr" value="25" min="0" max="90" step="1">
-          <span class="hint" id="wwrSrc">مستقیم وارد شده — یا از جدول پایین حساب کنید</span></div>
+  <!-- ۰۱ -->
+  <div class="ac">
+    <button class="ac-head" type="button" data-sec="sec-geo" aria-expanded="true" onclick="toggleSec('sec-geo',this)">
+      <span class="ac-n">۰۱</span><span class="ac-t">مشخصات پروژه<span class="ac-sub"> — ابعاد و اقلیم</span></span>
+      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="ac-body" id="sec-geo"><div><div class="ac-in">
+      <div class="g3">
+        <div class="f"><label for="city">شهر پروژه</label><select id="city"></select>
+          <span class="h" id="zoneOut"></span></div>
+        <div class="f"><label for="floors">تعداد طبقات</label><input type="number" id="floors" value="4" min="1" step="1"></div>
+        <div class="f"><label for="hgt">ارتفاع هر طبقه (m)</label><input type="number" id="hgt" value="3" min="2" step="0.1"></div>
+        <div class="f"><label for="plA">طول پلان (m)</label><input type="number" id="plA" value="18" min="1" step="0.5"></div>
+        <div class="f"><label for="plB">عرض پلان (m)</label><input type="number" id="plB" value="12" min="1" step="0.5"></div>
+        <div class="f"><label for="wwr">نسبت بازشو به دیوار (%)</label><input type="number" id="wwr" value="25" min="0" max="90" step="1">
+          <span class="h" id="wwrSrc">مستقیم وارد شده</span></div>
       </div>
-      <div class="callout" id="geoSum"></div>
-    </section>
+      <div class="note" id="geoSum"></div>
+    </div></div></div>
+  </div>
 
-    <section class="panel">
-      <span class="section-tag">محاسبه نسبت بازشو</span>
-      <h2>بازشوها را وارد کنید تا نسبت محاسبه شود</h2>
-      <p class="hint">به‌جای حدس زدن درصد، ابعاد و تعداد هر نوع بازشو را وارد کنید. نسبت به‌صورت خودکار حساب و در مرحله قبل جایگزین می‌شود.</p>
+  <!-- ۰۲ -->
+  <div class="ac">
+    <button class="ac-head" type="button" data-sec="sec-win" aria-expanded="true" onclick="toggleSec('sec-win',this)">
+      <span class="ac-n">۰۲</span><span class="ac-t">محاسبه نسبت بازشو<span class="ac-sub"> — از روی ابعاد واقعی</span></span>
+      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="ac-body" id="sec-win"><div><div class="ac-in">
       <table>
-        <thead><tr><th style="width:30%">نوع بازشو</th><th class="num">عرض (m)</th>
-          <th class="num">ارتفاع (m)</th><th class="num">تعداد</th>
-          <th class="num">مساحت (m²)</th><th style="width:6%"></th></tr></thead>
+        <thead><tr><th style="width:28%">نوع بازشو</th><th class="num">عرض (m)</th><th class="num">ارتفاع (m)</th>
+          <th class="num">تعداد</th><th class="num">مساحت (m²)</th><th style="width:5%"></th></tr></thead>
         <tbody id="winRows"></tbody>
       </table>
-      <div class="btn-row" style="margin-top:12px">
-        <button class="nav-btn small" type="button" onclick="addWin()">+ افزودن بازشو</button>
-        <button class="nav-btn small" type="button" onclick="applyWWR()">اعمال نسبت محاسبه‌شده ←</button>
+      <div class="row">
+        <button class="btn btn-g btn-s" type="button" onclick="addWin()">+ افزودن بازشو</button>
+        <button class="btn btn-p btn-s" type="button" onclick="applyWWR()">اعمال نسبت محاسبه‌شده ←</button>
       </div>
-      <div class="callout" id="winSum"></div>
-    </section>
+      <div class="note" id="winSum"></div>
+    </div></div></div>
   </div>
 
-  <div class="tab-panel" id="tab-2">
-    <section class="panel">
-      <span class="section-tag">لایه‌های جداره</span>
-      <h2>ترکیب هر جداره</h2>
-      <p class="hint">برای هر جداره، لایه‌ها را از فهرست مصالح انتخاب و ضخامت را وارد کنید. مقاومت حرارتی هم‌زمان محاسبه می‌شود.</p>
+  <!-- ۰۳ -->
+  <div class="ac">
+    <button class="ac-head" type="button" data-sec="sec-el" aria-expanded="true" onclick="toggleSec('sec-el',this)">
+      <span class="ac-n">۰۳</span><span class="ac-t">جداره‌ها و لایه‌ها<span class="ac-sub"> — ترکیب هر جداره</span></span>
+      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="ac-body" id="sec-el"><div><div class="ac-in">
       <div id="elements"></div>
-    </section>
+    </div></div></div>
   </div>
 
-  <div class="tab-panel" id="tab-3">
-    <section class="panel">
-      <span class="section-tag">نرخ‌ها</span>
-      <h2>نرخ مصالح و اجرا</h2>
-      <div class="demo">
-        <b>DEMO DATA —</b> هیچ نرخ واقعی در پروژه انرژی‌یار وجود ندارد. اعداد زیر مقادیر نمونه‌اند و
-        <b>مرجع نیستند</b>. پیش از هر استفاده، نرخ روز را از فهرست‌بهای ابنیه یا نرخ‌نامه خودتان جایگزین کنید.
-      </div>
-      <div class="grid3" id="rates"></div>
-      <div class="field" style="max-width:320px;margin-top:16px">
+  <!-- ۰۴ -->
+  <div class="ac">
+    <button class="ac-head" type="button" data-sec="sec-rate" aria-expanded="false" onclick="toggleSec('sec-rate',this)">
+      <span class="ac-n">۰۴</span><span class="ac-t">نرخ‌ها<span class="ac-sub"> — مصالح و اجرا</span></span>
+      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="ac-body" id="sec-rate"><div><div class="ac-in">
+      <div class="demo"><b>DEMO DATA —</b> هیچ نرخ واقعی در پروژه انرژی‌یار وجود ندارد. اعداد زیر نمونه‌اند و <b>مرجع نیستند</b>. پیش از استفاده، نرخ روز را جایگزین کنید.</div>
+      <div class="g3" id="rates"></div>
+      <div class="f" style="max-width:300px;margin-top:18px">
         <label for="waste">ضریب پرت اجرا (%)</label>
         <input type="number" id="waste" value="7" min="0" max="40" step="1">
-        <span class="hint">DEMO — مقدار متعارف بین ۵ تا ۱۰٪</span>
+        <span class="h">DEMO — مقدار متعارف ۵ تا ۱۰٪</span>
       </div>
-    </section>
+    </div></div></div>
   </div>
 
-  <div class="tab-panel" id="tab-4">
-    <div class="report" id="report"></div>
-    <div class="print-row no-print">
-      <button class="nav-btn" type="button" onclick="window.print()">چاپ / دریافت PDF</button>
-      <p class="print-tip">نسخه مستقل — برای بررسی پیش از افزودن به سایت.</p>
-    </div>
+  <!-- ۰۵ -->
+  <div class="ac">
+    <button class="ac-head" type="button" data-sec="sec-report" aria-expanded="false" onclick="toggleSec('sec-report',this)">
+      <span class="ac-n">۰۵</span><span class="ac-t">گزارش متره<span class="ac-sub"> — مقادیر، هزینه و کنترل انطباق</span></span>
+      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="ac-body" id="sec-report"><div><div class="ac-in">
+      <div id="report"></div>
+    </div></div></div>
   </div>
 
-  <div class="step-nav no-print" id="stepNav"></div>
-</main>
+  <div class="row" style="margin:26px 0 0">
+    <button class="btn btn-p" type="button" onclick="openReport()">مشاهده گزارش متره ←</button>
+    <button class="btn btn-g" type="button" onclick="window.print()">چاپ / PDF</button>
+  </div>
+
+  <p class="foot">نسخه مستقل برای بررسی — هیچ تغییری در سایت انرژی‌یار داده نشده است.</p>
+</div>
 
 <script>
+
+/* ---- آکاردئون ---- */
+function toggleSec(id, btn){
+  const b=document.getElementById(id);
+  const open=b.classList.toggle('open');
+  btn.setAttribute('aria-expanded', String(open));
+  if(id==='sec-report' && open) report();
+}
+function openAll(){
+  ['sec-geo','sec-win','sec-el'].forEach(id=>document.getElementById(id).classList.add('open'));
+  document.querySelectorAll('.ac-head').forEach(b=>{
+    const t=document.getElementById(b.dataset.sec);
+    b.setAttribute('aria-expanded', String(t.classList.contains('open')));
+  });
+}
+function openReport(){
+  const b=document.getElementById('sec-report');
+  b.classList.add('open');
+  document.querySelector('[data-sec="sec-report"]').setAttribute('aria-expanded','true');
+  report();
+  b.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 /* ============================================================
    داده‌های استفاده‌شده
    REUSED  : materials.json (۸۵ محصول گواهی‌نامه‌دار، تاریخ‌نگذشته)
@@ -683,27 +273,6 @@ const RATES = [
   {k:'glaz',  n:'جداره نورگذر (هر m²)',           v:7200000}
 ];
 
-const TABS=[{id:1,t:'مشخصات پروژه'},{id:2,t:'لایه‌های جداره'},{id:3,t:'نرخ‌ها'},{id:4,t:'گزارش متره'}];
-let tab=1;
-$('tabbar').innerHTML='<div class="wrap">'+TABS.map(t=>
-  `<button type="button" onclick="go(${t.id})" id="tb${t.id}">${t.t}</button>`).join('')+'</div>';
-function go(n){
-  tab=n;
-  TABS.forEach(t=>{
-    $('tab-'+t.id).classList.toggle('active',t.id===n);
-    $('tb'+t.id).classList.toggle('active',t.id===n);
-  });
-  if(n===4) report();
-  nav(); window.scrollTo({top:0,behavior:'smooth'});
-}
-function nav(){
-  const p=TABS.find(t=>t.id===tab-1), x=TABS.find(t=>t.id===tab+1);
-  $('stepNav').innerHTML=`<span class="step-count">مرحله ${FA(tab)} از ${FA(TABS.length)}</span>`+
-    '<span class="step-actions">'+
-    (p?`<button class="nav-btn ghost" type="button" onclick="go(${p.id})"><span class="chev">→</span> ${p.t}</button>`:'')+
-    (x?`<button class="nav-btn" type="button" onclick="go(${x.id})">${x.t} <span class="chev">←</span></button>`:'')+
-    '</span>';
-}
 
 /* ---- شهر و اقلیم ---- */
 $('city').innerHTML=CITIES.map((c,i)=>`<option value="${i}">${esc(c.c)} — رده ${c.z}</option>`).join('');
@@ -794,34 +363,34 @@ function renderElements(){
     const A=areaOfEl(el,g);
     let head;
     if(el.rIdx===null){
-      head=`<span class="el-sum">R = ${fmt(R,2)} · <span class="wait">بدون الزام حرارتی</span></span>`;
+      head=`<span class="el-s">R = ${fmt(R,2)} · <span class="wait">بدون الزام حرارتی</span></span>`;
     } else {
       const need=R_TABLE[el.rIdx].v[R_COLS.indexOf(zone())];
       const v = R>=need?'<span class="ok">قبول</span>':'<span class="no">کمتر از حد</span>';
-      head=`<span class="el-sum">R = ${fmt(R,2)} در برابر حداقل ${fmt(need,2)} m²K/W &nbsp; ${v}</span>`;
+      head=`<span class="el-s">R = ${fmt(R,2)} در برابر حداقل ${fmt(need,2)} m²K/W &nbsp; ${v}</span>`;
     }
     const areaCell = el.areaMode==='manual'
-      ? `<div class="field" style="max-width:190px"><label>مساحت (m²)</label>
+      ? `<div class="f" style="max-width:190px"><label>مساحت (m²)</label>
            <input type="number" value="${el.manual||0}" min="0" step="1" oninput="setManual(${ei},this.value)"></div>`
-      : `<p class="hint" style="margin:0 0 10px">مساحت از هندسه: <b>${fmt(A,1)}</b> m²</p>`;
-    return `<div class="el-box">
-      <div class="el-head">
-        <span class="el-name">${esc(el.name)}</span>
+      : `<p class="h" style="margin:0 0 10px">مساحت از هندسه: <b>${fmt(A,1)}</b> m²</p>`;
+    return `<div class="el">
+      <div class="el-h">
+        <span class="el-n">${esc(el.name)}</span>
         ${head}
         <button class="x" type="button" onclick="delEl(${ei})" aria-label="حذف جداره">×</button>
       </div>
       ${areaCell}
-      ${el.layers.map((L,li)=>`<div class="lay-row">
-        <div class="field"><label>مصالح لایه ${FA(li+1)}</label>
+      ${el.layers.map((L,li)=>`<div class="lay">
+        <div class="f"><label>مصالح لایه ${FA(li+1)}</label>
           <select onchange="setMat(${ei},${li},this.value)">${matOptions(L.mi)}</select></div>
-        <div class="field"><label>ضخامت (mm)</label>
+        <div class="f"><label>ضخامت (mm)</label>
           <input type="number" value="${L.t}" min="0" step="5" oninput="setTh(${ei},${li},this.value)"></div>
         <button class="x" type="button" onclick="delLayer(${ei},${li})" aria-label="حذف لایه">×</button>
       </div>`).join('')}
-      <button class="nav-btn small" type="button" style="margin-top:12px" onclick="addLayer(${ei})">+ افزودن لایه</button>
+      <button class="btn btn-g btn-s" type="button" style="margin-top:12px" onclick="addLayer(${ei})">+ افزودن لایه</button>
     </div>`;
   }).join('')
-  + `<div class="field" style="max-width:420px;margin-top:18px">
+  + `<div class="f" style="max-width:420px;margin-top:18px">
        <label for="addEl">افزودن جداره دیگر</label>
        <select id="addEl" onchange="addEl(this.value); this.value='';">
          <option value="">انتخاب کنید…</option>
@@ -852,7 +421,7 @@ function addLayer(e){ state[e].layers.push({mi:0,t:20}); renderElements(); }
 
 /* ---- نرخ‌ها ---- */
 $('rates').innerHTML=RATES.map(r=>
-  `<div class="field"><label for="r_${r.k}">${esc(r.n)}</label>
+  `<div class="f"><label for="r_${r.k}">${esc(r.n)}</label>
    <input type="number" id="r_${r.k}" value="${r.v}" min="0" step="100000"></div>`).join('');
 
 /* ---- گزارش متره ---- */
@@ -911,15 +480,11 @@ function report(){
       <td class="num"><span class="wait">بدون الزام</span></td></tr>`).join('');
 
   $('report').innerHTML=
-    `<div class="report-head"><div class="report-head-row">
-      <div><div class="report-brand">گزارش متره و برآورد پوسته حرارتی</div>
-      <div class="report-sub">${esc(CITIES[+$('city').value].c)} — رده اقلیمی ${esc(CITIES[+$('city').value].z)}</div></div>
-     </div></div>
-     <div class="report-body">
+    `<p class="h" style="margin:0 0 18px">${esc(CITIES[+$('city').value].c)} — رده اقلیمی ${esc(CITIES[+$('city').value].z)}</p>
+     <div>
       <div class="kpis">${kpi}</div>
-      <section class="rcat"><h4 class="rcat-head"><span class="rcat-n">۰۱</span>
-        <span class="rcat-t">متره لایه‌ها</span></h4>
-        <table class="report-table"><thead><tr>
+      <section class="rsec"><h4><span>۰۱</span>متره لایه‌ها</h4>
+        <table class=""><thead><tr>
           <th>جداره</th><th>مصالح</th><th class="num">ضخامت (mm)</th>
           <th class="num">مساحت (m²)</th><th class="num">حجم (m³)</th>
           <th class="num">وزن (kg)</th><th class="num">هزینه (تومان)</th>
@@ -928,16 +493,15 @@ function report(){
             <td class="num">${fmt(g.glaz*waste,1)}</td><td class="num">—</td>
             <td class="num">—</td><td class="num">${money(glazCost)}</td></tr>
         </tbody></table>
-        ${noDens?`<p class="hint" style="margin-top:8px">${FA(noDens)} لایه چگالی عددی ندارد و در وزن محاسبه نشده است.</p>`:''}
+        ${noDens?`<p class="h" style="margin-top:8px">${FA(noDens)} لایه چگالی عددی ندارد و در وزن محاسبه نشده است.</p>`:''}
       </section>
-      <section class="rcat"><h4 class="rcat-head"><span class="rcat-n">۰۲</span>
-        <span class="rcat-t">کنترل انطباق با مبحث ۱۹</span></h4>
-        <table class="report-table"><thead><tr>
+      <section class="rsec"><h4><span>۰۲</span>کنترل انطباق با مبحث ۱۹</h4>
+        <table class=""><thead><tr>
           <th>جداره</th><th class="num">حداقل R جدول ۱۹-۵-۱</th>
           <th class="num">R طرح</th><th class="num">نتیجه</th>
         </tr></thead><tbody>${comp}</tbody></table>
       </section>
-      <p class="report-footnote"><b>نرخ‌ها DEMO DATA هستند</b> و از پروژه انرژی‌یار نیامده‌اند؛ پیش از هر استناد با نرخ روز جایگزین شوند.
+      <p class="foot"><b>نرخ‌ها DEMO DATA هستند</b> و از پروژه انرژی‌یار نیامده‌اند؛ پیش از هر استناد با نرخ روز جایگزین شوند.
       مقادیر λ و مقاومت حرارتی از مصالح دارای گواهی‌نامه و پیوست «۷» است. این خروجی برآورد اولیه است و جایگزین متره تفصیلی نیست.</p>
      </div>`;
 }
@@ -977,7 +541,8 @@ function applyWWR(){
 ['floors','hgt','plA','plB'].forEach(id=>$(id).addEventListener('input',renderWins));
 $('wwr').addEventListener('input',()=>{ $('wwrSrc').textContent='مستقیم وارد شده'; renderElements(); });
 
-zoneShow(); initElements(); renderWins(); nav();
+zoneShow(); initElements(); renderWins(); openAll();
+
 </script>
 </body>
 </html>
