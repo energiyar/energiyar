@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>[نسخه مستقل] متره و برآورد پوسته حرارتی | انرژی‌یار</title>
+<title>[نسخه مستقل] متره و برآورد پوسته حرارتی | انرژی یار</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#232A2D; --bg-2:#2B3336; --bg-3:#323B3E;
@@ -29,8 +29,8 @@
   .top{padding:44px 0 26px;border-bottom:1px solid var(--line)}
   .kick{font-size:12px;font-weight:600;letter-spacing:.07em;color:var(--emerald-br);margin:0 0 12px}
   h1{font-size:clamp(25px,3.4vw,34px);font-weight:800;line-height:1.4;letter-spacing:-.015em;
-    margin:0 0 12px;color:#fff;max-width:20ch}
-  .lead{font-size:15px;line-height:1.95;color:var(--ink-soft);max-width:660px;margin:0}
+    margin:0 0 12px;color:#fff;max-width:22ch}
+  .lead{font-size:15px;line-height:1.95;color:var(--ink-soft);max-width:680px;margin:0}
 
   /* آکاردئون */
   .ac{border-bottom:1px solid var(--line)}
@@ -48,11 +48,13 @@
   .ac-body.open{grid-template-rows:1fr}
   .ac-body > div{overflow:hidden;min-height:0}
   .ac-in{padding:4px 2px 30px}
+  .ac.off{display:none}
 
   /* ورودی‌ها */
   .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 20px}
   .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 20px}
-  @media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 20px}
+  @media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr}}
   .f{display:flex;flex-direction:column;gap:7px}
   .f label{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
   .f .h{font-size:11.5px;color:var(--ink-faint);line-height:1.7}
@@ -62,7 +64,11 @@
   input:hover,select:hover{background:var(--bg-3)}
   input:focus,select:focus{outline:none;border-color:var(--emerald);background:var(--bg-3)}
   input[type=number]{font-variant-numeric:tabular-nums}
+  input[type=file]{padding:8px 10px;font-size:12.5px}
   select option,select optgroup{background:var(--bg-2);color:var(--ink)}
+  input[type=checkbox]{width:auto;min-height:0;margin:0}
+  .chk{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-soft);
+    cursor:pointer;padding:8px 0}
 
   /* دکمه‌ها */
   .btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;
@@ -73,9 +79,22 @@
   .btn-g{background:transparent;color:var(--ink-soft);border:1px solid var(--line-str)}
   .btn-g:hover{background:var(--bg-2);color:var(--ink)}
   .btn-s{min-height:36px;padding:0 14px;font-size:12.5px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
   .x{all:unset;cursor:pointer;color:var(--ink-faint);font-size:18px;padding:0 8px;line-height:1}
   .x:hover{color:var(--fail)}
+
+  /* انتخاب حالت */
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 6px}
+  @media(max-width:700px){.modes{grid-template-columns:1fr}}
+  .mode{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:18px 20px;
+    border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
+    transition:border-color .18s,background .18s}
+  .mode:hover{background:var(--bg-3)}
+  .mode[aria-pressed="true"]{border-color:var(--emerald);background:var(--emerald-deep)}
+  .mode .mt{display:block;font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:5px}
+  .mode .md{display:block;font-size:12.5px;color:var(--ink-faint);line-height:1.8}
+  .mode[aria-pressed="true"] .mt{color:#fff}
 
   /* جعبه‌ها */
   .note{background:var(--bg-2);border-inline-start:2px solid var(--emerald);border-radius:0 var(--r-sm) var(--r-sm) 0;
@@ -84,13 +103,26 @@
   .demo{background:var(--amber-bg);border:1px solid rgba(224,169,75,.28);border-radius:var(--r-sm);
     padding:13px 16px;font-size:12.5px;line-height:1.95;color:var(--amber);margin:0 0 18px}
   .demo b{color:#F0C87A}
+  .warn{background:rgba(255,107,82,.09);border:1px solid rgba(255,107,82,.3);border-radius:var(--r-sm);
+    padding:13px 16px;font-size:12.5px;line-height:1.95;color:#FFB4A4;margin:14px 0}
+  .warn b{color:var(--fail)}
 
   table{width:100%;border-collapse:collapse}
   th{font-size:11.5px;font-weight:600;color:var(--ink-faint);text-align:start;
     padding:10px 8px;border-bottom:1px solid var(--line-str)}
   td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)}
   td.num,th.num{text-align:end;font-variant-numeric:tabular-nums}
-  table input{min-height:36px;padding:7px 9px;font-size:13px}
+  table input,table select{min-height:36px;padding:7px 9px;font-size:13px}
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tscroll table{min-width:620px}
+
+  /* نماها */
+  .fac{border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
+    padding:16px 18px;margin-bottom:12px}
+  .fac-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .fac-h select{width:auto;min-width:140px}
+  .fac-h input{width:110px}
+  .fac-s{margin-inline-start:auto;font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
 
   /* جداره‌ها */
   .el{border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
@@ -99,12 +131,26 @@
     padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--line)}
   .el-n{font-size:14.5px;font-weight:700;color:var(--ink)}
   .el-s{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
-  .lay{display:grid;grid-template-columns:2fr .7fr auto;gap:10px;align-items:end;
+  .lay{display:grid;grid-template-columns:1fr 1.6fr .6fr .9fr auto;gap:10px;align-items:end;
     padding:10px 0;border-bottom:1px solid var(--line)}
-  @media(max-width:700px){.lay{grid-template-columns:1fr 1fr}}
+  @media(max-width:900px){.lay{grid-template-columns:1fr 1fr}}
   .ok{color:var(--pass);font-weight:700}
   .no{color:var(--fail);font-weight:700}
   .wait{color:var(--ink-faint);font-weight:600}
+
+  /* مقطع شماتیک */
+  .sect{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .sect-t{font-size:11.5px;font-weight:600;color:var(--ink-faint);margin:0 0 9px}
+  .sect svg{display:block;width:100%;height:auto;border-radius:var(--r-sm);background:#1C2224}
+
+  /* بوم پلان */
+  .canvwrap{position:relative;border:1px solid var(--line-str);border-radius:var(--r);
+    background:#1C2224;overflow:hidden;margin:14px 0}
+  #planCanvas{display:block;width:100%;height:auto;cursor:crosshair;touch-action:none}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px}
+  .step{font-size:12px;padding:7px 12px;border-radius:999px;border:1px solid var(--line-str);
+    color:var(--ink-faint)}
+  .step.on{border-color:var(--emerald);color:var(--emerald-br);background:var(--emerald-deep)}
 
   /* نتیجه */
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 24px}
@@ -118,143 +164,266 @@
     margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line-str)}
   .rsec h4 span{font-size:11.5px;font-weight:600;color:var(--emerald-br)}
   .foot{font-size:12px;line-height:1.95;color:var(--ink-faint);padding:22px 0 50px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <div class="top">
-    <p class="kick">نسخه مستقل برای بررسی · به سایت اضافه نشده</p>
+  <header class="top">
+    <p class="kick">نسخه مستقل — برای بررسی، هنوز به سایت اضافه نشده</p>
     <h1>متره و برآورد پوسته حرارتی</h1>
-    <p class="lead">مساحت، حجم و وزن لایه‌های جداره را از روی ابعاد ساختمان حساب می‌کند، با مصالح دارای گواهی‌نامه، و در کنار آن انطباق با حداقل مقاومت حرارتی مبحث ۱۹ را کنترل می‌کند.</p>
-  </div>
+    <p class="lead">مساحت، حجم و وزن لایه‌های پوسته را بر پایه نماهای واقعی ساختمان حساب می‌کند،
+      کسر بازشوها و سازه را جدا از هم در نظر می‌گیرد، و انطباق هر جداره را با حداقل مقاومت حرارتی
+      جدول ۱۹-۵-۱ کنترل می‌کند.</p>
+  </header>
 
   <!-- ۰۱ -->
-  <div class="ac">
-    <button class="ac-head" type="button" data-sec="sec-geo" aria-expanded="true" onclick="toggleSec('sec-geo',this)">
-      <span class="ac-n">۰۱</span><span class="ac-t">مشخصات پروژه<span class="ac-sub"> — ابعاد و اقلیم</span></span>
-      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  <section class="ac">
+    <button class="ac-head" aria-expanded="true" onclick="toggleSec('sec-mode',this)">
+      <span class="ac-n">۰۱</span><span class="ac-t">حالت محاسبه و مشخصات پروژه</span>
+      <span class="ac-sub" id="subMode">حالت دقیق</span>
+      <svg class="ac-ch" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <div class="ac-body" id="sec-geo"><div><div class="ac-in">
-      <div class="g3">
-        <div class="f"><label for="city">شهر پروژه</label><select id="city"></select>
-          <span class="h" id="zoneOut"></span></div>
-        <div class="f"><label for="floors">تعداد طبقات</label><input type="number" id="floors" value="4" min="1" step="1"></div>
-        <div class="f"><label for="hgt">ارتفاع هر طبقه (m)</label><input type="number" id="hgt" value="3" min="2" step="0.1"></div>
-        <div class="f"><label for="plA">طول پلان (m)</label><input type="number" id="plA" value="18" min="1" step="0.5"></div>
-        <div class="f"><label for="plB">عرض پلان (m)</label><input type="number" id="plB" value="12" min="1" step="0.5"></div>
-        <div class="f"><label for="wwr">نسبت بازشو به دیوار (%)</label><input type="number" id="wwr" value="25" min="0" max="90" step="1">
-          <span class="h" id="wwrSrc">مستقیم وارد شده</span></div>
+    <div class="ac-body open" id="sec-mode"><div><div class="ac-in">
+
+      <div class="modes">
+        <button class="mode" id="mExact" aria-pressed="true" onclick="setMode('exact')">
+          <span class="mt">حالت دقیق — نما به نما</span>
+          <span class="md">طول هر نما و بازشوهای همان نما را وارد می‌کنید. برای پلان‌های غیرمستطیل و
+            ساختمان‌هایی با شکست زیاد مناسب است.</span>
+        </button>
+        <button class="mode" id="mSimple" aria-pressed="false" onclick="setMode('simple')">
+          <span class="mt">حالت ساده — تقریبی</span>
+          <span class="md">فقط زیربنای کل را وارد می‌کنید و یک برآورد تقریبی می‌گیرید.
+            برای کاربر غیرمتخصص و شناخت اولیه.</span>
+        </button>
       </div>
+
+      <div class="warn" id="simpleWarn" style="display:none">
+        <b>این حالت تقریبی است.</b> پلان فرضی جمع‌وجور و مربع در نظر گرفته می‌شود
+        (محیط = ۴√مساحت طبقه)، کسر ستون و دیوار برشی انجام نمی‌شود و بازشوها با یک نسبت
+        یکنواخت حساب می‌شوند. خروجی برای شناخت اولیه است، نه برای برآورد قرارداد یا ارائه به مرجع.
+      </div>
+
+      <div class="g3" style="margin-top:20px">
+        <div class="f">
+          <label for="city">شهر پروژه</label>
+          <select id="city"></select>
+          <span class="h" id="zoneOut"></span>
+        </div>
+        <div class="f">
+          <label for="floors">تعداد طبقات</label>
+          <input id="floors" type="number" min="1" step="1" value="5">
+          <span class="h">طبقه‌های گرم‌شونده روی هم</span>
+        </div>
+        <div class="f">
+          <label for="hgt">ارتفاع هر طبقه (m)</label>
+          <input id="hgt" type="number" min="2" step="0.05" value="3.2">
+          <span class="h">از کف تا کف</span>
+        </div>
+      </div>
+
+      <div class="g3" id="simpleInputs" style="display:none;margin-top:4px">
+        <div class="f">
+          <label for="totalArea">زیربنای کل (m²)</label>
+          <input id="totalArea" type="number" min="0" step="1" value="1000">
+          <span class="h">مجموع مساحت همه طبقات</span>
+        </div>
+        <div class="f">
+          <label for="wwrSimple">نسبت بازشو به دیوار (%)</label>
+          <input id="wwrSimple" type="number" min="0" max="90" step="1" value="20">
+          <span class="h">یکنواخت روی همه نماها</span>
+        </div>
+      </div>
+
+      <div class="g3" id="exactInputs" style="margin-top:4px">
+        <div class="f">
+          <label for="planArea">مساحت پلان یک طبقه (m²)</label>
+          <input id="planArea" type="number" min="0" step="0.1" value="200">
+          <span class="h">از روی پلان برداشت شود؛ از محیط قابل استخراج نیست</span>
+        </div>
+      </div>
+
       <div class="note" id="geoSum"></div>
     </div></div></div>
-  </div>
+  </section>
 
   <!-- ۰۲ -->
-  <div class="ac">
-    <button class="ac-head" type="button" data-sec="sec-win" aria-expanded="true" onclick="toggleSec('sec-win',this)">
-      <span class="ac-n">۰۲</span><span class="ac-t">محاسبه نسبت بازشو<span class="ac-sub"> — از روی ابعاد واقعی</span></span>
-      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  <section class="ac" id="acFac">
+    <button class="ac-head" aria-expanded="true" onclick="toggleSec('sec-fac',this)">
+      <span class="ac-n">۰۲</span><span class="ac-t">نماها و بازشوها</span>
+      <span class="ac-sub" id="subFac"></span>
+      <svg class="ac-ch" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <div class="ac-body" id="sec-win"><div><div class="ac-in">
-      <table>
-        <thead><tr><th style="width:28%">نوع بازشو</th><th class="num">عرض (m)</th><th class="num">ارتفاع (m)</th>
-          <th class="num">تعداد</th><th class="num">مساحت (m²)</th><th style="width:5%"></th></tr></thead>
-        <tbody id="winRows"></tbody>
-      </table>
+    <div class="ac-body open" id="sec-fac"><div><div class="ac-in">
+
+      <p class="note">هر ضلع بیرونی پلان یک ردیف است. برای پلان‌هایی که شکست دارند،
+        هر قطعه را با جهت خودش اضافه کنید — جهت نما هم در مساحت و هم در نسبت بازشو اثر دارد.</p>
+
+      <label class="chk">
+        <input type="checkbox" id="winPerFloor" checked>
+        <span>بازشوها برای <b>یک طبقه نمونه</b> وارد شده‌اند و در تعداد طبقات ضرب می‌شوند
+          (اگر مجموع کل ساختمان را وارد می‌کنید، این را بردارید)</span>
+      </label>
+
+      <div id="facList"></div>
       <div class="row">
-        <button class="btn btn-g btn-s" type="button" onclick="addWin()">+ افزودن بازشو</button>
-        <button class="btn btn-p btn-s" type="button" onclick="applyWWR()">اعمال نسبت محاسبه‌شده ←</button>
+        <button class="btn btn-g btn-s" onclick="addFacade()">+ افزودن نما</button>
+        <button class="btn btn-g btn-s" onclick="resetFacades()">بازگشت به چهار نمای پیش‌فرض</button>
       </div>
-      <div class="note" id="winSum"></div>
+
+      <div style="margin-top:28px;padding-top:22px;border-top:1px solid var(--line-str)">
+        <p class="sect-t" style="font-size:13px;color:var(--ink);font-weight:700;margin-bottom:6px">
+          ساخت نماها از روی تصویر پلان</p>
+        <p class="h" style="font-size:12.5px;color:var(--ink-faint);line-height:1.9;margin:0 0 14px">
+          تصویر پلان را بارگذاری کنید، با دو کلیک یک اندازه معلوم را به‌عنوان مقیاس معرفی کنید،
+          سپس روی گوشه‌های محیط بیرونی کلیک کنید. طول و جهت هر ضلع و مساحت پلان خودکار حساب می‌شود.
+          <b style="color:var(--ink-soft)">تشخیص خودکار انجام نمی‌شود؛ گوشه‌ها را خودتان تأیید می‌کنید.</b>
+        </p>
+
+        <div class="g3">
+          <div class="f">
+            <label for="planImg">تصویر پلان</label>
+            <input id="planImg" type="file" accept="image/*">
+          </div>
+          <div class="f">
+            <label for="northDeg">زاویه شمال نسبت به بالای تصویر (°)</label>
+            <input id="northDeg" type="number" step="1" value="0">
+            <span class="h">اگر فلش شمال به بالا است، صفر بماند</span>
+          </div>
+          <div class="f">
+            <label for="scaleLen">اندازه واقعی خط مقیاس (m)</label>
+            <input id="scaleLen" type="number" min="0" step="0.01" value="10">
+            <span class="h">طول واقعی دو نقطه‌ای که کلیک می‌کنید</span>
+          </div>
+        </div>
+
+        <div class="steps">
+          <span class="step" id="st1">۱ — بارگذاری تصویر</span>
+          <span class="step" id="st2">۲ — دو کلیک برای مقیاس</span>
+          <span class="step" id="st3">۳ — کلیک روی گوشه‌ها</span>
+        </div>
+
+        <div class="canvwrap"><canvas id="planCanvas" width="900" height="520"></canvas></div>
+
+        <div class="row">
+          <button class="btn btn-g btn-s" id="btnScale" onclick="setTraceMode('scale')" disabled>تعیین مقیاس</button>
+          <button class="btn btn-g btn-s" id="btnTrace" onclick="setTraceMode('trace')" disabled>شروع ترسیم محیط</button>
+          <button class="btn btn-g btn-s" onclick="undoPt()">واگرد آخرین نقطه</button>
+          <button class="btn btn-g btn-s" onclick="clearTrace()">پاک کردن</button>
+          <button class="btn btn-p btn-s" id="btnApply" onclick="applyTrace()" disabled>ساخت نماها از این پلان</button>
+        </div>
+        <p class="h" id="traceOut" style="margin-top:12px;font-size:12.5px"></p>
+      </div>
+
     </div></div></div>
-  </div>
+  </section>
 
   <!-- ۰۳ -->
-  <div class="ac">
-    <button class="ac-head" type="button" data-sec="sec-el" aria-expanded="true" onclick="toggleSec('sec-el',this)">
-      <span class="ac-n">۰۳</span><span class="ac-t">جداره‌ها و لایه‌ها<span class="ac-sub"> — ترکیب هر جداره</span></span>
-      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  <section class="ac" id="acStruct">
+    <button class="ac-head" aria-expanded="false" onclick="toggleSec('sec-struct',this)">
+      <span class="ac-n">۰۳</span><span class="ac-t">ستون و دیوار برشی در صفحه نما</span>
+      <span class="ac-sub" id="subStruct"></span>
+      <svg class="ac-ch" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <div class="ac-body" id="sec-el"><div><div class="ac-in">
-      <div id="elements"></div>
+    <div class="ac-body" id="sec-struct"><div><div class="ac-in">
+
+      <p class="note"><b>این سطح از همه لایه‌ها کسر نمی‌شود.</b>
+        جایی که ستون یا دیوار برشی هست، بلوک و آجر اجرا نمی‌شود، پس از متره <b>مصالح بنایی</b> کسر می‌شود.
+        اما عایق حرارتی طبق مبحث ۱۹ باید پیوسته و از روی ستون عبور کند، پس از متره <b>عایق</b> کسر نمی‌شود.
+        مبنای هر لایه در بخش ۰۴ جداگانه قابل تنظیم است.</p>
+
+      <div class="tscroll">
+        <table>
+          <thead><tr>
+            <th>نوع</th><th class="num">عرض (m)</th><th class="num">ارتفاع (m)</th>
+            <th class="num">تعداد</th><th class="num">مساحت (m²)</th><th></th>
+          </tr></thead>
+          <tbody id="structBody"></tbody>
+        </table>
+      </div>
+      <div class="row">
+        <button class="btn btn-g btn-s" onclick="addStruct('ستون')">+ ستون</button>
+        <button class="btn btn-g btn-s" onclick="addStruct('دیوار برشی')">+ دیوار برشی</button>
+      </div>
+
+      <div id="bridgeBox"></div>
+
     </div></div></div>
-  </div>
+  </section>
 
   <!-- ۰۴ -->
-  <div class="ac">
-    <button class="ac-head" type="button" data-sec="sec-rate" aria-expanded="false" onclick="toggleSec('sec-rate',this)">
-      <span class="ac-n">۰۴</span><span class="ac-t">نرخ‌ها<span class="ac-sub"> — مصالح و اجرا</span></span>
-      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  <section class="ac">
+    <button class="ac-head" aria-expanded="true" onclick="toggleSec('sec-el',this)">
+      <span class="ac-n">۰۴</span><span class="ac-t">جداره‌ها و لایه‌ها</span>
+      <span class="ac-sub">ترکیب هر جداره</span>
+      <svg class="ac-ch" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <div class="ac-body" id="sec-rate"><div><div class="ac-in">
-      <div class="demo"><b>DEMO DATA —</b> هیچ نرخ واقعی در پروژه انرژی‌یار وجود ندارد. اعداد زیر نمونه‌اند و <b>مرجع نیستند</b>. پیش از استفاده، نرخ روز را جایگزین کنید.</div>
-      <div class="g3" id="rates"></div>
-      <div class="f" style="max-width:300px;margin-top:18px">
-        <label for="waste">ضریب پرت اجرا (%)</label>
-        <input type="number" id="waste" value="7" min="0" max="40" step="1">
-        <span class="h">DEMO — مقدار متعارف ۵ تا ۱۰٪</span>
+    <div class="ac-body open" id="sec-el"><div><div class="ac-in">
+      <div class="demo"><b>داده نمونه:</b> ترکیب و ضخامت پیش‌فرض لایه‌ها فقط نقطه شروع است و
+        از هیچ پروژه واقعی نیامده. پیش از استفاده، لایه‌ها را با جزئیات پروژه خودتان جایگزین کنید.</div>
+      <div id="elList"></div>
+      <div class="row">
+        <select id="addSel" style="max-width:360px"></select>
+        <button class="btn btn-g btn-s" onclick="addElement()">+ افزودن جداره</button>
       </div>
     </div></div></div>
-  </div>
+  </section>
 
   <!-- ۰۵ -->
-  <div class="ac">
-    <button class="ac-head" type="button" data-sec="sec-report" aria-expanded="false" onclick="toggleSec('sec-report',this)">
-      <span class="ac-n">۰۵</span><span class="ac-t">گزارش متره<span class="ac-sub"> — مقادیر، هزینه و کنترل انطباق</span></span>
-      <svg class="ac-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  <section class="ac">
+    <button class="ac-head" aria-expanded="false" onclick="toggleSec('sec-rate',this)">
+      <span class="ac-n">۰۵</span><span class="ac-t">نرخ‌ها</span>
+      <span class="ac-sub">مصالح و اجرا</span>
+      <svg class="ac-ch" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ac-body" id="sec-rate"><div><div class="ac-in">
+      <div class="demo"><b>داده نمونه — جایگزین کنید.</b> این نرخ‌ها ساختگی‌اند و هیچ مرجعی ندارند.
+        تا وقتی با نرخ روز پروژه عوض نشوند، عددهای هزینه در گزارش بی‌معنا هستند.</div>
+      <div class="g2" id="rateBox"></div>
+      <div class="f" style="margin-top:18px;max-width:320px">
+        <label for="waste">ضریب پرت اجرا (%)</label>
+        <input id="waste" type="number" min="0" max="50" step="1" value="5">
+      </div>
+    </div></div></div>
+  </section>
+
+  <!-- ۰۶ -->
+  <section class="ac">
+    <button class="ac-head" aria-expanded="false" onclick="toggleSec('sec-report',this)">
+      <span class="ac-n">۰۶</span><span class="ac-t">گزارش متره</span>
+      <span class="ac-sub">مقادیر، هزینه و کنترل انطباق</span>
+      <svg class="ac-ch" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ac-body" id="sec-report"><div><div class="ac-in">
-      <div id="report"></div>
+      <div class="row" style="margin:0 0 20px">
+        <button class="btn btn-p" onclick="report()">محاسبه و به‌روزرسانی گزارش</button>
+        <button class="btn btn-g" onclick="window.print()">چاپ</button>
+      </div>
+      <div id="out"></div>
     </div></div></div>
-  </div>
+  </section>
 
-  <div class="row" style="margin:26px 0 0">
-    <button class="btn btn-p" type="button" onclick="openReport()">مشاهده گزارش متره ←</button>
-    <button class="btn btn-g" type="button" onclick="window.print()">چاپ / PDF</button>
-  </div>
-
-  <p class="foot">نسخه مستقل برای بررسی — هیچ تغییری در سایت انرژی‌یار داده نشده است.</p>
+  <p class="foot">
+    نسخه مستقل برای بررسی — به سایت انرژی یار اضافه نشده است.<br>
+    حداقل مقاومت حرارتی از جدول ۱۹-۵-۱ مبحث ۱۹ ویرایش پنجم؛ رده اقلیمی شهرها از پیوست «۲»؛
+    ضرایب هدایت حرارتی از پیوست «۷» و گواهی‌نامه‌های فنی مرکز تحقیقات راه، مسکن و شهرسازی.<br>
+    نرخ‌ها و ترکیب پیش‌فرض لایه‌ها داده نمونه‌اند و مرجع نیستند.
+  </p>
 </div>
 
 <script>
 
-/* ---- آکاردئون ---- */
-function toggleSec(id, btn){
-  const b=document.getElementById(id);
-  const open=b.classList.toggle('open');
-  btn.setAttribute('aria-expanded', String(open));
-  if(id==='sec-report' && open) report();
-}
-function openAll(){
-  ['sec-geo','sec-win','sec-el'].forEach(id=>document.getElementById(id).classList.add('open'));
-  document.querySelectorAll('.ac-head').forEach(b=>{
-    const t=document.getElementById(b.dataset.sec);
-    b.setAttribute('aria-expanded', String(t.classList.contains('open')));
-  });
-}
-function openReport(){
-  const b=document.getElementById('sec-report');
-  b.classList.add('open');
-  document.querySelector('[data-sec="sec-report"]').setAttribute('aria-expanded','true');
-  report();
-  b.scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-/* ============================================================
-   داده‌های استفاده‌شده
-   REUSED  : materials.json (۸۵ محصول گواهی‌نامه‌دار، تاریخ‌نگذشته)
-   REUSED  : R_TABLE و R_COLS و ZONE_MAP از tools/ayegh.html
-   REUSED  : MATS (مقادیر عمومی پیوست ۷) از tools/ayegh.html
-   REUSED  : فهرست شهرها و رده اقلیمی از solar-cities.json
-   DEMO    : نرخ‌ها، ضریب پرت، ضخامت‌های پیش‌فرض لایه‌ها
-   ============================================================ */
+/* ======== داده‌های مرجع (بدون تغییر از نسخه قبل) ======== */
 const R_COLS  = ["0B","1B","2A/2B","3A/3B","4A/4B","5B/5C"];
 const R_TABLE = [{"e":"دیوار خارجی مجاور فضای باز","v":[1.09,1.16,1.16,1.43,1.69,1.96]},{"e":"دیوار مجاور فضای نیمه‌باز کنترل‌نشده","v":[0.91,0.97,0.97,1.19,1.41,1.64]},{"e":"دیوار مجاور خاک","v":[0.15,0.15,0.15,0.15,1.47,1.47]},{"e":"سقف مجاور فضای آزاد","v":[3.7,3.7,4.55,4.55,5.56,5.56]},{"e":"سقف مجاور فضای نیمه‌باز کنترل‌نشده","v":[3.13,3.13,3.85,3.85,4.55,4.55]},{"e":"کف مجاور هوای آزاد","v":[0.51,0.55,1.64,2.38,3.13,3.45]},{"e":"کف مجاور فضای نیمه‌باز کنترل‌نشده","v":[0.43,0.45,1.37,2.0,2.63,2.86]},{"e":"کف مجاور خاک","v":[0.26,0.26,0.27,0.27,0.28,0.28]}];
 const ZONE_MAP= {"0B":"0B","1B":"1B","2A":"2A/2B","2B":"2A/2B","3A":"3A/3B","3B":"3A/3B","4A":"4A/4B","4B":"4A/4B","5B":"5B/5C","5C":"5B/5C"};
 const MATS_GEN= [{"n":"اندود و ملات سیمانی متراکم (وزن مخصوص بیش از ۲۰۰۰)","c":1.8,"d":2000,"cat":"بتن و بنایی","cf":"official"},{"n":"اندود و ملات آهکی یا سیمانی معمولی (۱۸۰۰ تا ۲۰۰۰)","c":1.3,"d":1900,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن با سنگدانه متداول - متراکم (۲۳۰۰ تا ۲۶۰۰)","c":2.0,"d":2450,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن با سنگدانه متداول - متخلخل (۱۸۰۰ تا ۲۰۰۰)","c":1.15,"d":1900,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۸۰۰)","c":0.29,"d":800,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۷۵۰)","c":0.27,"d":750,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۷۰۰)","c":0.25,"d":700,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۶۵۰)","c":0.23,"d":650,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۶۰۰)","c":0.21,"d":600,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۵۵۰)","c":0.19,"d":550,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۵۰۰)","c":0.18,"d":500,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۴۵۰)","c":0.16,"d":450,"cat":"بتن و بنایی","cf":"official"},{"n":"بتن هوادار اتوکلاوشده AAC (چگالی اسمی ۴۰۰)","c":0.15,"d":400,"cat":"بتن و بنایی","cf":"official"},{"n":"سفال و کاشی (چگالی اسمی حدود ۱۶۰۰)","c":0.6,"d":1600,"cat":"بتن و بنایی","cf":"official"},{"n":"سفال و کاشی سبک (چگالی کمتر از ۱۰۰۰)","c":0.34,"d":900,"cat":"بتن و بنایی","cf":"official"},{"n":"بلوک سیمانی","c":1.0,"d":1400,"cat":"بتن و بنایی","cf":"est"},{"n":"گچ اندود داخلی (زنده یا کشته) — چگالی ۱۰۰۰ تا ۱۳۰۰","c":0.57,"d":1150,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ اندود داخلی — چگالی کمتر از ۱۰۰۰","c":0.4,"d":900,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ سخت با حداقل میزان آب لازم (۱۲۰۰ تا ۱۵۰۰)","c":0.56,"d":1350,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ (۹۰۰ تا ۱۲۰۰)","c":0.43,"d":1050,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ و خاک (۱۳۰۰ تا ۱۷۰۰)","c":1.1,"d":1500,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ قطعات پیش‌ساخته گچی با روکش مقوایی (۷۵۰ تا ۹۰۰)","c":0.25,"d":825,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ با سبک‌دانه یا الیاف معدنی / روکش مقوایی ضدآتش (۸۰۰ تا ۱۰۰۰)","c":0.25,"d":900,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ اندود با پرلیت یا ورمیکولیت — یک حجم برای یک حجم گچ","c":0.3,"d":750,"cat":"بتن و بنایی","cf":"official"},{"n":"گچ اندود با پرلیت یا ورمیکولیت — دو حجم برای یک حجم گچ","c":0.18,"d":550,"cat":"بتن و بنایی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۵ تا ۲۵)","c":0.05,"d":20,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۲۵ تا ۴۰)","c":0.044,"d":32,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۴۰ تا ۱۰۰)","c":0.042,"d":70,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۰۰ تا ۱۲۵)","c":0.044,"d":112,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۲۵ تا ۱۵۰)","c":0.046,"d":137,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۵۰ تا ۱۷۵)","c":0.047,"d":162,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌سنگ (چگالی ۱۷۵ تا ۲۰۰)","c":0.048,"d":187,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۷ تا ۱۰)","c":0.055,"d":8,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۱۰ تا ۱۵)","c":0.047,"d":12,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۱۵ تا ۲۰)","c":0.044,"d":17,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۲۰ تا ۳۰)","c":0.041,"d":25,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۳۰ تا ۴۰)","c":0.039,"d":35,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۴۰ تا ۸۰)","c":0.038,"d":60,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۸۰ تا ۱۲۰)","c":0.039,"d":100,"cat":"عایق حرارتی","cf":"official"},{"n":"پشم‌شیشه (چگالی ۱۲۰ تا ۱۵۰)","c":0.04,"d":135,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۷ تا ۱۰)","c":0.056,"d":8,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۰ تا ۱۳)","c":0.05,"d":11,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۳ تا ۱۵)","c":0.047,"d":14,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۵ تا ۱۹)","c":0.044,"d":17,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۱۹ تا ۲۴)","c":0.042,"d":21,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۲۴ تا ۲۹)","c":0.04,"d":26,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی ۲۹ تا ۴۰)","c":0.039,"d":34,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن منبسط EPS (چگالی بیش از ۴۰)","c":0.038,"d":45,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن اکسترود XPS — حفره هوا/گاز کربنیک، ضخامت ≤ ۶۰ میلی‌متر","c":0.041,"d":34,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن اکسترود XPS — حفره هوا/گاز کربنیک، ضخامت > ۶۰ میلی‌متر","c":0.046,"d":34,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌استایرن اکسترود XPS — با گاز HCFC","c":0.035,"d":32,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — صفحات ممتد، پوشش انعطاف‌پذیر نفوذپذیر","c":0.035,"d":33,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — صفحات ممتد، پوشش انعطاف‌پذیر آلومینیومی (> ۵۰ میکرون)","c":0.03,"d":33,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — صفحات برش‌خورده از بلوک","c":0.041,"d":50,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — تزریق‌شده بین دو ورق فلزی، منبسط با HCFC/پنتان","c":0.032,"d":48,"cat":"عایق حرارتی","cf":"official"},{"n":"اسفنج پلی‌یورتان — تزریق‌شده بین دو ورق فلزی، هوا یا گاز کربنیک","c":0.035,"d":48,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌وینیل کلراید PVC منبسط‌شده (چگالی ۲۵ تا ۳۵)","c":0.031,"d":30,"cat":"عایق حرارتی","cf":"official"},{"n":"پلی‌وینیل کلراید PVC منبسط‌شده (چگالی ۳۵ تا ۴۸)","c":0.034,"d":41,"cat":"عایق حرارتی","cf":"official"},{"n":"چوب طبیعی (چگالی متوسط)","c":0.15,"d":600,"cat":"چوب و مشتقات","cf":"official"},{"n":"تخته OSB (صفحات با تراشه‌های جهت‌یافته)","c":0.13,"d":650,"cat":"چوب و مشتقات","cf":"official"},{"n":"پلی وینیل کلراید PVC","c":0.17,"d":1390,"cat":"پلاستیک و پلیمر","cf":"official"},{"n":"پلی متیل متاکریلات PMMA (پلکسی‌گلاس)","c":0.18,"d":1180,"cat":"پلاستیک و پلیمر","cf":"official"},{"n":"شیشه","c":1.1,"d":2700,"cat":"سایر","cf":"official"},{"n":"اسفنج شیشه (شیشه متخلخل، چگالی ۱۲۰ تا ۱۳۰)","c":0.05,"d":125,"cat":"عایق حرارتی","cf":"official"},{"n":"فولاد","c":52.0,"d":7780,"cat":"فلزات","cf":"official"},{"n":"آلومینیوم","c":230.0,"d":2700,"cat":"فلزات","cf":"official"},{"n":"آلومینیوم آلیاژی سخت","c":160.0,"d":2800,"cat":"فلزات","cf":"official"},{"n":"مس","c":380.0,"d":8930,"cat":"فلزات","cf":"official"},{"n":"برنج","c":120.0,"d":8400,"cat":"فلزات","cf":"official"},{"n":"روی","c":110.0,"d":7200,"cat":"فلزات","cf":"official"},{"n":"آهن خالص","c":72.0,"d":7870,"cat":"فلزات","cf":"official"},{"n":"چدن","c":56.0,"d":7500,"cat":"فلزات","cf":"official"}];
 const CERT    = [{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی بهب — لیکا","lam":0.069,"cat":"اندود","d":250.0,"cert":1},{"n":"اندود گچ ساختمانی سبک وزن با عملکرد حرارتی بهبود — گیلان میکا","lam":0.071,"cat":"اندود","d":322.0,"cert":1},{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی بهب — سازه پوشش کانی","lam":0.081,"cat":"اندود","d":415.0,"cert":1},{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی بهب — گیلان میکا","lam":0.083,"cat":"اندود","d":457.0,"cert":1},{"n":"ملات سبک (رده LW) با مقاومت حرارتی بهبود یافته   — رامان فیدار سازه","lam":0.085,"cat":"اندود","d":333.0,"cert":1},{"n":"ملات اندودکاری سبک (رده LW) با عملکرد حرارتی معم — شورلول ایرانیان","lam":0.14,"cat":"اندود","d":790.0,"cert":1},{"n":"بلوکهای بتنی سبک هوادار اتوکلاو شده — صنایع معادن و عمران رضوی (بیرجند)","lam":0.1217,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك های بتنی سبک هوادار اتوکلاو شده — صنایع معادن و عمران رضوی","lam":0.1418,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک هوادار اتوکلاوشده، با نام تجاري SI — سیلیس‌آرا","lam":0.149,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک هوادار اتوکلاو شده (AAC)؛ — تعاونی یاسین گستر ایساتیس","lam":0.1503,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک هوادار اتوکلاو شده (AAC)؛ — تعاونی یاسین گستر ایساتیس","lam":0.1518,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبك هوادار اتوکلاوشده غیرباربر (AAC-2) — صنایع خاک چینی ایران","lam":0.1596,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبك ديواري مجوف غيرباربر سه‌جداره، پنج — افق فردای پاسارگاد","lam":0.2628,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك سبك سيماني مجوف غيرباربر سه جداره پنج ‌سورا — تک سامان هور","lam":0.3641,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبكدانه مجوف غيرباربر سه جداره پنج ‌سو — گروه تک سامان هور","lam":0.3777,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"بلوك بتنی سبک دیواري مجوف غیرباربر دوجداره سه سو — افق فرداي پاسارگاد","lam":0.5,"cat":"بلوک بتنی","d":null,"cert":1},{"n":"پانل سفالی غیرباربر با سوراخ‌های افقی در اندازه‌ — آجرماشینی هادیان","lam":0.2574,"cat":"بلوک سفالی","d":null,"cert":1},{"n":"بلوک سفالی غیرباربر با سوراخ‌های افقی در اندازه  — تولیدی آجر سوفالین","lam":0.3077,"cat":"بلوک سفالی","d":null,"cert":1},{"n":"بلوک سفالی دیواری با سوراخ‌های قائم و چگالی کم ( — تولیدی و بازرگانی کیان بهساز","lam":0.3906,"cat":"بلوک سفالی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توپر در اندازه‎ه — ابنیه بیکران فرخ پی","lam":0.1323,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار ‌جداره همرا — آبادی گستران طرح روز","lam":0.142,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر چهار جداره در ا — ایستا سازه مرکزی","lam":0.1784,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — گروه تولیدی آذربان بلوک","lam":0.2216,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك  سيماني سبک ديواري غيرباربر توخالی ته‌پر با — لیکا","lam":0.2331,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك  سيماني سبک ديواري غيرباربر توخالی ته‌پر با — لیکا","lam":0.2365,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك  سيماني سبک ديواري غيرباربر توخالی ته‌پر با — لیکا","lam":0.2378,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — مصالح چی دند آذربایجان","lam":0.2404,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — کهکشان بلوک","lam":0.2423,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره در اند — ایستا سازه مرکزی","lam":0.2459,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره با یک  — ایستا سازه مرکزی","lam":0.2525,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی سه جداره  — سیروان اطلس کسری","lam":0.2534,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جدار در انداز — قطعات بتنی عمرانی اذین صنعت","lam":0.256,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — پایتخت اقتصادی ایرانیان","lam":0.2573,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — کهکشان بلوک","lam":0.265,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره در اند — فاخر صنعت آرتا","lam":0.266,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره در اند — بلوک سبک صفابخش","lam":0.2712,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — سهند بتن ایرانیان","lam":0.2747,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه‌جداره در اندا — قطعات بتنی نفیس پارت بینالود","lam":0.2799,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهار جداره در ان — خاک بتن زرین سبلان","lam":0.283,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی چهار جدار — قطعات بتن سبک دلیر","lam":0.2874,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوك بتنی سبکدانه مجوف دیواری غيرباربر سه جداره  — نوین سبک‌ساز سبلان","lam":0.2894,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — قطعات بتنی آرش رهگذر","lam":0.2953,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر توخالی و سه جدا — آسیا بلوک غرب","lam":0.297,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — مشهد بتن ساز پارس","lam":0.2982,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — لیدا بتن شرق","lam":0.2994,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — آشیانه ققنوس باختر","lam":0.3151,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک سه جداره در اندازه های اسمی(20×1 — فرآورده های اترک بلوک","lam":0.3178,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی چهار جدار — سیوان اطلس کسری","lam":0.3356,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — مصالح ساختمانی سپاهان خشت ابهر","lam":0.3371,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — مبتکران سازه پرشیا","lam":0.3401,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — طوس خراسان","lam":0.3425,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیربار سه جداره در اندازه — ساروج بنای افق شرق","lam":0.344,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — تواره توس","lam":0.3513,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی سه جداره  — نوین عیار بتن بهپویان","lam":0.3513,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توپر در اندازه‌ه — پویان پوشش فرانگر","lam":0.3538,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر چهارجداره در اند — فاخر صنعت آرتا","lam":0.3538,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه جداره در اندا — آروین ساران غرب","lam":0.3704,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر توخالی و سه‌جدار — بنیاد بتن خراسان","lam":0.3817,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر سه‌جداره در اندا — تولیدی معدنی پوکه صنعتی الیکا","lam":0.3827,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر دو‌جداره در اندا — تولیدی معدنی پوکه صنعتی الیکا","lam":0.3977,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیر باربر سه جداره با کار — صنعتی و تولیدی آژند","lam":0.4043,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"بلوک سیمانی سبک دیواری غیرباربر دو جداره در اندا — طوس خراسان","lam":0.4274,"cat":"بلوک سیمانی","d":null,"cert":1},{"n":"عایق حرارتی تخته‌ای فوم پلی‌یورتان PIR با روکش آ — اینسولیشن پارس","lam":0.0212,"cat":"عایق حرارتی","d":55.0,"cert":1},{"n":"عایق حرارتی فوم الاستومری انعطاف پذیر رولی از جن — مهندسین سامان تهویه ایرانیان","lam":0.0324,"cat":"عایق حرارتی","d":33.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0325,"cat":"عایق حرارتی","d":40.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0332,"cat":"عایق حرارتی","d":40.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0332,"cat":"عایق حرارتی","d":41.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0333,"cat":"عایق حرارتی","d":39.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0333,"cat":"عایق حرارتی","d":39.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0335,"cat":"عایق حرارتی","d":42.0,"cert":1},{"n":"عایق حرارتی لوله‌ای فوم الاستومری از نوع NBR به  — سازه پايدار الهيه","lam":0.0338,"cat":"عایق حرارتی","d":58.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0338,"cat":"عایق حرارتی","d":46.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.0338,"cat":"عایق حرارتی","d":46.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — فراز ماهان عایق پایدار","lam":0.034,"cat":"عایق حرارتی","d":42.0,"cert":1},{"n":"عایق حرارتی پشم سرباره تخته‌ای در اندازه‌های اسم — نگین عایق پوشش پارسیان","lam":0.0341,"cat":"عایق حرارتی","d":76.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — سازه پایدار الهیه","lam":0.0342,"cat":"عایق حرارتی","d":55.0,"cert":1},{"n":"سامانه مرکب عایق حرارتی بیرونی (ETICS) با نام تج — رهاورد ساختار اصیل","lam":0.0349,"cat":"عایق حرارتی","d":null,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — سازه پايدار الهيه","lam":0.0352,"cat":"عایق حرارتی","d":47.0,"cert":1},{"n":"عایق حرارتی فوم الاستومری رولی از نوع NBR در اند — مهراد لاستیک صنعت آریا","lam":0.0377,"cat":"عایق حرارتی","d":56.0,"cert":1},{"n":"عایق حرارتی رولی فوم الاستومری قابل انعطاف از نو — گروه صنعتی سانا عایق","lam":0.041,"cat":"عایق حرارتی","d":59.0,"cert":1},{"n":"فوم الاستومری NBR با ضخامت‌های 10، 15 میلی‌متر و — گروه صنعتی سانا عایق","lam":0.0607,"cat":"عایق حرارتی","d":428.0,"cert":1},{"n":"سبکدانه رس منبسط شده در اندازه اسمی 4-10 میلی‌مت — لیکا","lam":0.087,"cat":"عایق حرارتی","d":null,"cert":1},{"n":"بلوک سقفی پروفیل دار از جنس پلی استایرن منبسط شد — فرآورده های پیشرفته ساختمانی","lam":0.0339,"cat":"قالب ماندگار","d":null,"cert":1},{"n":"ساندویچ پانل با جداره از جنس بتن سبک، مسلح به می — مشاوره و بهسازی عمران و ساختمان مکان‌ساز پویا","lam":0.0827,"cat":"پانل","d":null,"cert":1},{"n":"پانل‌های سفالی غیرباربر با سوراخ‌های افقی در اند — آجر مهدیه نو ذاکری","lam":0.3476,"cat":"پانل","d":null,"cert":1}];
 const CITIES  = [{"c":"آبادان","z":"0B"},{"c":"آباده","z":"4B"},{"c":"آقاجاری","z":"0B"},{"c":"اراک","z":"4B"},{"c":"اردبیل","z":"5C"},{"c":"ارومیه","z":"4B"},{"c":"اصفهان","z":"4B"},{"c":"کرج","z":"3B"},{"c":"الیگودرز","z":"4A"},{"c":"بندر انزلی","z":"3A"},{"c":"اهر","z":"4B"},{"c":"اهواز","z":"0B"},{"c":"ایرانشهر","z":"0B"},{"c":"ایلام","z":"3A"},{"c":"بابلسر","z":"3A"},{"c":"بازرگان","z":"5B"},{"c":"بافت","z":"3B"},{"c":"بجنورد","z":"4B"},{"c":"بم","z":"1B"},{"c":"بندر بوشهر","z":"1B"},{"c":"بندر لنگه","z":"0B"},{"c":"بندر ماهشهر","z":"1B"},{"c":"بندرعباس","z":"0B"},{"c":"بیرجند","z":"3B"},{"c":"پارس‌آباد مغان","z":"3B"},{"c":"تبریز","z":"4B"},{"c":"تربت حیدریه","z":"4B"},{"c":"تهران","z":"3B"},{"c":"جاسک","z":"0B"},{"c":"چابهار","z":"0B"},{"c":"خرم‌آباد","z":"3A"},{"c":"خور","z":"2B"},{"c":"خوی","z":"4B"},{"c":"دیر","z":"0B"},{"c":"رامسر","z":"3A"},{"c":"رشت","z":"3A"},{"c":"زابل","z":"1B"},{"c":"زنجان","z":"4B"},{"c":"زاهدان","z":"2B"},{"c":"ساری","z":"3A"},{"c":"سبزوار","z":"2B"},{"c":"سراب","z":"5B"},{"c":"سراوان","z":"2B"},{"c":"سرخس","z":"2B"},{"c":"سقز","z":"4A"},{"c":"سمنان","z":"2B"},{"c":"سنندج","z":"4A"},{"c":"سیرجان","z":"3B"},{"c":"شاهرود","z":"4B"},{"c":"شهرکرد","z":"4A"},{"c":"شیراز","z":"3B"},{"c":"طبس","z":"2B"},{"c":"قائم‌شهر","z":"3A"},{"c":"قزوین","z":"4B"},{"c":"قم","z":"2B"},{"c":"قشم","z":"0B"},{"c":"قوچان","z":"4B"},{"c":"کاشان","z":"2B"},{"c":"کاشمر","z":"2B"},{"c":"کرمان","z":"3B"},{"c":"کرمانشاه","z":"4A"},{"c":"کهنوج","z":"0B"},{"c":"کیش","z":"0B"},{"c":"گچساران","z":"2A"},{"c":"گرگان","z":"3B"},{"c":"لار","z":"1B"},{"c":"مراغه","z":"4B"},{"c":"مشهد","z":"3B"},{"c":"مهاباد","z":"4A"},{"c":"میانه","z":"4B"},{"c":"نهبندان","z":"2B"},{"c":"نوشهر","z":"3A"},{"c":"همدان","z":"4A"},{"c":"یاسوج","z":"3A"},{"c":"یزد","z":"2B"}];
+
+
 
 const MATS = MATS_GEN.map(m=>({n:m.n, lam:m.c, cat:m.cat, d:m.d||null, cert:0})).concat(CERT);
 
@@ -263,8 +432,9 @@ const fmt=(v,d=1)=>FA(Number(v).toLocaleString('en-US',{minimumFractionDigits:d,
 const money=v=>FA(Math.round(v).toLocaleString('en-US'));
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=id=>document.getElementById(id);
+const num=id=>+($(id)||{}).value||0;
 
-/* ---- DEMO DATA: نرخ‌ها. هیچ‌کدام از پروژه انرژی‌یار نیامده‌اند ---- */
+/* ---- DEMO DATA: نرخ‌ها. هیچ‌کدام از پروژه انرژی یار نیامده‌اند ---- */
 const RATES = [
   {k:'wall',  n:'دیوارچینی و اندود (هر m²)',      v:1800000},
   {k:'ins',   n:'عایق حرارتی (هر m³)',            v:9500000},
@@ -273,6 +443,21 @@ const RATES = [
   {k:'glaz',  n:'جداره نورگذر (هر m²)',           v:7200000}
 ];
 
+/* ===================== گروه‌بندی مصالح =====================
+   هر گروه: کدام دسته‌های پیوست «۷» را در بر می‌گیرد، آیا سطح ستون و
+   دیوار برشی از آن کسر می‌شود، و با چه هاشوری در مقطع کشیده شود. */
+const GROUPS = [
+  {g:'اندود',         cats:['اندود'],                                   cut:false, h:'plaster'},
+  {g:'عایق حرارتی',   cats:['عایق حرارتی'],                             cut:false, h:'ins'},
+  {g:'بلوک و آجر',    cats:['بلوک سیمانی','بلوک بتنی','بلوک سفالی'],    cut:true,  h:'brick'},
+  {g:'بتن و بنایی',   cats:['بتن و بنایی','قالب ماندگار'],              cut:true,  h:'conc'},
+  {g:'پانل و چوب',    cats:['پانل','چوب و مشتقات'],                     cut:false, h:'wood'},
+  {g:'فلز',           cats:['فلزات'],                                   cut:true,  h:'metal'},
+  {g:'سایر',          cats:['پلاستیک و پلیمر','سایر'],                  cut:false, h:'other'}
+];
+const groupOf = m => (GROUPS.find(G=>G.cats.includes(m.cat)) || GROUPS[GROUPS.length-1]).g;
+const GRP = g => GROUPS.find(G=>G.g===g) || GROUPS[GROUPS.length-1];
+const matsIn = g => MATS.filter(m=>GRP(g).cats.includes(m.cat));
 
 /* ---- شهر و اقلیم ---- */
 $('city').innerHTML=CITIES.map((c,i)=>`<option value="${i}">${esc(c.c)} — رده ${c.z}</option>`).join('');
@@ -280,268 +465,620 @@ function zone(){ const z=CITIES[+$('city').value].z; return ZONE_MAP[z]||z; }
 function zoneShow(){
   const c=CITIES[+$('city').value];
   $('zoneOut').textContent='رده اقلیمی رسمی: '+c.z+' (ستون '+zone()+' جدول ۱۹-۵-۱)';
-  geo();
+  recalc();
 }
 $('city').addEventListener('change',zoneShow);
 
-/* ---- هندسه: متره سطوح ---- */
-function geo(){
-  const n=+$('floors').value||1, h=+$('hgt').value||3;
-  const a=+$('plA').value||0, b=+$('plB').value||0, wwr=(+$('wwr').value||0)/100;
-  const perim=2*(a+b);
-  const grossWall=perim*h*n;
-  const glaz=grossWall*wwr;
-  const wall=grossWall-glaz;
-  const plan=a*b;
-  const el=$('geoSum');
-  if(el) el.innerHTML=
-    `محیط پلان <b>${fmt(perim,1)}</b> m · دیوار ناخالص <b>${fmt(grossWall,0)}</b> m² · `+
-    `جداره نورگذر <b>${fmt(glaz,0)}</b> m² · دیوار خالص <b>${fmt(wall,0)}</b> m² · `+
-    `مساحت پلان <b>${fmt(plan,0)}</b> m²`;
-  return {wall,glaz,roof:plan,floor:plan,plan,perim,grossWall};
+/* ===================== حالت محاسبه ===================== */
+let MODE='exact';
+function setMode(m){
+  MODE=m;
+  $('mExact').setAttribute('aria-pressed', String(m==='exact'));
+  $('mSimple').setAttribute('aria-pressed', String(m==='simple'));
+  $('simpleWarn').style.display = m==='simple' ? '' : 'none';
+  $('simpleInputs').style.display = m==='simple' ? '' : 'none';
+  $('exactInputs').style.display = m==='simple' ? 'none' : '';
+  $('acFac').classList.toggle('off', m==='simple');
+  $('acStruct').classList.toggle('off', m==='simple');
+  $('subMode').textContent = m==='simple' ? 'حالت ساده — تقریبی' : 'حالت دقیق';
+  recalc();
 }
-['floors','hgt','plA','plB','wwr'].forEach(id=>$(id).addEventListener('input',geo));
 
-/* ---- جداره‌ها و لایه‌ها ---- */
-/* فهرست جداره‌ها.
-   rIdx = سطر جدول ۱۹-۵-۱؛ null یعنی جداره الزام حرارتی ندارد
-   (مثل دیوار بین دو فضای گرم) ولی باید متره شود.
-   area = نحوه محاسبه مساحت: auto از هندسه، یا manual با ورودی کاربر.
-   DEMO: ترکیب و ضخامت پیش‌فرض لایه‌ها فقط نمونه شروع است. */
+/* ===================== نماها ===================== */
+const ORIENT=[
+  {k:'N', n:'شمالی'},      {k:'NE',n:'شمال‌شرقی'},
+  {k:'E', n:'شرقی'},       {k:'SE',n:'جنوب‌شرقی'},
+  {k:'S', n:'جنوبی'},      {k:'SW',n:'جنوب‌غربی'},
+  {k:'W', n:'غربی'},       {k:'NW',n:'شمال‌غربی'}
+];
+const oName = k => (ORIENT.find(o=>o.k===k)||ORIENT[0]).n;
+
+let FACADES=[];
+function defFacades(){
+  return [
+    {o:'N', len:20, wins:[{t:'پنجره', w:1.6, h:1.3, n:3}]},
+    {o:'E', len:10, wins:[{t:'پنجره', w:1.2, h:1.3, n:2}]},
+    {o:'S', len:20, wins:[{t:'پنجره', w:1.8, h:1.5, n:4}]},
+    {o:'W', len:10, wins:[{t:'پنجره', w:1.2, h:1.3, n:2}]}
+  ];
+}
+function resetFacades(){ FACADES=defFacades(); renderFacades(); }
+function addFacade(){ FACADES.push({o:'N', len:0, wins:[]}); renderFacades(); }
+function delFacade(i){ FACADES.splice(i,1); renderFacades(); }
+function addWin(i){ FACADES[i].wins.push({t:'پنجره', w:1.2, h:1.2, n:1}); renderFacades(); }
+function delWin(i,j){ FACADES[i].wins.splice(j,1); renderFacades(); }
+
+function facGlaz(f){ return f.wins.reduce((s,w)=>s+(+w.w||0)*(+w.h||0)*(+w.n||0),0); }
+
+function renderFacades(){
+  const h=num('hgt'), n=Math.max(1,num('floors')), mult = $('winPerFloor').checked ? n : 1;
+  $('facList').innerHTML = FACADES.map((f,i)=>{
+    const gross=(+f.len||0)*h*n;
+    const glaz=facGlaz(f)*mult;
+    const wwr = gross>0 ? glaz/gross*100 : 0;
+    const bad = wwr>100;
+    return `<div class="fac">
+      <div class="fac-h">
+        <select onchange="FACADES[${i}].o=this.value;renderFacades()">
+          ${ORIENT.map(o=>`<option value="${o.k}" ${o.k===f.o?'selected':''}>${o.n}</option>`).join('')}
+        </select>
+        <input type="number" min="0" step="0.1" value="${f.len}" aria-label="طول نما"
+          oninput="FACADES[${i}].len=+this.value;renderFacades()">
+        <span class="h" style="font-size:12px">متر طول</span>
+        <span class="fac-s">ناخالص ${fmt(gross,0)} m² · بازشو ${fmt(glaz,1)} m² ·
+          نسبت <b class="${bad?'no':''}">${fmt(wwr,1)}٪</b></span>
+        <button class="x" onclick="delFacade(${i})" aria-label="حذف نما">×</button>
+      </div>
+      ${bad?'<div class="warn">مساحت بازشو از مساحت ناخالص این نما بیشتر شده است.</div>':''}
+      <div class="tscroll"><table>
+        <thead><tr><th>نوع بازشو</th><th class="num">عرض (m)</th><th class="num">ارتفاع (m)</th>
+          <th class="num">تعداد</th><th class="num">مساحت (m²)</th><th></th></tr></thead>
+        <tbody>${f.wins.map((w,j)=>`<tr>
+          <td><input value="${esc(w.t)}" oninput="FACADES[${i}].wins[${j}].t=this.value"></td>
+          <td class="num"><input type="number" min="0" step="0.01" value="${w.w}" oninput="FACADES[${i}].wins[${j}].w=+this.value;renderFacades()"></td>
+          <td class="num"><input type="number" min="0" step="0.01" value="${w.h}" oninput="FACADES[${i}].wins[${j}].h=+this.value;renderFacades()"></td>
+          <td class="num"><input type="number" min="0" step="1" value="${w.n}" oninput="FACADES[${i}].wins[${j}].n=+this.value;renderFacades()"></td>
+          <td class="num">${fmt((+w.w||0)*(+w.h||0)*(+w.n||0),2)}</td>
+          <td><button class="x" onclick="delWin(${i},${j})" aria-label="حذف">×</button></td>
+        </tr>`).join('')||'<tr><td colspan="6" style="color:var(--ink-faint)">بازشویی ثبت نشده است.</td></tr>'}</tbody>
+      </table></div>
+      <div class="row"><button class="btn btn-g btn-s" onclick="addWin(${i})">+ بازشو</button></div>
+    </div>`;
+  }).join('');
+  recalc();
+}
+$('winPerFloor').addEventListener('change',renderFacades);
+
+/* ===================== ستون و دیوار برشی ===================== */
+let STRUCT=[];
+function addStruct(t){ STRUCT.push({t:t, w:0.4, h:num('hgt')||3, n:4}); renderStruct(); }
+function delStruct(i){ STRUCT.splice(i,1); renderStruct(); }
+function structArea(){ return STRUCT.reduce((s,x)=>s+(+x.w||0)*(+x.h||0)*(+x.n||0),0); }
+
+function renderStruct(){
+  $('structBody').innerHTML = STRUCT.map((x,i)=>`<tr>
+    <td><input value="${esc(x.t)}" oninput="STRUCT[${i}].t=this.value"></td>
+    <td class="num"><input type="number" min="0" step="0.01" value="${x.w}" oninput="STRUCT[${i}].w=+this.value;renderStruct()"></td>
+    <td class="num"><input type="number" min="0" step="0.01" value="${x.h}" oninput="STRUCT[${i}].h=+this.value;renderStruct()"></td>
+    <td class="num"><input type="number" min="0" step="1" value="${x.n}" oninput="STRUCT[${i}].n=+this.value;renderStruct()"></td>
+    <td class="num">${fmt((+x.w||0)*(+x.h||0)*(+x.n||0),2)}</td>
+    <td><button class="x" onclick="delStruct(${i})" aria-label="حذف">×</button></td>
+  </tr>`).join('') || '<tr><td colspan="6" style="color:var(--ink-faint)">موردی ثبت نشده است. اگر ستون یا دیوار برشی در صفحه نما دارید، اضافه کنید.</td></tr>';
+  recalc();
+}
+
+/* نسبت پل حرارتی: جدول ۱۹-۵-۱ با فرض عایق‌کاری پیوسته خارجی و حداکثر ۵٪ پل حرارتی
+   از مساحت هر سطح خارجی محاسبه شده است. */
+function bridgeCheck(g){
+  const box=$('bridgeBox'); if(!box) return null;
+  if(MODE==='simple' || g.grossWall<=0){ box.innerHTML=''; return null; }
+  const r = structArea()/g.grossWall*100;
+  const over = r>5;
+  box.innerHTML = STRUCT.length===0 ? '' : `<div class="${over?'warn':'note'}">
+    <b>نسبت پل حرارتی: ${fmt(r,2)}٪</b> از مساحت ناخالص دیوار خارجی.
+    ${over
+      ? 'این از حد ۵٪ که جدول ۱۹-۵-۱ بر مبنای آن محاسبه شده بیشتر است. در این حالت مقاومت‌های جدول دیگر معتبر نیستند و باید اثر پل حرارتی جداگانه محاسبه شود.'
+      : 'در محدوده ۵٪ که جدول ۱۹-۵-۱ بر مبنای آن محاسبه شده است.'}
+  </div>`;
+  return r;
+}
+
+/* ===================== هندسه ===================== */
+function geom(){
+  const n=Math.max(1,num('floors')), h=num('hgt');
+  let perim, grossWall, glaz, plan, approx=false, facs=[];
+
+  if(MODE==='simple'){
+    approx=true;
+    const tot=num('totalArea');
+    plan = n>0 ? tot/n : 0;
+    const side = Math.sqrt(Math.max(0,plan));
+    perim = 4*side;
+    grossWall = perim*h*n;
+    glaz = grossWall*(num('wwrSimple')/100);
+    facs = ['N','E','S','W'].map(k=>({o:k, len:side, gross:grossWall/4, glaz:glaz/4}));
+  } else {
+    const mult = $('winPerFloor').checked ? n : 1;
+    perim = FACADES.reduce((s,f)=>s+(+f.len||0),0);
+    grossWall = perim*h*n;
+    glaz = FACADES.reduce((s,f)=>s+facGlaz(f),0)*mult;
+    plan = num('planArea');
+    facs = FACADES.map(f=>({o:f.o, len:+f.len||0, gross:(+f.len||0)*h*n, glaz:facGlaz(f)*mult}));
+  }
+  glaz = Math.min(glaz, grossWall);
+  const struct = MODE==='simple' ? 0 : Math.min(structArea(), Math.max(0,grossWall-glaz));
+  return {
+    n, h, perim, grossWall, glaz, plan, struct, approx, facs,
+    wallNoStruct: Math.max(0, grossWall-glaz),
+    wallNet:      Math.max(0, grossWall-glaz-struct),
+    roof: plan, floorSoil: plan, between: plan*Math.max(0,n-1)
+  };
+}
+
+function recalc(){
+  const g=geom();
+  const el=$('geoSum');
+  if(el) el.innerHTML = MODE==='simple'
+    ? `<b>برآورد تقریبی</b> — مساحت هر طبقه ${fmt(g.plan,0)} m² · محیط فرضی ${fmt(g.perim,1)} m ·
+       دیوار ناخالص ${fmt(g.grossWall,0)} m² · بازشو ${fmt(g.glaz,0)} m² ·
+       دیوار خالص ${fmt(g.wallNoStruct,0)} m²`
+    : `محیط ${fmt(g.perim,1)} m · دیوار ناخالص <b>${fmt(g.grossWall,0)}</b> m² ·
+       بازشو <b>${fmt(g.glaz,0)}</b> m² · ستون و دیوار برشی <b>${fmt(g.struct,1)}</b> m² ·
+       دیوار خالص بنایی <b>${fmt(g.wallNet,0)}</b> m² · مساحت پلان ${fmt(g.plan,0)} m²`;
+  const sf=$('subFac'); if(sf) sf.textContent = FACADES.length+' نما';
+  const ss=$('subStruct'); if(ss) ss.textContent = STRUCT.length? fmt(structArea(),1)+' m²' : 'ثبت نشده';
+  bridgeCheck(g);
+  renderSections();
+  return g;
+}
+['floors','hgt','planArea','totalArea','wwrSimple'].forEach(id=>{
+  const e=$(id); if(e) e.addEventListener('input',()=>{ renderFacades(); });
+});
+
+/* ===================== جداره‌ها =====================
+   rIdx = سطر جدول ۱۹-۵-۱؛ null یعنی الزام حرارتی ندارد ولی متره می‌شود.
+   area = facade (از هندسه نما) · plan · between · manual
+   cats = گروه‌های مصالح مجاز برای این جداره
+   DEMO: ترکیب و ضخامت پیش‌فرض فقط نمونه شروع است. */
+const WALLG=['اندود','عایق حرارتی','بلوک و آجر','بتن و بنایی','پانل و چوب','فلز','سایر'];
+const SLABG=['اندود','عایق حرارتی','بتن و بنایی','بلوک و آجر','پانل و چوب','سایر'];
+const FLOORG=['عایق حرارتی','بتن و بنایی','اندود','سایر'];
+
 const CATALOGUE=[
-  {k:'wall',      rIdx:0,    area:'wall',     name:'دیوار خارجی مجاور فضای باز',
-   def:[['اندود',20],['عایق حرارتی',50],['بلوک',200]]},
-  {k:'wallSemi',  rIdx:1,    area:'manual',   name:'دیوار مجاور فضای نیمه‌باز کنترل‌نشده',
-   def:[['اندود',20],['عایق حرارتی',40],['بلوک',200]]},
-  {k:'wallSoil',  rIdx:2,    area:'manual',   name:'دیوار مجاور خاک',
-   def:[['عایق حرارتی',30],['بلوک',200]]},
-  {k:'roof',      rIdx:3,    area:'plan',     name:'سقف مجاور فضای آزاد',
+  {k:'wall',      rIdx:0,    area:'facade',  cats:WALLG,  name:'دیوار خارجی مجاور فضای باز',
+   def:[['اندود',20],['عایق حرارتی',50],['بلوک و آجر',200]]},
+  {k:'wallSemi',  rIdx:1,    area:'manual',  cats:WALLG,  name:'دیوار مجاور فضای نیمه‌باز کنترل‌نشده',
+   def:[['اندود',20],['عایق حرارتی',40],['بلوک و آجر',200]]},
+  {k:'wallSoil',  rIdx:2,    area:'manual',  cats:WALLG,  name:'دیوار مجاور خاک',
+   def:[['عایق حرارتی',30],['بتن و بنایی',250]]},
+  {k:'roof',      rIdx:3,    area:'plan',    cats:SLABG,  name:'سقف مجاور فضای آزاد',
    def:[['اندود',20],['عایق حرارتی',100]]},
-  {k:'roofSemi',  rIdx:4,    area:'manual',   name:'سقف مجاور فضای نیمه‌باز کنترل‌نشده',
+  {k:'roofSemi',  rIdx:4,    area:'manual',  cats:SLABG,  name:'سقف مجاور فضای نیمه‌باز کنترل‌نشده',
    def:[['اندود',20],['عایق حرارتی',80]]},
-  {k:'floorAir',  rIdx:5,    area:'manual',   name:'کف مجاور هوای آزاد',
+  {k:'floorAir',  rIdx:5,    area:'manual',  cats:FLOORG, name:'کف مجاور هوای آزاد',
    def:[['عایق حرارتی',50]]},
-  {k:'floorSemi', rIdx:6,    area:'manual',   name:'کف مجاور فضای نیمه‌باز کنترل‌نشده',
+  {k:'floorSemi', rIdx:6,    area:'manual',  cats:FLOORG, name:'کف مجاور فضای نیمه‌باز کنترل‌نشده',
    def:[['عایق حرارتی',40]]},
-  {k:'floorSoil', rIdx:7,    area:'plan',     name:'کف مجاور خاک',
+  {k:'floorSoil', rIdx:7,    area:'plan',    cats:FLOORG, name:'کف مجاور خاک',
    def:[['عایق حرارتی',30]]},
   /* بدون الزام حرارتی — فقط متره */
-  {k:'wallWarm',  rIdx:null, area:'manual',   name:'دیوار مجاور فضای گرم (داخلی)',
-   def:[['اندود',20],['بلوک',100],['اندود',20]]},
-  {k:'floorMid',  rIdx:null, area:'between',  name:'کف و سقف بین طبقات',
+  {k:'wallWarm',  rIdx:null, area:'manual',  cats:WALLG,  name:'دیوار مجاور فضای گرم (داخلی)',
+   def:[['اندود',20],['بلوک و آجر',100],['اندود',20]]},
+  {k:'floorMid',  rIdx:null, area:'between', cats:FLOORG, name:'کف و سقف بین طبقات',
    def:[['اندود',20]]},
-  {k:'partition', rIdx:null, area:'manual',   name:'تیغه و دیوار جداکننده داخلی',
-   def:[['اندود',15],['بلوک',100],['اندود',15]]}
+  {k:'partition', rIdx:null, area:'manual',  cats:WALLG,  name:'تیغه و دیوار جداکننده داخلی',
+   def:[['اندود',15],['بلوک و آجر',100],['اندود',15]]}
 ];
+
 let state=[];
-function initElements(){
-  /* شروع با جداره‌های پرکاربرد؛ بقیه را کاربر اضافه می‌کند */
-  state=['wall','roof','floorSoil','wallWarm','floorMid'].map(k=>mkEl(k));
-  renderElements();
+function mkLayer(gname,t){
+  const list=matsIn(gname);
+  const m=list[0]||MATS[0];
+  return {g:gname, mi:MATS.indexOf(m), t:t, basis: GRP(gname).cut ? 'net' : 'noStruct'};
 }
 function mkEl(k){
   const c=CATALOGUE.find(x=>x.k===k);
-  return {k:c.k, name:c.name, rIdx:c.rIdx, areaMode:c.area, manual:0,
-    layers:c.def.map(l=>{
-      const hit=MATS.find(m=>m.cat.indexOf(l[0])>=0)||MATS[0];
-      return {mi:MATS.indexOf(hit), t:l[1]};
-    })};
+  return {k:c.k, name:c.name, rIdx:c.rIdx, areaMode:c.area, cats:c.cats, manual:0,
+          layers:c.def.map(l=>mkLayer(l[0],l[1]))};
 }
-function areaOfEl(el,g){
-  if(el.areaMode==='wall')    return g.wall;
+function initElements(){ state=['wall','roof','floorSoil'].map(mkEl); renderEls(); }
+function addElement(){ state.push(mkEl($('addSel').value)); renderEls(); }
+function delEl(i){ state.splice(i,1); renderEls(); }
+function addLayer(i){ state[i].layers.push(mkLayer(state[i].cats[0],50)); renderEls(); }
+function delLayer(i,j){ state[i].layers.splice(j,1); renderEls(); }
+function setGroup(i,j,g){
+  const L=state[i].layers[j];
+  L.g=g; const list=matsIn(g); L.mi=MATS.indexOf(list[0]||MATS[0]);
+  L.basis = GRP(g).cut ? 'net' : 'noStruct';
+  renderEls();
+}
+
+function areaOfEl(el,g,basis){
+  if(el.areaMode==='facade'){
+    if(basis==='gross') return g.grossWall;
+    if(basis==='net')   return g.wallNet;
+    return g.wallNoStruct;
+  }
   if(el.areaMode==='plan')    return g.plan;
-  if(el.areaMode==='between') return g.plan*Math.max(0,(+$('floors').value||1)-1);
+  if(el.areaMode==='between') return g.between;
   return +el.manual||0;
 }
-function addEl(k){ if(!k) return; state.push(mkEl(k)); renderElements(); }
-function delEl(i){ state.splice(i,1); renderElements(); }
-function setManual(i,v){ state[i].manual=+v; renderElements(); }
-function renderElements(){
-  const g=geo();
-  $('elements').innerHTML=state.map((el,ei)=>{
-    const R=elR(el);
-    const A=areaOfEl(el,g);
-    let head;
-    if(el.rIdx===null){
-      head=`<span class="el-s">R = ${fmt(R,2)} · <span class="wait">بدون الزام حرارتی</span></span>`;
-    } else {
-      const need=R_TABLE[el.rIdx].v[R_COLS.indexOf(zone())];
-      const v = R>=need?'<span class="ok">قبول</span>':'<span class="no">کمتر از حد</span>';
-      head=`<span class="el-s">R = ${fmt(R,2)} در برابر حداقل ${fmt(need,2)} m²K/W &nbsp; ${v}</span>`;
-    }
-    const areaCell = el.areaMode==='manual'
-      ? `<div class="f" style="max-width:190px"><label>مساحت (m²)</label>
-           <input type="number" value="${el.manual||0}" min="0" step="1" oninput="setManual(${ei},this.value)"></div>`
-      : `<p class="h" style="margin:0 0 10px">مساحت از هندسه: <b>${fmt(A,1)}</b> m²</p>`;
+
+function rOf(el){
+  return el.layers.reduce((s,L)=>{
+    const m=MATS[L.mi]; const lam=m?m.lam:0; const t=(L.t||0)/1000;
+    return s + (lam>0 ? t/lam : 0);
+  },0);
+}
+function rReq(el){
+  if(el.rIdx==null) return null;
+  const ci=R_COLS.indexOf(zone());
+  return ci<0?null:R_TABLE[el.rIdx].v[ci];
+}
+
+const BASIS_N={gross:'ناخالص (بدون کسر)', noStruct:'کسر بازشو', net:'کسر بازشو و سازه'};
+
+function renderEls(){
+  const g=geom();
+  $('addSel').innerHTML=CATALOGUE.map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('');
+  $('elList').innerHTML=state.map((el,i)=>{
+    const R=rOf(el), req=rReq(el);
+    const st = req==null ? '<span class="wait">بدون الزام حرارتی</span>'
+             : (R>=req ? `<span class="ok">منطبق</span>` : `<span class="no">کمتر از حد مجاز</span>`);
+    const isFac = el.areaMode==='facade';
     return `<div class="el">
       <div class="el-h">
         <span class="el-n">${esc(el.name)}</span>
-        ${head}
-        <button class="x" type="button" onclick="delEl(${ei})" aria-label="حذف جداره">×</button>
+        <span class="el-s">R = ${fmt(R,3)}${req!=null?' / حداقل '+fmt(req,2):''} m²·K/W &nbsp; ${st}</span>
+        <button class="x" onclick="delEl(${i})" aria-label="حذف جداره">×</button>
       </div>
-      ${areaCell}
-      ${el.layers.map((L,li)=>`<div class="lay">
-        <div class="f"><label>مصالح لایه ${FA(li+1)}</label>
-          <select onchange="setMat(${ei},${li},this.value)">${matOptions(L.mi)}</select></div>
-        <div class="f"><label>ضخامت (mm)</label>
-          <input type="number" value="${L.t}" min="0" step="5" oninput="setTh(${ei},${li},this.value)"></div>
-        <button class="x" type="button" onclick="delLayer(${ei},${li})" aria-label="حذف لایه">×</button>
-      </div>`).join('')}
-      <button class="btn btn-g btn-s" type="button" style="margin-top:12px" onclick="addLayer(${ei})">+ افزودن لایه</button>
+
+      ${el.areaMode==='manual' ? `<div class="f" style="max-width:260px;margin-bottom:12px">
+        <label>مساحت این جداره (m²)</label>
+        <input type="number" min="0" step="0.1" value="${el.manual}"
+          oninput="state[${i}].manual=+this.value;renderEls()">
+      </div>` : `<p class="h" style="font-size:12px;margin:0 0 12px">
+        مساحت از ${el.areaMode==='facade'?'هندسه نماها':el.areaMode==='plan'?'مساحت پلان':'پلان × (طبقات−۱)'} گرفته می‌شود.</p>`}
+
+      ${el.layers.map((L,j)=>{
+        const list=matsIn(L.g);
+        return `<div class="lay">
+          <div class="f">
+            <label>دسته</label>
+            <select onchange="setGroup(${i},${j},this.value)">
+              ${el.cats.map(gn=>`<option value="${gn}" ${gn===L.g?'selected':''}>${gn}</option>`).join('')}
+            </select>
+          </div>
+          <div class="f">
+            <label>مصالح (${FA(list.length)} مورد)</label>
+            <select onchange="state[${i}].layers[${j}].mi=+this.value;renderEls()">
+              <optgroup label="مقادیر عمومی — پیوست «۷»">
+                ${list.filter(m=>!m.cert).map(m=>`<option value="${MATS.indexOf(m)}" ${MATS.indexOf(m)===L.mi?'selected':''}>${esc(m.n)} — λ=${m.lam}</option>`).join('')}
+              </optgroup>
+              <optgroup label="محصولات دارای گواهی‌نامه فنی">
+                ${list.filter(m=>m.cert).map(m=>`<option value="${MATS.indexOf(m)}" ${MATS.indexOf(m)===L.mi?'selected':''}>${esc(m.n)} — λ=${m.lam}</option>`).join('')}
+              </optgroup>
+            </select>
+          </div>
+          <div class="f">
+            <label>ضخامت (mm)</label>
+            <input type="number" min="0" step="1" value="${L.t}"
+              oninput="state[${i}].layers[${j}].t=+this.value;renderEls()">
+          </div>
+          <div class="f">
+            <label>مبنای مساحت</label>
+            <select ${isFac?'':'disabled'} onchange="state[${i}].layers[${j}].basis=this.value;renderEls()">
+              ${Object.keys(BASIS_N).map(b=>`<option value="${b}" ${b===L.basis?'selected':''}>${BASIS_N[b]}</option>`).join('')}
+            </select>
+          </div>
+          <button class="x" onclick="delLayer(${i},${j})" aria-label="حذف لایه">×</button>
+        </div>`;
+      }).join('')}
+
+      <div class="row"><button class="btn btn-g btn-s" onclick="addLayer(${i})">+ لایه</button></div>
+      <div class="sect">
+        <p class="sect-t">مقطع جداره — از بیرون به داخل</p>
+        ${sectionSVG(el,i)}
+      </div>
     </div>`;
-  }).join('')
-  + `<div class="f" style="max-width:420px;margin-top:18px">
-       <label for="addEl">افزودن جداره دیگر</label>
-       <select id="addEl" onchange="addEl(this.value); this.value='';">
-         <option value="">انتخاب کنید…</option>
-         <optgroup label="دارای الزام جدول ۱۹-۵-۱">${
-           CATALOGUE.filter(c=>c.rIdx!==null).map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('')}</optgroup>
-         <optgroup label="بدون الزام حرارتی — فقط متره">${
-           CATALOGUE.filter(c=>c.rIdx===null).map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('')}</optgroup>
-       </select>
-     </div>`;
+  }).join('');
+  recalc();
 }
-function matOptions(sel){
-  const gen=MATS.map((m,i)=>({m,i})).filter(o=>!o.m.cert);
-  const cer=MATS.map((m,i)=>({m,i})).filter(o=>o.m.cert);
-  const o=a=>a.map(x=>`<option value="${x.i}" ${x.i===sel?'selected':''}>${esc(x.m.n)} — λ ${x.m.lam}</option>`).join('');
-  return `<optgroup label="مقادیر عمومی — پیوست «۷»">${o(gen)}</optgroup>`+
-         `<optgroup label="محصولات دارای گواهی‌نامه فنی">${o(cer)}</optgroup>`;
-}
-function elR(el){
-  return el.layers.reduce((a,L)=>{
-    const m=MATS[L.mi]; const t=(L.t||0)/1000;
-    return a + (m && m.lam>0 ? t/m.lam : 0);
-  },0);
-}
-function setMat(e,l,v){ state[e].layers[l].mi=+v; renderElements(); }
-function setTh(e,l,v){ state[e].layers[l].t=+v; renderElements(); }
-function delLayer(e,l){ state[e].layers.splice(l,1); renderElements(); }
-function addLayer(e){ state[e].layers.push({mi:0,t:20}); renderElements(); }
+function renderSections(){ /* مقطع‌ها همراه renderEls ساخته می‌شوند */ }
 
-/* ---- نرخ‌ها ---- */
-$('rates').innerHTML=RATES.map(r=>
-  `<div class="f"><label for="r_${r.k}">${esc(r.n)}</label>
-   <input type="number" id="r_${r.k}" value="${r.v}" min="0" step="100000"></div>`).join('');
+/* ---- مقطع شماتیک ---- */
+function hatchDefs(uid){
+  return `<defs>
+    <pattern id="p-ins-${uid}" width="12" height="10" patternUnits="userSpaceOnUse">
+      <path d="M0 5 q3 -5 6 0 q3 5 6 0" fill="none" stroke="rgba(47,214,155,.55)" stroke-width="1.1"/>
+    </pattern>
+    <pattern id="p-brick-${uid}" width="22" height="14" patternUnits="userSpaceOnUse">
+      <rect width="22" height="14" fill="none"/>
+      <path d="M0 7h22M0 0h22M11 0v7M0 7v7M22 7v7" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+    </pattern>
+    <pattern id="p-conc-${uid}" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="1.1" fill="rgba(255,255,255,.34)"/>
+      <circle cx="10" cy="9" r="1.1" fill="rgba(255,255,255,.34)"/>
+      <path d="M7 2l2 3H5z" fill="rgba(255,255,255,.22)"/>
+    </pattern>
+    <pattern id="p-plaster-${uid}" width="7" height="7" patternUnits="userSpaceOnUse">
+      <path d="M0 7L7 0" stroke="rgba(255,255,255,.22)" stroke-width="0.9"/>
+    </pattern>
+    <pattern id="p-wood-${uid}" width="18" height="9" patternUnits="userSpaceOnUse">
+      <path d="M0 2h18M0 6h18" stroke="rgba(224,169,75,.4)" stroke-width="1"/>
+    </pattern>
+    <pattern id="p-metal-${uid}" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="rgba(255,255,255,.14)"/>
+    </pattern>
+    <pattern id="p-other-${uid}" width="10" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="1" fill="rgba(255,255,255,.26)"/>
+    </pattern>
+  </defs>`;
+}
+function sectionSVG(el,uid){
+  const Ls=el.layers.filter(L=>(L.t||0)>0);
+  if(!Ls.length) return '<p class="h" style="font-size:12px">لایه‌ای با ضخامت بزرگ‌تر از صفر ثبت نشده است.</p>';
+  const W=760, H=132, pad=12, top=30, boxH=62;
+  const tot=Ls.reduce((s,L)=>s+(L.t||0),0);
+  const minW=40, avail=W-2*pad;
+  let raw=Ls.map(L=>(L.t||0)/tot*avail);
+  const deficit=raw.reduce((s,w)=>s+Math.max(0,minW-w),0);
+  const surplus=raw.reduce((s,w)=>s+Math.max(0,w-minW),0);
+  if(surplus>0) raw=raw.map(w=>w<minW?minW:w-(w-minW)/surplus*Math.min(deficit,surplus));
+  /* در متن راست‌به‌چپ، بیرونی‌ترین لایه سمت راست کشیده می‌شود */
+  let x=W-pad, out='';
+  Ls.forEach((L,i)=>{
+    const m=MATS[L.mi], w=raw[i], hp=GRP(L.g).h;
+    x-=w;
+    out+=`<rect x="${x.toFixed(1)}" y="${top}" width="${w.toFixed(1)}" height="${boxH}" fill="url(#p-${hp}-${uid})" stroke="rgba(255,255,255,.32)" stroke-width="1"/>`;
+    out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+17}" text-anchor="middle" font-size="10.5" fill="#8A9894" font-family="inherit">${FA(L.t)}</text>`;
+    if(w>64) out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+31}" text-anchor="middle" font-size="10" fill="#A8B5B1" font-family="inherit">${esc((m?groupOf(m):L.g).slice(0,16))}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="مقطع لایه‌های جداره">
+    ${hatchDefs(uid)}
+    <text x="${W-46}" y="20" text-anchor="middle" font-size="11" fill="#2FD69B" font-family="inherit">بیرون</text>
+    <text x="40" y="20" text-anchor="middle" font-size="11" fill="#8A9894" font-family="inherit">داخل</text>
+    <text x="${W/2}" y="20" text-anchor="middle" font-size="10" fill="#6B7976" font-family="inherit">ضخامت بر حسب میلی‌متر</text>
+    ${out}
+  </svg>`;
+}
 
-/* ---- گزارش متره ---- */
+/* ===================== نرخ‌ها ===================== */
+$('rateBox').innerHTML=RATES.map((r,i)=>`<div class="f">
+  <label>${esc(r.n)}</label>
+  <input type="number" min="0" step="10000" value="${r.v}" oninput="RATES[${i}].v=+this.value">
+  <span class="h">تومان — داده نمونه</span>
+</div>`).join('');
+
+/* ===================== ترسیم پلان ===================== */
+const cv=$('planCanvas'), ctx=cv.getContext('2d');
+let img=null, tmode='none', scalePts=[], pts=[], pxPerM=0, fit={s:1,dx:0,dy:0};
+
+$('planImg').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const im=new Image();
+  im.onload=()=>{ img=im; scalePts=[]; pts=[]; pxPerM=0;
+    const s=Math.min(cv.width/im.width, cv.height/im.height);
+    fit={s, dx:(cv.width-im.width*s)/2, dy:(cv.height-im.height*s)/2};
+    $('btnScale').disabled=false; $('btnTrace').disabled=true; $('btnApply').disabled=true;
+    step(1,true); step(2,false); step(3,false); setTraceMode('scale'); draw();
+  };
+  im.src=URL.createObjectURL(f);
+});
+function step(i,on){ const e=$('st'+i); if(e) e.classList.toggle('on',!!on); }
+function setTraceMode(m){
+  tmode=m;
+  step(2, m==='scale'); step(3, m==='trace');
+  if(m==='scale'){ scalePts=[]; }
+  draw();
+}
+cv.addEventListener('click',e=>{
+  if(!img) return;
+  const r=cv.getBoundingClientRect();
+  const x=(e.clientX-r.left)*cv.width/r.width, y=(e.clientY-r.top)*cv.height/r.height;
+  if(tmode==='scale'){
+    scalePts.push({x,y});
+    if(scalePts.length===2){
+      const d=Math.hypot(scalePts[1].x-scalePts[0].x, scalePts[1].y-scalePts[0].y);
+      const real=num('scaleLen');
+      pxPerM = real>0 ? d/real : 0;
+      $('btnTrace').disabled = !(pxPerM>0);
+      setTraceMode('trace');
+    }
+  } else if(tmode==='trace'){
+    pts.push({x,y});
+    $('btnApply').disabled = pts.length<3;
+  }
+  draw();
+});
+function undoPt(){ if(tmode==='scale') scalePts.pop(); else pts.pop();
+  $('btnApply').disabled = pts.length<3; draw(); }
+function clearTrace(){ pts=[]; $('btnApply').disabled=true; draw(); }
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#1C2224'; ctx.fillRect(0,0,cv.width,cv.height);
+  if(img) ctx.drawImage(img, fit.dx, fit.dy, img.width*fit.s, img.height*fit.s);
+  // scale line
+  if(scalePts.length){
+    ctx.strokeStyle='#E0A94B'; ctx.lineWidth=2; ctx.beginPath();
+    scalePts.forEach((p,i)=> i? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y));
+    ctx.stroke();
+    scalePts.forEach(p=>dot(p,'#E0A94B'));
+  }
+  // polygon
+  if(pts.length){
+    ctx.strokeStyle='#2FD69B'; ctx.lineWidth=2; ctx.beginPath();
+    pts.forEach((p,i)=> i? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y));
+    if(pts.length>2) ctx.closePath();
+    ctx.stroke();
+    if(pts.length>2){ ctx.fillStyle='rgba(47,214,155,.10)'; ctx.fill(); }
+    pts.forEach(p=>dot(p,'#2FD69B'));
+    if(pxPerM>0 && pts.length>1) labelSegs();
+  }
+  info();
+}
+function dot(p,c){ ctx.fillStyle=c; ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,7); ctx.fill();
+  ctx.strokeStyle='#1C2224'; ctx.lineWidth=1.5; ctx.stroke(); }
+function labelSegs(){
+  ctx.font='12px sans-serif'; ctx.textAlign='center';
+  segs().forEach(s=>{
+    ctx.fillStyle='#0B3C2E'; const t=s.len.toFixed(1)+' m';
+    const w=ctx.measureText(t).width+10;
+    ctx.fillRect(s.mx-w/2, s.my-9, w, 17);
+    ctx.fillStyle='#2FD69B'; ctx.fillText(t, s.mx, s.my+4);
+  });
+}
+function segs(){
+  if(pts.length<3 || pxPerM<=0) return [];
+  const cx=pts.reduce((s,p)=>s+p.x,0)/pts.length, cy=pts.reduce((s,p)=>s+p.y,0)/pts.length;
+  const nd=num('northDeg');
+  return pts.map((p,i)=>{
+    const q=pts[(i+1)%pts.length];
+    const dx=q.x-p.x, dy=q.y-p.y, L=Math.hypot(dx,dy);
+    const mx=(p.x+q.x)/2, my=(p.y+q.y)/2;
+    let nx=dy, ny=-dx;                       // یکی از دو عمود
+    if((mx-cx)*nx+(my-cy)*ny < 0){ nx=-nx; ny=-ny; }   // رو به بیرون
+    let b=Math.atan2(nx,-ny)*180/Math.PI - nd;
+    b=((b%360)+360)%360;
+    const k=ORIENT[Math.round(b/45)%8].k;
+    return {len:L/pxPerM, mx, my, o:k, b};
+  });
+}
+function planAreaPx(){
+  let a=0; for(let i=0;i<pts.length;i++){ const p=pts[i], q=pts[(i+1)%pts.length];
+    a += p.x*q.y - q.x*p.y; }
+  return Math.abs(a)/2;
+}
+function info(){
+  const o=$('traceOut'); if(!o) return;
+  if(!img){ o.textContent='تصویری بارگذاری نشده است.'; return; }
+  if(pxPerM<=0){ o.textContent='برای تعیین مقیاس، دو سر یک اندازه معلوم را کلیک کنید.'; return; }
+  if(pts.length<3){ o.textContent=`مقیاس: ${fmt(pxPerM,1)} پیکسل در هر متر — حالا روی گوشه‌های محیط بیرونی کلیک کنید (${FA(pts.length)} نقطه).`; return; }
+  const S=segs(), A=planAreaPx()/(pxPerM*pxPerM);
+  o.innerHTML=`${FA(S.length)} ضلع · محیط ${fmt(S.reduce((s,x)=>s+x.len,0),1)} m ·
+    مساحت پلان ${fmt(A,1)} m² — جهت‌ها: ${S.map(s=>oName(s.o)).join('، ')}`;
+}
+function applyTrace(){
+  const S=segs(); if(S.length<3) return;
+  const A=planAreaPx()/(pxPerM*pxPerM);
+  FACADES = S.map(s=>({o:s.o, len:+s.len.toFixed(2), wins:[]}));
+  $('planArea').value = A.toFixed(1);
+  if(MODE!=='exact') setMode('exact');
+  renderFacades();
+  $('traceOut').innerHTML = `<b style="color:var(--pass)">${FA(S.length)} نما ساخته شد</b> و مساحت پلان روی ${fmt(A,1)} m² تنظیم شد. بازشوهای هر نما را در جدول‌های بالا وارد کنید.`;
+}
+
+/* ===================== گزارش ===================== */
+function toggleSec(id, btn){
+  const b=$(id); const open=b.classList.toggle('open');
+  btn.setAttribute('aria-expanded', String(open));
+  if(id==='sec-report' && open) report();
+}
+
 function report(){
-  const g=geo();
-  const waste=1+(+$('waste').value||0)/100;
-  const rate=k=>+$('r_'+k).value||0;
-  const areaOf={wall:g.wall, roof:g.roof, floor:g.floor};
+  const g=recalc(), waste=1+num('waste')/100;
+  const zc=zone();
+  let insVol=0, insWt=0, noDens=0, cost=0, rows=[], bad=[];
 
-  let rows=[], totalCost=0, insVol=0, insWt=0, noDens=0;
   state.forEach(el=>{
-    const A=areaOfEl(el,g);
+    const R=rOf(el), req=rReq(el);
+    if(req!=null && R<req) bad.push(el.name);
     el.layers.forEach(L=>{
       const m=MATS[L.mi]; if(!m) return;
+      const A=areaOfEl(el,g,L.basis);
       const vol=A*(L.t||0)/1000*waste;
       const isIns=m.cat.indexOf('عایق')>=0;
       if(isIns){ insVol+=vol; if(m.d) insWt+=vol*m.d; else noDens++; }
-      /* نرخ بر پایه نوع جداره؛ جداره‌های داخلی با نرخ دیوار حساب می‌شوند */
-      const rk = isIns ? 'ins'
-               : (el.k.indexOf('roof')>=0 ? 'roof'
-               : (el.k.indexOf('floor')>=0 ? 'floor' : 'wall'));
-      const cost = isIns ? vol*rate('ins') : A*waste*rate(rk);
-      totalCost+=cost;
-      rows.push([el.name, m.n, L.t, A*waste, vol, m.d? vol*m.d : null, cost, m.cert]);
+      const k=el.k;
+      const rate = isIns ? RATES.find(r=>r.k==='ins')
+                 : k.indexOf('roof')===0 ? RATES.find(r=>r.k==='roof')
+                 : k.indexOf('floor')===0 ? RATES.find(r=>r.k==='floor')
+                 : RATES.find(r=>r.k==='wall');
+      const c = isIns ? vol*rate.v : A*rate.v/Math.max(1,el.layers.length);
+      cost+=c;
+      rows.push({el:el.name, g:L.g, m:m.n, t:L.t, basis:L.basis, A, vol, wt:m.d?vol*m.d:null, c});
     });
   });
-  const glazCost=g.glaz*waste*rate('glaz');
-  totalCost+=glazCost;
+  const glazCost=g.glaz*RATES.find(r=>r.k==='glaz').v;
+  cost+=glazCost;
 
-  const kpi=[
-    ['مساحت کل جداره', fmt(g.wall+g.roof+g.floor+g.glaz,0), 'متر مربع، با پرت'],
-    ['حجم عایق', fmt(insVol,1), 'متر مکعب'],
-    ['وزن عایق', insWt? fmt(insWt,0):'—', insWt? 'کیلوگرم':'چگالی ناقص'],
-    ['برآورد هزینه', money(totalCost), 'تومان — DEMO']
-  ].map(k=>`<div class="kpi"><div class="v">${k[1]}</div><div class="l">${k[0]} · ${k[2]}</div></div>`).join('');
+  const br = g.grossWall>0 ? structArea()/g.grossWall*100 : 0;
 
-  const tbl=rows.map(r=>`<tr>
-    <td>${esc(r[0])}</td>
-    <td>${esc(r[1])}${r[7]?' <span style="font-size:10px;color:var(--emerald-deep)">گواهی‌نامه‌دار</span>':''}</td>
-    <td class="num">${FA(r[2])}</td>
-    <td class="num">${fmt(r[3],1)}</td>
-    <td class="num">${fmt(r[4],2)}</td>
-    <td class="num">${r[5]!=null?fmt(r[5],0):'—'}</td>
-    <td class="num">${money(r[6])}</td></tr>`).join('');
+  const facTable = `<div class="rsec"><h4>نماها <span>${FA(g.facs.length)} نما</span></h4>
+    <div class="tscroll"><table>
+      <thead><tr><th>جهت</th><th class="num">طول (m)</th><th class="num">ناخالص (m²)</th>
+        <th class="num">بازشو (m²)</th><th class="num">نسبت بازشو</th></tr></thead>
+      <tbody>${g.facs.map(f=>`<tr><td>${oName(f.o)}</td>
+        <td class="num">${fmt(f.len,1)}</td><td class="num">${fmt(f.gross,1)}</td>
+        <td class="num">${fmt(f.glaz,1)}</td>
+        <td class="num">${f.gross>0?fmt(f.glaz/f.gross*100,1)+'٪':'—'}</td></tr>`).join('')}
+      <tr><td><b>جمع</b></td><td class="num"><b>${fmt(g.perim,1)}</b></td>
+        <td class="num"><b>${fmt(g.grossWall,1)}</b></td><td class="num"><b>${fmt(g.glaz,1)}</b></td>
+        <td class="num"><b>${g.grossWall>0?fmt(g.glaz/g.grossWall*100,1)+'٪':'—'}</b></td></tr>
+      </tbody></table></div></div>`;
 
-  const reg=state.filter(el=>el.rIdx!==null);
-  const unreg=state.filter(el=>el.rIdx===null);
-  const comp=reg.map(el=>{
-    const R=elR(el), need=R_TABLE[el.rIdx].v[R_COLS.indexOf(zone())];
-    return `<tr><td>${esc(el.name)}</td><td class="num">${fmt(need,2)}</td>
-      <td class="num">${fmt(R,2)}</td>
-      <td class="num">${R>=need?'<span class="ok">قبول</span>':'<span class="no">کمتر از حد</span>'}</td></tr>`;
-  }).join('') + unreg.map(el=>
-    `<tr><td>${esc(el.name)}</td><td class="num">—</td>
-      <td class="num">${fmt(elR(el),2)}</td>
-      <td class="num"><span class="wait">بدون الزام</span></td></tr>`).join('');
+  const bridge = MODE==='simple' ? '' : `<div class="rsec">
+    <h4>کنترل پل حرارتی <span>حد ۵٪</span></h4>
+    <div class="${br>5?'warn':'note'}">
+      مساحت ستون و دیوار برشی در صفحه نما: <b>${fmt(structArea(),2)} m²</b> —
+      معادل <b>${fmt(br,2)}٪</b> از مساحت ناخالص دیوار خارجی.
+      ${br>5 ? 'بیشتر از حد ۵٪ که جدول ۱۹-۵-۱ بر مبنای آن محاسبه شده است؛ مقاومت‌های جدول در این شرایط معتبر نیستند.'
+             : 'در محدوده فرض جدول ۱۹-۵-۱ (عایق‌کاری پیوسته خارجی با حداکثر ۵٪ پل حرارتی).'}
+    </div></div>`;
 
-  $('report').innerHTML=
-    `<p class="h" style="margin:0 0 18px">${esc(CITIES[+$('city').value].c)} — رده اقلیمی ${esc(CITIES[+$('city').value].z)}</p>
-     <div>
-      <div class="kpis">${kpi}</div>
-      <section class="rsec"><h4><span>۰۱</span>متره لایه‌ها</h4>
-        <table class=""><thead><tr>
-          <th>جداره</th><th>مصالح</th><th class="num">ضخامت (mm)</th>
-          <th class="num">مساحت (m²)</th><th class="num">حجم (m³)</th>
-          <th class="num">وزن (kg)</th><th class="num">هزینه (تومان)</th>
-        </tr></thead><tbody>${tbl}
-        <tr><td>جداره نورگذر</td><td>—</td><td class="num">—</td>
-            <td class="num">${fmt(g.glaz*waste,1)}</td><td class="num">—</td>
-            <td class="num">—</td><td class="num">${money(glazCost)}</td></tr>
-        </tbody></table>
-        ${noDens?`<p class="h" style="margin-top:8px">${FA(noDens)} لایه چگالی عددی ندارد و در وزن محاسبه نشده است.</p>`:''}
-      </section>
-      <section class="rsec"><h4><span>۰۲</span>کنترل انطباق با مبحث ۱۹</h4>
-        <table class=""><thead><tr>
-          <th>جداره</th><th class="num">حداقل R جدول ۱۹-۵-۱</th>
-          <th class="num">R طرح</th><th class="num">نتیجه</th>
-        </tr></thead><tbody>${comp}</tbody></table>
-      </section>
-      <p class="foot"><b>نرخ‌ها DEMO DATA هستند</b> و از پروژه انرژی‌یار نیامده‌اند؛ پیش از هر استناد با نرخ روز جایگزین شوند.
-      مقادیر λ و مقاومت حرارتی از مصالح دارای گواهی‌نامه و پیوست «۷» است. این خروجی برآورد اولیه است و جایگزین متره تفصیلی نیست.</p>
-     </div>`;
+  $('out').innerHTML = `
+    ${g.approx ? `<div class="warn"><b>گزارش تقریبی.</b> این خروجی در حالت ساده و با فرض پلان
+      جمع‌وجور مربع (محیط = ۴√مساحت طبقه) تهیه شده، کسر ستون و دیوار برشی در آن لحاظ نشده و
+      بازشوها یکنواخت فرض شده‌اند. برای برآورد قرارداد یا ارائه به مرجع قابل استناد نیست.</div>` : ''}
+    <div class="demo"><b>هشدار داده:</b> نرخ‌ها و ترکیب پیش‌فرض لایه‌ها نمونه‌اند و از هیچ پروژه
+      واقعی نیامده‌اند. تا جایگزین نشوند، ستون هزینه بی‌معناست.</div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="v">${fmt(g.grossWall,0)}</div><div class="l">دیوار خارجی ناخالص (m²)</div></div>
+      <div class="kpi"><div class="v">${fmt(g.glaz,0)}</div><div class="l">جداره نورگذر (m²)</div></div>
+      <div class="kpi"><div class="v">${fmt(insVol,1)}</div><div class="l">حجم عایق حرارتی (m³)</div></div>
+      <div class="kpi"><div class="v">${money(cost)}</div><div class="l">برآورد هزینه (تومان، نمونه)</div></div>
+    </div>
+
+    ${facTable}
+    ${bridge}
+
+    <div class="rsec"><h4>کنترل انطباق حرارتی <span>اقلیم ${esc(zc)}</span></h4>
+      <div class="tscroll"><table>
+        <thead><tr><th>جداره</th><th class="num">R محاسبه‌شده</th><th class="num">حداقل جدول</th><th>وضعیت</th></tr></thead>
+        <tbody>${state.map(el=>{const R=rOf(el),q=rReq(el);
+          return `<tr><td>${esc(el.name)}</td><td class="num">${fmt(R,3)}</td>
+          <td class="num">${q==null?'—':fmt(q,2)}</td>
+          <td>${q==null?'<span class="wait">بدون الزام</span>':(R>=q?'<span class="ok">منطبق</span>':'<span class="no">کمتر از حد</span>')}</td></tr>`;
+        }).join('')}</tbody></table></div>
+      ${bad.length?`<div class="warn"><b>${FA(bad.length)} جداره</b> به حداقل مقاومت حرارتی جدول ۱۹-۵-۱ نمی‌رسد: ${bad.map(esc).join('، ')}</div>`:''}
+    </div>
+
+    <div class="rsec"><h4>متره لایه‌ها <span>${FA(rows.length)} ردیف</span></h4>
+      <div class="tscroll"><table>
+        <thead><tr><th>جداره</th><th>دسته</th><th>مصالح</th><th class="num">ضخامت (mm)</th>
+          <th>مبنای مساحت</th><th class="num">مساحت (m²)</th><th class="num">حجم (m³)</th>
+          <th class="num">وزن (kg)</th></tr></thead>
+        <tbody>${rows.map(r=>`<tr>
+          <td>${esc(r.el)}</td><td>${esc(r.g)}</td><td>${esc(r.m)}</td>
+          <td class="num">${FA(r.t)}</td><td style="font-size:12px">${BASIS_N[r.basis]}</td>
+          <td class="num">${fmt(r.A,1)}</td><td class="num">${fmt(r.vol,2)}</td>
+          <td class="num">${r.wt==null?'—':fmt(r.wt,0)}</td></tr>`).join('')}</tbody>
+      </table></div>
+      ${noDens?`<div class="note">برای ${FA(noDens)} لایه عایق، چگالی در منبع ثبت نشده و وزن محاسبه نشده است.</div>`:''}
+      <div class="note">ضریب پرت ${FA(num('waste'))}٪ روی حجم‌ها اعمال شده است.
+        «کسر بازشو و سازه» برای لایه‌های بنایی و «کسر بازشو» برای عایق و اندود پیش‌فرض است،
+        چون عایق طبق مبحث ۱۹ باید پیوسته و از روی ستون عبور کند.</div>
+    </div>`;
 }
 
-
-/* ---- محاسبه نسبت بازشو از روی ابعاد واقعی ---- */
-let wins=[{w:1.2,h:1.5,q:12},{w:0.8,h:1.2,q:8}];   /* DEMO: دو نوع نمونه */
-function renderWins(){
-  const g=geo();
-  let tot=0;
-  $('winRows').innerHTML=wins.map((x,i)=>{
-    const a=(+x.w||0)*(+x.h||0)*(+x.q||0); tot+=a;
-    return `<tr>
-      <td><input type="text" value="${esc(x.n||('بازشو '+FA(i+1)))}" oninput="setWin(${i},'n',this.value)"></td>
-      <td class="num"><input type="number" value="${x.w}" min="0" step="0.1" oninput="setWin(${i},'w',this.value)"></td>
-      <td class="num"><input type="number" value="${x.h}" min="0" step="0.1" oninput="setWin(${i},'h',this.value)"></td>
-      <td class="num"><input type="number" value="${x.q}" min="0" step="1" oninput="setWin(${i},'q',this.value)"></td>
-      <td class="num">${fmt(a,2)}</td>
-      <td><button class="x" type="button" onclick="delWin(${i})" aria-label="حذف">×</button></td>
-    </tr>`;
-  }).join('');
-  const ratio = g.grossWall>0 ? tot/g.grossWall*100 : 0;
-  $('winSum').innerHTML =
-    `مجموع سطح بازشو <b>${fmt(tot,2)}</b> m² · دیوار ناخالص <b>${fmt(g.grossWall,0)}</b> m² · `+
-    `نسبت بازشو <b>${fmt(ratio,1)}٪</b>`;
-  return ratio;
-}
-function setWin(i,k,v){ wins[i][k] = (k==='n') ? v : +v; renderWins(); }
-function delWin(i){ wins.splice(i,1); renderWins(); }
-function addWin(){ wins.push({w:1,h:1.2,q:1}); renderWins(); }
-function applyWWR(){
-  const r=renderWins();
-  $('wwr').value=Math.round(r*10)/10;
-  $('wwrSrc').textContent='از جدول بازشوها محاسبه شد';
-  geo(); renderElements();
-}
-['floors','hgt','plA','plB'].forEach(id=>$(id).addEventListener('input',renderWins));
-$('wwr').addEventListener('input',()=>{ $('wwrSrc').textContent='مستقیم وارد شده'; renderElements(); });
-
-zoneShow(); initElements(); renderWins(); openAll();
+/* ===================== راه‌اندازی ===================== */
+resetFacades();
+renderStruct();
+initElements();
+zoneShow();
+setMode('exact');
 
 </script>
 </body>
