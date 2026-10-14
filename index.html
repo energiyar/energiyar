@@ -206,7 +206,7 @@
         یکنواخت حساب می‌شوند. خروجی برای شناخت اولیه است، نه برای برآورد قرارداد یا ارائه به مرجع.
       </div>
 
-      <div class="g3" style="margin-top:20px">
+      <div class="g4" style="margin-top:20px">
         <div class="f">
           <label for="city">شهر پروژه</label>
           <select id="city"></select>
@@ -218,11 +218,22 @@
           <span class="h">طبقه‌های گرم‌شونده روی هم</span>
         </div>
         <div class="f">
-          <label for="hgt">ارتفاع هر طبقه (m)</label>
+          <label for="hgt">ارتفاع طبقه — کف تا کف (m)</label>
           <input id="hgt" type="number" min="2" step="0.05" value="3.2">
-          <span class="h">از کف تا کف</span>
+          <span class="h">همان عددی که روی مقطع نقشه است</span>
+        </div>
+        <div class="f">
+          <label for="slabT">ضخامت سقف (m)</label>
+          <input id="slabT" type="number" min="0" max="1.2" step="0.01" value="0.3">
+          <span class="h" id="hClearOut"></span>
         </div>
       </div>
+
+      <p class="note" style="margin-top:10px">
+        <b>کدام ارتفاع برای کدام لایه.</b> بلوک و آجر و بتن فقط بین دو سقف اجرا می‌شوند، پس با
+        <b>ارتفاع خالص</b> متره می‌شوند. عایق و اندود و نازک‌کاری روی لبه سقف هم ادامه دارند
+        (طبق مبحث ۱۹ عایق باید پیوسته باشد)، پس با <b>ارتفاع کف تا کف</b> متره می‌شوند.
+      </p>
 
       <div class="g3" id="simpleInputs" style="display:none;margin-top:4px">
         <div class="f">
@@ -242,6 +253,30 @@
           <label for="planArea">مساحت پلان یک طبقه (m²)</label>
           <input id="planArea" type="number" min="0" step="0.1" value="200">
           <span class="h">از روی پلان برداشت شود؛ از محیط قابل استخراج نیست</span>
+        </div>
+      </div>
+
+      <label class="chk" style="margin-top:14px">
+        <input type="checkbox" id="diffFloors">
+        <span>مساحت طبقات با هم فرق دارد — هر طبقه را جداگانه وارد می‌کنم</span>
+      </label>
+
+      <div id="floorsBox" style="display:none;margin-top:12px">
+        <p class="h" style="font-size:12.5px;color:var(--ink-faint);line-height:1.9;margin:0 0 10px">
+          مساحت هر طبقه را وارد کنید. اگر محیط یک طبقه با بقیه فرق دارد (مثلاً طبقه اول عقب‌نشینی دارد)،
+          محیط آن طبقه را هم بنویسید؛ خالی بگذارید تا محیط نماهای بخش ۰۲ استفاده شود.
+        </p>
+        <div class="tscroll">
+          <table>
+            <thead><tr>
+              <th>طبقه</th><th class="num">مساحت (m²)</th>
+              <th class="num">محیط (m) — اختیاری</th><th class="num">دیوار ناخالص (m²)</th>
+            </tr></thead>
+            <tbody id="floorsBody"></tbody>
+          </table>
+        </div>
+        <div class="row">
+          <button class="btn btn-g btn-s" onclick="fillFloors()">پر کردن همه با مساحت بالا</button>
         </div>
       </div>
 
@@ -285,7 +320,9 @@
         <div class="g3">
           <div class="f">
             <label for="planImg">تصویر پلان</label>
-            <input id="planImg" type="file" accept="image/*">
+            <input id="planImg" type="file" accept="image/png,image/jpeg,image/webp">
+            <span class="h">PNG، JPG یا WebP — حداکثر ۱۰ مگابایت.
+              اگر نقشه PDF یا DWG است، اول یک تصویر از آن بگیرید.</span>
           </div>
           <div class="f">
             <label for="northDeg">زاویه شمال نسبت به بالای تصویر (°)</label>
@@ -333,6 +370,16 @@
         جایی که ستون یا دیوار برشی هست، بلوک و آجر اجرا نمی‌شود، پس از متره <b>مصالح بنایی</b> کسر می‌شود.
         اما عایق حرارتی طبق مبحث ۱۹ باید پیوسته و از روی ستون عبور کند، پس از متره <b>عایق</b> کسر نمی‌شود.
         مبنای هر لایه در بخش ۰۴ جداگانه قابل تنظیم است.</p>
+
+      <label class="chk">
+        <input type="checkbox" id="structPerFloor" checked>
+        <span>تعدادها برای <b>یک طبقه نمونه</b> وارد شده‌اند و در تعداد طبقات ضرب می‌شوند</span>
+      </label>
+      <label class="chk">
+        <input type="checkbox" id="structManualH">
+        <span>ارتفاع هر ردیف را دستی وارد می‌کنم
+          (پیش‌فرض: ارتفاع خالص طبقه، همان عددی که در بخش ۰۱ حساب شد)</span>
+      </label>
 
       <div class="tscroll">
         <table>
@@ -551,28 +598,48 @@ $('winPerFloor').addEventListener('change',renderFacades);
 
 /* ===================== ستون و دیوار برشی ===================== */
 let STRUCT=[];
-function addStruct(t){ STRUCT.push({t:t, w:0.4, h:num('hgt')||3, n:4}); renderStruct(); }
+function addStruct(t){ STRUCT.push({t:t, w:0.4, h:0, n:4}); renderStruct(); }
 function delStruct(i){ STRUCT.splice(i,1); renderStruct(); }
-function structArea(){ return STRUCT.reduce((s,x)=>s+(+x.w||0)*(+x.h||0)*(+x.n||0),0); }
+/* ارتفاع ستون و دیوار برشی در صفحه نما همان ارتفاع خالص طبقه است،
+   مگر اینکه کاربر حالت دستی را انتخاب کند. */
+function structH(x){
+  const man = $('structManualH') && $('structManualH').checked;
+  return man ? (+x.h||0) : hCL();
+}
+function structArea(){
+  const mult = ($('structPerFloor') && $('structPerFloor').checked) ? Math.max(1,num('floors')) : 1;
+  return STRUCT.reduce((s,x)=>s+(+x.w||0)*structH(x)*(+x.n||0),0) * mult;
+}
 
 function renderStruct(){
-  $('structBody').innerHTML = STRUCT.map((x,i)=>`<tr>
-    <td><input value="${esc(x.t)}" oninput="STRUCT[${i}].t=this.value"></td>
-    <td class="num"><input type="number" min="0" step="0.01" value="${x.w}" oninput="STRUCT[${i}].w=+this.value;renderStruct()"></td>
-    <td class="num"><input type="number" min="0" step="0.01" value="${x.h}" oninput="STRUCT[${i}].h=+this.value;renderStruct()"></td>
-    <td class="num"><input type="number" min="0" step="1" value="${x.n}" oninput="STRUCT[${i}].n=+this.value;renderStruct()"></td>
-    <td class="num">${fmt((+x.w||0)*(+x.h||0)*(+x.n||0),2)}</td>
-    <td><button class="x" onclick="delStruct(${i})" aria-label="حذف">×</button></td>
-  </tr>`).join('') || '<tr><td colspan="6" style="color:var(--ink-faint)">موردی ثبت نشده است. اگر ستون یا دیوار برشی در صفحه نما دارید، اضافه کنید.</td></tr>';
+  const man = $('structManualH') && $('structManualH').checked;
+  const mult = ($('structPerFloor') && $('structPerFloor').checked) ? Math.max(1,num('floors')) : 1;
+  $('structBody').innerHTML = STRUCT.map((x,i)=>{
+    const hh = structH(x);
+    const hCell = man
+      ? `<input type="number" min="0" step="0.01" value="${x.h}" oninput="STRUCT[${i}].h=+this.value;renderStruct()">`
+      : `<span title="ارتفاع خالص طبقه">${fmt(hh,2)}</span>`;
+    return `<tr>
+      <td><input value="${esc(x.t)}" oninput="STRUCT[${i}].t=this.value"></td>
+      <td class="num"><input type="number" min="0" step="0.01" value="${x.w}" oninput="STRUCT[${i}].w=+this.value;renderStruct()"></td>
+      <td class="num">${hCell}</td>
+      <td class="num"><input type="number" min="0" step="1" value="${x.n}" oninput="STRUCT[${i}].n=+this.value;renderStruct()"></td>
+      <td class="num">${fmt((+x.w||0)*hh*(+x.n||0)*mult,2)}</td>
+      <td><button class="x" onclick="delStruct(${i})" aria-label="حذف">×</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6" style="color:var(--ink-faint)">موردی ثبت نشده است. اگر ستون یا دیوار برشی در صفحه نما دارید، اضافه کنید.</td></tr>';
   recalc();
 }
+['structPerFloor','structManualH'].forEach(id=>{
+  const e=$(id); if(e) e.addEventListener('change',renderStruct);
+});
 
 /* نسبت پل حرارتی: جدول ۱۹-۵-۱ با فرض عایق‌کاری پیوسته خارجی و حداکثر ۵٪ پل حرارتی
    از مساحت هر سطح خارجی محاسبه شده است. */
 function bridgeCheck(g){
   const box=$('bridgeBox'); if(!box) return null;
   if(MODE==='simple' || g.grossWall<=0){ box.innerHTML=''; return null; }
-  const r = structArea()/g.grossWall*100;
+  const r = structArea()/g.grossWall*100;   // نسبت به دیوار ناخالص کف تا کف
   const over = r>5;
   box.innerHTML = STRUCT.length===0 ? '' : `<div class="${over?'warn':'note'}">
     <b>نسبت پل حرارتی: ${fmt(r,2)}٪</b> از مساحت ناخالص دیوار خارجی.
@@ -583,35 +650,97 @@ function bridgeCheck(g){
   return r;
 }
 
+/* ===================== ارتفاع‌ها =====================
+   کف تا کف شامل یک ضخامت سقف است. دیوار بنایی فقط بین دو سقف اجرا می‌شود،
+   پس ارتفاع خالص = کف تا کف − ضخامت سقف. عایق و اندود روی لبه سقف هم ادامه
+   دارند و با ارتفاع کف تا کف متره می‌شوند. */
+function hFF(){ return Math.max(0, num('hgt')); }
+function hCL(){ return Math.max(0, hFF() - Math.max(0, num('slabT'))); }
+
+/* ===================== مساحت طبقات ===================== */
+let FLOORS=[];
+function floorRows(){
+  const n=Math.max(1,num('floors'));
+  const base = MODE==='simple' ? (num('totalArea')/n) : num('planArea');
+  const per  = $('diffFloors') && $('diffFloors').checked && MODE!=='simple';
+  const out=[];
+  for(let i=0;i<n;i++){
+    const r = per ? (FLOORS[i]||{}) : {};
+    const a = per ? (r.a==='' || r.a==null ? base : +r.a||0) : base;
+    const p = per && r.p!=='' && r.p!=null && +r.p>0 ? +r.p : null;
+    out.push({a, p});
+  }
+  return out;
+}
+function fillFloors(){
+  const n=Math.max(1,num('floors')), a=num('planArea');
+  FLOORS=Array.from({length:n},()=>({a:a, p:''}));
+  renderFloors();
+}
+function renderFloors(){
+  const box=$('floorsBox'); if(!box) return;
+  const on = $('diffFloors').checked && MODE!=='simple';
+  box.style.display = on ? '' : 'none';
+  if(!on){ recalc(); return; }
+  const n=Math.max(1,num('floors'));
+  while(FLOORS.length<n) FLOORS.push({a:num('planArea'), p:''});
+  FLOORS.length=n;
+  const pf = FACADES.reduce((t,f)=>t+(+f.len||0),0);
+  $('floorsBody').innerHTML = FLOORS.map((r,i)=>{
+    const p = (r.p===''||r.p==null) ? pf : (+r.p||0);
+    return `<tr>
+      <td>طبقه ${FA(i+1)}</td>
+      <td class="num"><input type="number" min="0" step="0.1" value="${r.a}"
+        oninput="FLOORS[${i}].a=this.value;renderFloors()"></td>
+      <td class="num"><input type="number" min="0" step="0.1" value="${r.p}" placeholder="${fmt(pf,1)}"
+        oninput="FLOORS[${i}].p=this.value;renderFloors()"></td>
+      <td class="num">${fmt(p*hFF(),1)}</td>
+    </tr>`;
+  }).join('');
+  recalc();
+}
+
 /* ===================== هندسه ===================== */
 function geom(){
-  const n=Math.max(1,num('floors')), h=num('hgt');
-  let perim, grossWall, glaz, plan, approx=false, facs=[];
+  const n=Math.max(1,num('floors')), h=hFF(), hc=hCL();
+  const rows=floorRows();
+  let perimFac, glaz, approx=false, facs=[];
 
   if(MODE==='simple'){
     approx=true;
-    const tot=num('totalArea');
-    plan = n>0 ? tot/n : 0;
-    const side = Math.sqrt(Math.max(0,plan));
-    perim = 4*side;
-    grossWall = perim*h*n;
-    glaz = grossWall*(num('wwrSimple')/100);
-    facs = ['N','E','S','W'].map(k=>({o:k, len:side, gross:grossWall/4, glaz:glaz/4}));
+    const side = Math.sqrt(Math.max(0, rows[0].a));
+    perimFac = 4*side;
+    glaz = perimFac*h*n*(num('wwrSimple')/100);
+    facs = ['N','E','S','W'].map(k=>({o:k, len:side, gross:perimFac*h*n/4, glaz:glaz/4}));
   } else {
     const mult = $('winPerFloor').checked ? n : 1;
-    perim = FACADES.reduce((s,f)=>s+(+f.len||0),0);
-    grossWall = perim*h*n;
-    glaz = FACADES.reduce((s,f)=>s+facGlaz(f),0)*mult;
-    plan = num('planArea');
+    perimFac = FACADES.reduce((t,f)=>t+(+f.len||0),0);
+    glaz = FACADES.reduce((t,f)=>t+facGlaz(f),0)*mult;
     facs = FACADES.map(f=>({o:f.o, len:+f.len||0, gross:(+f.len||0)*h*n, glaz:facGlaz(f)*mult}));
   }
-  glaz = Math.min(glaz, grossWall);
-  const struct = MODE==='simple' ? 0 : Math.min(structArea(), Math.max(0,grossWall-glaz));
+
+  /* محیط هر طبقه: اگر طبقه محیط اختصاصی دارد همان، وگرنه محیط نماها */
+  const perimSum = rows.reduce((t,r)=> t + (r.p!=null ? r.p : perimFac), 0);
+  const perim = n>0 ? perimSum/n : 0;           // محیط میانگین، فقط برای نمایش
+  const grossFF = perimSum*h;                   // مبنای عایق و اندود
+  const grossCL = perimSum*hc;                  // مبنای بنایی
+
+  /* اگر محیط طبقات با محیط نماها فرق دارد، سهم هر نما به همان نسبت تصحیح می‌شود */
+  const kk = (perimFac*n)>0 ? perimSum/(perimFac*n) : 1;
+  if(kk!==1) facs = facs.map(f=>({...f, gross:f.gross*kk}));
+
+  glaz = Math.min(glaz, grossFF);
+  const struct = MODE==='simple' ? 0 : Math.min(structArea(), Math.max(0, grossCL-glaz));
+
+  const plan = rows[0].a;
   return {
-    n, h, perim, grossWall, glaz, plan, struct, approx, facs,
-    wallNoStruct: Math.max(0, grossWall-glaz),
-    wallNet:      Math.max(0, grossWall-glaz-struct),
-    roof: plan, floorSoil: plan, between: plan*Math.max(0,n-1)
+    n, h, hc, perim, perimSum, grossWall:grossFF, grossCL, glaz, plan, struct, approx, facs,
+    wallNoStruct: Math.max(0, grossFF-glaz),
+    wallNet:      Math.max(0, grossCL-glaz-struct),
+    roof:      rows[n-1].a,
+    floorSoil: rows[0].a,
+    between:   rows.slice(0, Math.max(0,n-1)).reduce((t,r)=>t+r.a,0),
+    totalArea: rows.reduce((t,r)=>t+r.a,0)
   };
 }
 
@@ -622,18 +751,22 @@ function recalc(){
     ? `<b>برآورد تقریبی</b> — مساحت هر طبقه ${fmt(g.plan,0)} m² · محیط فرضی ${fmt(g.perim,1)} m ·
        دیوار ناخالص ${fmt(g.grossWall,0)} m² · بازشو ${fmt(g.glaz,0)} m² ·
        دیوار خالص ${fmt(g.wallNoStruct,0)} m²`
-    : `محیط ${fmt(g.perim,1)} m · دیوار ناخالص <b>${fmt(g.grossWall,0)}</b> m² ·
+    : `محیط ${fmt(g.perim,1)} m · ارتفاع خالص ${fmt(g.hc,2)} m ·
+       دیوار ناخالص (کف‌تاکف) <b>${fmt(g.grossWall,0)}</b> m² ·
        بازشو <b>${fmt(g.glaz,0)}</b> m² · ستون و دیوار برشی <b>${fmt(g.struct,1)}</b> m² ·
-       دیوار خالص بنایی <b>${fmt(g.wallNet,0)}</b> m² · مساحت پلان ${fmt(g.plan,0)} m²`;
+       دیوار خالص بنایی <b>${fmt(g.wallNet,0)}</b> m² · زیربنای کل ${fmt(g.totalArea,0)} m²`;
+  const ho=$('hClearOut');
+  if(ho) ho.innerHTML = `ارتفاع خالص دیوار: <b>${fmt(hCL(),2)}</b> m`;
   const sf=$('subFac'); if(sf) sf.textContent = FACADES.length+' نما';
   const ss=$('subStruct'); if(ss) ss.textContent = STRUCT.length? fmt(structArea(),1)+' m²' : 'ثبت نشده';
   bridgeCheck(g);
   renderSections();
   return g;
 }
-['floors','hgt','planArea','totalArea','wwrSimple'].forEach(id=>{
-  const e=$(id); if(e) e.addEventListener('input',()=>{ renderFacades(); });
+['floors','hgt','slabT','planArea','totalArea','wwrSimple'].forEach(id=>{
+  const e=$(id); if(e) e.addEventListener('input',()=>{ renderFloors(); renderStruct(); renderFacades(); });
 });
+$('diffFloors').addEventListener('change',()=>{ renderFloors(); recalc(); });
 
 /* ===================== جداره‌ها =====================
    rIdx = سطر جدول ۱۹-۵-۱؛ null یعنی الزام حرارتی ندارد ولی متره می‌شود.
@@ -699,7 +832,11 @@ function areaOfEl(el,g,basis){
     if(basis==='net')   return g.wallNet;
     return g.wallNoStruct;
   }
-  if(el.areaMode==='plan')    return g.plan;
+  if(el.areaMode==='plan'){
+    if(el.k==='roof' || el.k==='roofSemi')  return g.roof;       // بام = مساحت بالاترین طبقه
+    if(el.k==='floorSoil' || el.k==='floorAir' || el.k==='floorSemi') return g.floorSoil;
+    return g.plan;
+  }
   if(el.areaMode==='between') return g.between;
   return +el.manual||0;
 }
@@ -856,6 +993,14 @@ let img=null, tmode='none', scalePts=[], pts=[], pxPerM=0, fit={s:1,dx:0,dy:0};
 
 $('planImg').addEventListener('change',e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
+  if(!/^image\/(png|jpeg|webp)$/.test(f.type)){
+    $('traceOut').innerHTML='<b style="color:var(--fail)">فقط PNG، JPG یا WebP پذیرفته می‌شود.</b> اگر نقشه PDF یا DWG است، اول از آن تصویر بگیرید.';
+    e.target.value=''; return;
+  }
+  if(f.size > 10*1024*1024){
+    $('traceOut').innerHTML='<b style="color:var(--fail)">حجم تصویر بیش از ۱۰ مگابایت است.</b> تصویر را کوچک‌تر کنید.';
+    e.target.value=''; return;
+  }
   const im=new Image();
   im.onload=()=>{ img=im; scalePts=[]; pts=[]; pxPerM=0;
     const s=Math.min(cv.width/im.width, cv.height/im.height);
@@ -953,8 +1098,9 @@ function planAreaPx(){
 function info(){
   const o=$('traceOut'); if(!o) return;
   if(!img){ o.textContent='تصویری بارگذاری نشده است.'; return; }
-  if(pxPerM<=0){ o.textContent='برای تعیین مقیاس، دو سر یک اندازه معلوم را کلیک کنید.'; return; }
-  if(pts.length<3){ o.textContent=`مقیاس: ${fmt(pxPerM,1)} پیکسل در هر متر — حالا روی گوشه‌های محیط بیرونی کلیک کنید (${FA(pts.length)} نقطه).`; return; }
+  if(pxPerM<=0){ o.innerHTML='برای تعیین مقیاس، طول واقعی را در فیلد بالا بنویسید، سپس دو سر همان اندازه را روی تصویر کلیک کنید.'; return; }
+  if(pts.length<3){ o.innerHTML=`<b style="color:var(--pass)">مقیاس تنظیم شد</b> — ${fmt(pxPerM,1)} پیکسل در هر متر (هر پیکسل ${fmt(1/pxPerM,3)} m).
+    حالا روی گوشه‌های محیط بیرونی کلیک کنید (${FA(pts.length)} نقطه ثبت شده).`; return; }
   const S=segs(), A=planAreaPx()/(pxPerM*pxPerM);
   o.innerHTML=`${FA(S.length)} ضلع · محیط ${fmt(S.reduce((s,x)=>s+x.len,0),1)} m ·
     مساحت پلان ${fmt(A,1)} m² — جهت‌ها: ${S.map(s=>oName(s.o)).join('، ')}`;
@@ -965,6 +1111,7 @@ function applyTrace(){
   FACADES = S.map(s=>({o:s.o, len:+s.len.toFixed(2), wins:[]}));
   $('planArea').value = A.toFixed(1);
   if(MODE!=='exact') setMode('exact');
+  if($('diffFloors').checked) renderFloors();
   renderFacades();
   $('traceOut').innerHTML = `<b style="color:var(--pass)">${FA(S.length)} نما ساخته شد</b> و مساحت پلان روی ${fmt(A,1)} m² تنظیم شد. بازشوهای هر نما را در جدول‌های بالا وارد کنید.`;
 }
