@@ -214,17 +214,17 @@
         </div>
         <div class="f">
           <label for="floors">تعداد طبقات</label>
-          <input id="floors" type="number" min="1" step="1" value="5">
+          <input id="floors" type="text" inputmode="numeric" value="5">
           <span class="h">طبقه‌های گرم‌شونده روی هم</span>
         </div>
         <div class="f">
           <label for="hgt">ارتفاع طبقه — کف تا کف (m)</label>
-          <input id="hgt" type="number" min="2" step="0.05" value="3.2">
+          <input id="hgt" type="text" inputmode="decimal" value="3.2">
           <span class="h">همان عددی که روی مقطع نقشه است</span>
         </div>
         <div class="f">
           <label for="slabT">ضخامت سقف (m)</label>
-          <input id="slabT" type="number" min="0" max="1.2" step="0.01" value="0.3">
+          <input id="slabT" type="text" inputmode="decimal" value="0.3">
           <span class="h" id="hClearOut"></span>
         </div>
       </div>
@@ -238,12 +238,12 @@
       <div class="g3" id="simpleInputs" style="display:none;margin-top:4px">
         <div class="f">
           <label for="totalArea">زیربنای کل (m²)</label>
-          <input id="totalArea" type="number" min="0" step="1" value="1000">
+          <input id="totalArea" type="text" inputmode="decimal" value="1000">
           <span class="h">مجموع مساحت همه طبقات</span>
         </div>
         <div class="f">
           <label for="wwrSimple">نسبت بازشو به دیوار (%)</label>
-          <input id="wwrSimple" type="number" min="0" max="90" step="1" value="20">
+          <input id="wwrSimple" type="text" inputmode="decimal" value="20">
           <span class="h">یکنواخت روی همه نماها</span>
         </div>
       </div>
@@ -251,7 +251,7 @@
       <div class="g3" id="exactInputs" style="margin-top:4px">
         <div class="f">
           <label for="planArea">مساحت پلان یک طبقه (m²)</label>
-          <input id="planArea" type="number" min="0" step="0.1" value="200">
+          <input id="planArea" type="text" inputmode="decimal" value="200">
           <span class="h">از روی پلان برداشت شود؛ از محیط قابل استخراج نیست</span>
         </div>
       </div>
@@ -326,12 +326,12 @@
           </div>
           <div class="f">
             <label for="northDeg">زاویه شمال نسبت به بالای تصویر (°)</label>
-            <input id="northDeg" type="number" step="1" value="0">
+            <input id="northDeg" type="text" inputmode="decimal" value="0">
             <span class="h">اگر فلش شمال به بالا است، صفر بماند</span>
           </div>
           <div class="f">
             <label for="scaleLen">اندازه واقعی خط مقیاس (m)</label>
-            <input id="scaleLen" type="number" min="0" step="0.01" value="10">
+            <input id="scaleLen" type="text" inputmode="decimal" value="10">
             <span class="h">طول واقعی دو نقطه‌ای که کلیک می‌کنید</span>
           </div>
         </div>
@@ -360,7 +360,7 @@
   <!-- ۰۳ -->
   <section class="ac" id="acStruct">
     <button class="ac-head" aria-expanded="false" onclick="toggleSec('sec-struct',this)">
-      <span class="ac-n">۰۳</span><span class="ac-t">ستون و دیوار برشی در صفحه نما</span>
+      <span class="ac-n">۰۳</span><span class="ac-t">پل‌های حرارتی سازه‌ای</span>
       <span class="ac-sub" id="subStruct"></span>
       <svg class="ac-ch" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -381,18 +381,27 @@
           (پیش‌فرض: ارتفاع خالص طبقه، همان عددی که در بخش ۰۱ حساب شد)</span>
       </label>
 
+      <p class="h" style="font-size:12.5px;line-height:1.95;margin:4px 0 14px">
+        پل حرارتی فقط روی دیوار نما نیست. تیر و شناژی که عایق سقف زیرزمین یا کف
+        مجاور خاک را قطع می‌کند هم پل حرارتی است و باید با مساحت <b>همان سطح</b>
+        سنجیده شود، نه با مساحت دیوار. برای همین هر ردیف سطح خودش را دارد.
+        برای این ردیف‌ها، عمق عضو در راستای عبور از عایق را در ستون «ارتفاع یا عمق» بنویسید.</p>
+
       <div class="tscroll">
         <table>
           <thead><tr>
-            <th>نوع</th><th class="num">عرض (m)</th><th class="num">ارتفاع (m)</th>
+            <th>نوع</th><th>سطحی که عایق آن را قطع می‌کند</th>
+            <th class="num">عرض (m)</th><th class="num">ارتفاع یا عمق (m)</th>
             <th class="num">تعداد</th><th class="num">مساحت (m²)</th><th></th>
           </tr></thead>
           <tbody id="structBody"></tbody>
         </table>
       </div>
       <div class="row">
-        <button class="btn btn-g btn-s" onclick="addStruct('ستون')">+ ستون</button>
-        <button class="btn btn-g btn-s" onclick="addStruct('دیوار برشی')">+ دیوار برشی</button>
+        <button class="btn btn-g btn-s" onclick="addStruct('ستون','wall')">+ ستون نما</button>
+        <button class="btn btn-g btn-s" onclick="addStruct('دیوار برشی','wall')">+ دیوار برشی</button>
+        <button class="btn btn-g btn-s" onclick="addStruct('تیر سقف زیرزمین','floorSoil')">+ تیر مجاور خاک</button>
+        <button class="btn btn-g btn-s" onclick="addStruct('تیر کف روی پیلوت','floorAir')">+ تیر کف پیلوت</button>
       </div>
 
       <div id="bridgeBox"></div>
@@ -429,9 +438,13 @@
       <div class="demo"><b>داده نمونه — جایگزین کنید.</b> این نرخ‌ها ساختگی‌اند و هیچ مرجعی ندارند.
         تا وقتی با نرخ روز پروژه عوض نشوند، عددهای هزینه در گزارش بی‌معنا هستند.</div>
       <div class="g2" id="rateBox"></div>
-      <div class="f" style="margin-top:18px;max-width:320px">
+      <div class="f" style="margin-top:18px;max-width:430px">
         <label for="waste">ضریب پرت اجرا (%)</label>
-        <input id="waste" type="number" min="0" max="50" step="1" value="5">
+        <input id="waste" type="text" inputmode="decimal" value="5">
+        <p class="h" style="font-size:12px;line-height:1.95;margin:8px 0 0">
+          دورریز برش و اجرای مصالح؛ فقط به <b>حجم و هزینه</b> اضافه می‌شود و در کنترل
+          انطباق حرارتی هیچ اثری ندارد. این عدد با حد ۵٪ پل حرارتی در بخش ۰۲ یکی نیست:
+          آن یکی رواداری نیست، فرضِ خودِ جدول ۱۹-۵-۱ است.</p>
       </div>
     </div></div></div>
   </section>
@@ -479,7 +492,48 @@ const fmt=(v,d=1)=>FA(Number(v).toLocaleString('en-US',{minimumFractionDigits:d,
 const money=v=>FA(Math.round(v).toLocaleString('en-US'));
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=id=>document.getElementById(id);
-const num=id=>+($(id)||{}).value||0;
+
+/* ---- خواندن عدد از ورودی ----
+   کاربر ممکن است با صفحه‌کلید فارسی بنویسد: رقم فارسی یا عربی، و ممیز را
+   با «٫»، «،»، «,» یا «.» بزند. همه این‌ها باید یک عدد بدهند.
+   ویرگول اگر دقیقاً سه رقم بعدش باشد جداکننده هزارگان است، نه ممیز. */
+function toNum(v){
+  if(typeof v==='number') return isFinite(v)?v:0;
+  if(v==null) return 0;
+  let s=String(v).trim();
+  if(!s) return 0;
+  s=s.replace(/[۰-۹]/g,c=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(c))
+     .replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
+  s=s.replace(/[\s‌٬⁦-⁩]/g,'');   // فاصله، نیم‌فاصله، جداکننده هزارگان
+  s=s.replace(/[٫،]/g,'.');                            // ممیز عربی و ویرگول فارسی
+  s=s.replace(/,(\d{3})(?!\d)/g,'$1');                 // ویرگول هزارگان: ۱,۰۰۰
+  s=s.replace(/,/g,'.');                               // هر ویرگول باقی‌مانده ممیز است
+  s=s.replace(/[^0-9.\-]/g,'');
+  const p=s.split('.');
+  if(p.length>2) s=p.shift()+'.'+p.join('');
+  const n=parseFloat(s);
+  return isFinite(n)?n:0;
+}
+const num=id=>toNum(($(id)||{}).value);
+
+/* ---- بازسازی جدول بدون از دست رفتن تمرکز ----
+   جدول‌ها با هر کلید دوباره ساخته می‌شوند. اگر فقط innerHTML عوض شود،
+   خانه‌ای که کاربر در آن تایپ می‌کند نابود می‌شود و نوشتن «۲٫۸» ممکن نیست:
+   به محض زدن ممیز، خانه از نو ساخته می‌شود و ممیز از بین می‌رود.
+   اینجا کلید خانه و جای مکان‌نما پیش از بازسازی نگه داشته و بعد برگردانده می‌شود. */
+function setHTML(box, html){
+  if(!box) return;
+  const a=document.activeElement;
+  const k=(a && a.getAttribute) ? a.getAttribute('data-k') : null;
+  let ss=null, se=null;
+  if(k){ try{ ss=a.selectionStart; se=a.selectionEnd; }catch(e){} }
+  box.innerHTML=html;
+  if(!k) return;
+  const b=box.querySelector('[data-k="'+k.replace(/"/g,'\\"')+'"]');
+  if(!b) return;
+  b.focus();
+  if(ss!=null && b.setSelectionRange){ try{ b.setSelectionRange(ss,se); }catch(e){} }
+}
 
 /* ---- DEMO DATA: نرخ‌ها. هیچ‌کدام از پروژه انرژی یار نیامده‌اند ---- */
 const RATES = [
@@ -555,12 +609,12 @@ function delFacade(i){ FACADES.splice(i,1); renderFacades(); }
 function addWin(i){ FACADES[i].wins.push({t:'پنجره', w:1.2, h:1.2, n:1}); renderFacades(); }
 function delWin(i,j){ FACADES[i].wins.splice(j,1); renderFacades(); }
 
-function facGlaz(f){ return f.wins.reduce((s,w)=>s+(+w.w||0)*(+w.h||0)*(+w.n||0),0); }
+function facGlaz(f){ return f.wins.reduce((s,w)=>s+toNum(w.w)*toNum(w.h)*toNum(w.n),0); }
 
 function renderFacades(){
   const h=num('hgt'), n=Math.max(1,num('floors')), mult = $('winPerFloor').checked ? n : 1;
-  $('facList').innerHTML = FACADES.map((f,i)=>{
-    const gross=(+f.len||0)*h*n;
+  setHTML($('facList'), FACADES.map((f,i)=>{
+    const gross=toNum(f.len)*h*n;
     const glaz=facGlaz(f)*mult;
     const wwr = gross>0 ? glaz/gross*100 : 0;
     const bad = wwr>100;
@@ -569,8 +623,8 @@ function renderFacades(){
         <select onchange="FACADES[${i}].o=this.value;renderFacades()">
           ${ORIENT.map(o=>`<option value="${o.k}" ${o.k===f.o?'selected':''}>${o.n}</option>`).join('')}
         </select>
-        <input type="number" min="0" step="0.1" value="${f.len}" aria-label="طول نما"
-          oninput="FACADES[${i}].len=+this.value;renderFacades()">
+        <input type="text" inputmode="decimal" value="${esc(f.len)}" aria-label="طول نما"
+          data-k="fac-${i}-len" oninput="FACADES[${i}].len=this.value;renderFacades()">
         <span class="h" style="font-size:12px">متر طول</span>
         <span class="fac-s">ناخالص ${fmt(gross,0)} m² · بازشو ${fmt(glaz,1)} m² ·
           نسبت <b class="${bad?'no':''}">${fmt(wwr,1)}٪</b></span>
@@ -581,53 +635,79 @@ function renderFacades(){
         <thead><tr><th>نوع بازشو</th><th class="num">عرض (m)</th><th class="num">ارتفاع (m)</th>
           <th class="num">تعداد</th><th class="num">مساحت (m²)</th><th></th></tr></thead>
         <tbody>${f.wins.map((w,j)=>`<tr>
-          <td><input value="${esc(w.t)}" oninput="FACADES[${i}].wins[${j}].t=this.value"></td>
-          <td class="num"><input type="number" min="0" step="0.01" value="${w.w}" oninput="FACADES[${i}].wins[${j}].w=+this.value;renderFacades()"></td>
-          <td class="num"><input type="number" min="0" step="0.01" value="${w.h}" oninput="FACADES[${i}].wins[${j}].h=+this.value;renderFacades()"></td>
-          <td class="num"><input type="number" min="0" step="1" value="${w.n}" oninput="FACADES[${i}].wins[${j}].n=+this.value;renderFacades()"></td>
-          <td class="num">${fmt((+w.w||0)*(+w.h||0)*(+w.n||0),2)}</td>
+          <td><input value="${esc(w.t)}" data-k="fac-${i}-w${j}-t" oninput="FACADES[${i}].wins[${j}].t=this.value"></td>
+          <td class="num"><input type="text" inputmode="decimal" value="${esc(w.w)}" data-k="fac-${i}-w${j}-w" oninput="FACADES[${i}].wins[${j}].w=this.value;renderFacades()"></td>
+          <td class="num"><input type="text" inputmode="decimal" value="${esc(w.h)}" data-k="fac-${i}-w${j}-h" oninput="FACADES[${i}].wins[${j}].h=this.value;renderFacades()"></td>
+          <td class="num"><input type="text" inputmode="numeric" value="${esc(w.n)}" data-k="fac-${i}-w${j}-n" oninput="FACADES[${i}].wins[${j}].n=this.value;renderFacades()"></td>
+          <td class="num">${fmt(toNum(w.w)*toNum(w.h)*toNum(w.n),2)}</td>
           <td><button class="x" onclick="delWin(${i},${j})" aria-label="حذف">×</button></td>
         </tr>`).join('')||'<tr><td colspan="6" style="color:var(--ink-faint)">بازشویی ثبت نشده است.</td></tr>'}</tbody>
       </table></div>
       <div class="row"><button class="btn btn-g btn-s" onclick="addWin(${i})">+ بازشو</button></div>
     </div>`;
-  }).join('');
+  }).join(''));
   recalc();
 }
 $('winPerFloor').addEventListener('change',renderFacades);
 
 /* ===================== ستون و دیوار برشی ===================== */
 let STRUCT=[];
-function addStruct(t){ STRUCT.push({t:t, w:0.4, h:0, n:4}); renderStruct(); }
+
+/* سطحی که این عضو سازه‌ای از آن عبور می‌کند. پل حرارتی همیشه روی دیوار نما
+   نیست: تیر سقف زیرزمین که مجاور خاک است هم عایق آن سقف را قطع می‌کند و
+   باید با مساحت همان سقف سنجیده شود، نه با مساحت دیوار. */
+const BR_SURF=[
+  {k:'wall',      n:'دیوار خارجی'},
+  {k:'wallSoil',  n:'دیوار مجاور خاک'},
+  {k:'floorSoil', n:'کف مجاور خاک'},
+  {k:'roof',      n:'سقف مجاور فضای آزاد'},
+  {k:'floorAir',  n:'کف مجاور هوای آزاد / روی پیلوت'}
+];
+const BR_NAME=k=>(BR_SURF.find(s=>s.k===k)||BR_SURF[0]).n;
+
+function addStruct(t,s){ STRUCT.push({t:t, w:0.4, h:0, n:4, s:s||'wall'}); renderStruct(); }
 function delStruct(i){ STRUCT.splice(i,1); renderStruct(); }
-/* ارتفاع ستون و دیوار برشی در صفحه نما همان ارتفاع خالص طبقه است،
-   مگر اینکه کاربر حالت دستی را انتخاب کند. */
-function structH(x){
-  const man = $('structManualH') && $('structManualH').checked;
-  return man ? (+x.h||0) : hCL();
+
+/* ارتفاع ستون و دیوار برشی در صفحه نما همان ارتفاع خالص طبقه است.
+   برای عضوی که در سطح دیگری است (تیر سقف، شناژ کف) ارتفاع خالص طبقه
+   بی‌معناست؛ آنجا عمق عضو را خود کاربر وارد می‌کند. */
+function structManual(x){
+  return ($('structManualH') && $('structManualH').checked) || (x.s && x.s!=='wall');
 }
-function structArea(){
-  const mult = ($('structPerFloor') && $('structPerFloor').checked) ? Math.max(1,num('floors')) : 1;
-  return STRUCT.reduce((s,x)=>s+(+x.w||0)*structH(x)*(+x.n||0),0) * mult;
+function structH(x){ return structManual(x) ? toNum(x.h) : hCL(); }
+
+/* ضرب در تعداد طبقات فقط برای اعضای صفحه نما معنا دارد. */
+function structMult(x){
+  if(x.s && x.s!=='wall') return 1;
+  return ($('structPerFloor') && $('structPerFloor').checked) ? Math.max(1,num('floors')) : 1;
 }
+function structRowArea(x){ return toNum(x.w)*structH(x)*toNum(x.n)*structMult(x); }
+
+function structAreaOn(surf){
+  return STRUCT.filter(x=>(x.s||'wall')===surf).reduce((s,x)=>s+structRowArea(x),0);
+}
+/* فقط اعضای صفحه نما از دیوار بنایی کسر می‌شوند. */
+function structArea(){ return structAreaOn('wall'); }
 
 function renderStruct(){
-  const man = $('structManualH') && $('structManualH').checked;
-  const mult = ($('structPerFloor') && $('structPerFloor').checked) ? Math.max(1,num('floors')) : 1;
-  $('structBody').innerHTML = STRUCT.map((x,i)=>{
+  setHTML($('structBody'), STRUCT.map((x,i)=>{
     const hh = structH(x);
-    const hCell = man
-      ? `<input type="number" min="0" step="0.01" value="${x.h}" oninput="STRUCT[${i}].h=+this.value;renderStruct()">`
+    const hCell = structManual(x)
+      ? `<input type="text" inputmode="decimal" value="${esc(x.h)}" data-k="st-${i}-h"
+           oninput="STRUCT[${i}].h=this.value;renderStruct()">`
       : `<span title="ارتفاع خالص طبقه">${fmt(hh,2)}</span>`;
     return `<tr>
-      <td><input value="${esc(x.t)}" oninput="STRUCT[${i}].t=this.value"></td>
-      <td class="num"><input type="number" min="0" step="0.01" value="${x.w}" oninput="STRUCT[${i}].w=+this.value;renderStruct()"></td>
+      <td><input value="${esc(x.t)}" data-k="st-${i}-t" oninput="STRUCT[${i}].t=this.value"></td>
+      <td><select data-k="st-${i}-s" onchange="STRUCT[${i}].s=this.value;renderStruct()">
+        ${BR_SURF.map(s=>`<option value="${s.k}" ${s.k===(x.s||'wall')?'selected':''}>${s.n}</option>`).join('')}
+      </select></td>
+      <td class="num"><input type="text" inputmode="decimal" value="${esc(x.w)}" data-k="st-${i}-w" oninput="STRUCT[${i}].w=this.value;renderStruct()"></td>
       <td class="num">${hCell}</td>
-      <td class="num"><input type="number" min="0" step="1" value="${x.n}" oninput="STRUCT[${i}].n=+this.value;renderStruct()"></td>
-      <td class="num">${fmt((+x.w||0)*hh*(+x.n||0)*mult,2)}</td>
+      <td class="num"><input type="text" inputmode="numeric" value="${esc(x.n)}" data-k="st-${i}-n" oninput="STRUCT[${i}].n=this.value;renderStruct()"></td>
+      <td class="num">${fmt(structRowArea(x),2)}</td>
       <td><button class="x" onclick="delStruct(${i})" aria-label="حذف">×</button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="6" style="color:var(--ink-faint)">موردی ثبت نشده است. اگر ستون یا دیوار برشی در صفحه نما دارید، اضافه کنید.</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="color:var(--ink-faint)">موردی ثبت نشده است. ستون و دیوار برشی صفحه نما، و تیر یا شناژی که عایق سقف و کف را قطع می‌کند، همه اینجا ثبت می‌شوند.</td></tr>');
   recalc();
 }
 ['structPerFloor','structManualH'].forEach(id=>{
@@ -636,18 +716,45 @@ function renderStruct(){
 
 /* نسبت پل حرارتی: جدول ۱۹-۵-۱ با فرض عایق‌کاری پیوسته خارجی و حداکثر ۵٪ پل حرارتی
    از مساحت هر سطح خارجی محاسبه شده است. */
+/* مساحت مرجع هر سطح، برای سنجش نسبت پل حرارتی همان سطح. */
+function surfArea(k,g){
+  if(k==='wall')      return g.grossWall;
+  if(k==='roof')      return g.roof;
+  if(k==='floorSoil') return g.floorSoil;
+  /* دیوار مجاور خاک و کف روی پیلوت مساحت دستی دارند؛ تا وقتی آن جداره در
+     بخش ۰۴ اضافه نشده، مساحت مرجعی برای سنجیدن نسبت وجود ندارد. */
+  const el=state.find(e=>e.k===k);
+  return el ? toNum(el.manual) : 0;
+}
+
 function bridgeCheck(g){
   const box=$('bridgeBox'); if(!box) return null;
-  if(MODE==='simple' || g.grossWall<=0){ box.innerHTML=''; return null; }
-  const r = structArea()/g.grossWall*100;   // نسبت به دیوار ناخالص کف تا کف
-  const over = r>5;
-  box.innerHTML = STRUCT.length===0 ? '' : `<div class="${over?'warn':'note'}">
-    <b>نسبت پل حرارتی: ${fmt(r,2)}٪</b> از مساحت ناخالص دیوار خارجی.
-    ${over
-      ? 'این از حد ۵٪ که جدول ۱۹-۵-۱ بر مبنای آن محاسبه شده بیشتر است. در این حالت مقاومت‌های جدول دیگر معتبر نیستند و باید اثر پل حرارتی جداگانه محاسبه شود.'
-      : 'در محدوده ۵٪ که جدول ۱۹-۵-۱ بر مبنای آن محاسبه شده است.'}
+  if(MODE==='simple' || STRUCT.length===0){ box.innerHTML=''; return null; }
+
+  const rows=BR_SURF.map(s=>{
+    const a=structAreaOn(s.k);
+    if(a<=0) return null;
+    const base=surfArea(s.k,g);
+    return {n:s.n, k:s.k, a, base, r: base>0 ? a/base*100 : null};
+  }).filter(Boolean);
+
+  if(!rows.length){ box.innerHTML=''; return null; }
+  const anyOver = rows.some(x=>x.r!=null && x.r>5);
+
+  box.innerHTML = `<div class="${anyOver?'warn':'note'}">
+    <b>نسبت پل حرارتی هر سطح</b>
+    <ul style="margin:8px 0 0;padding-inline-start:20px">
+      ${rows.map(x=>x.r==null
+        ? `<li>${x.n}: ${fmt(x.a,1)} m² — مساحت این سطح هنوز وارد نشده، پس نسبت قابل محاسبه نیست.</li>`
+        : `<li>${x.n}: <b class="${x.r>5?'no':'ok'}">${fmt(x.r,2)}٪</b>
+             (${fmt(x.a,1)} از ${fmt(x.base,0)} m²)</li>`).join('')}
+    </ul>
+    <p style="margin:10px 0 0">${anyOver
+      ? 'دست‌کم یک سطح از ۵٪ گذشته است. مقاومت‌های جدول ۱۹-۵-۱ بر فرض حداکثر ۵٪ پل حرارتی در هر سطح به‌دست آمده‌اند؛ بالاتر از آن، عددهای جدول دیگر معتبر نیستند و باید اثر پل حرارتی جداگانه محاسبه شود.'
+      : 'همه سطوح زیر ۵٪ هستند و عددهای جدول ۱۹-۵-۱ معتبرند.'}</p>
+    <p class="h" style="font-size:12px;margin:8px 0 0">این ۵٪ رواداری یا ضریب اطمینان نیست؛ فرضی است که خودِ جدول ۱۹-۵-۱ بر پایه آن بسته شده: حداکثر پنج درصد از مساحت هر سطح خارجی می‌تواند عایق‌بریده باشد.</p>
   </div>`;
-  return r;
+  return rows[0] ? rows[0].r : null;
 }
 
 /* ===================== ارتفاع‌ها =====================
@@ -666,8 +773,8 @@ function floorRows(){
   const out=[];
   for(let i=0;i<n;i++){
     const r = per ? (FLOORS[i]||{}) : {};
-    const a = per ? (r.a==='' || r.a==null ? base : +r.a||0) : base;
-    const p = per && r.p!=='' && r.p!=null && +r.p>0 ? +r.p : null;
+    const a = per ? (r.a==='' || r.a==null ? base : toNum(r.a)) : base;
+    const p = per && r.p!=='' && r.p!=null && toNum(r.p)>0 ? toNum(r.p) : null;
     out.push({a, p});
   }
   return out;
@@ -685,18 +792,18 @@ function renderFloors(){
   const n=Math.max(1,num('floors'));
   while(FLOORS.length<n) FLOORS.push({a:num('planArea'), p:''});
   FLOORS.length=n;
-  const pf = FACADES.reduce((t,f)=>t+(+f.len||0),0);
-  $('floorsBody').innerHTML = FLOORS.map((r,i)=>{
-    const p = (r.p===''||r.p==null) ? pf : (+r.p||0);
+  const pf = FACADES.reduce((t,f)=>t+toNum(f.len),0);
+  setHTML($('floorsBody'), FLOORS.map((r,i)=>{
+    const p = (r.p===''||r.p==null) ? pf : toNum(r.p);
     return `<tr>
       <td>طبقه ${FA(i+1)}</td>
-      <td class="num"><input type="number" min="0" step="0.1" value="${r.a}"
+      <td class="num"><input type="text" inputmode="decimal" value="${esc(r.a)}" data-k="fl-${i}-a"
         oninput="FLOORS[${i}].a=this.value;renderFloors()"></td>
-      <td class="num"><input type="number" min="0" step="0.1" value="${r.p}" placeholder="${fmt(pf,1)}"
+      <td class="num"><input type="text" inputmode="decimal" value="${esc(r.p)}" placeholder="${fmt(pf,1)}" data-k="fl-${i}-p"
         oninput="FLOORS[${i}].p=this.value;renderFloors()"></td>
       <td class="num">${fmt(p*hFF(),1)}</td>
     </tr>`;
-  }).join('');
+  }).join(''));
   recalc();
 }
 
@@ -714,9 +821,9 @@ function geom(){
     facs = ['N','E','S','W'].map(k=>({o:k, len:side, gross:perimFac*h*n/4, glaz:glaz/4}));
   } else {
     const mult = $('winPerFloor').checked ? n : 1;
-    perimFac = FACADES.reduce((t,f)=>t+(+f.len||0),0);
+    perimFac = FACADES.reduce((t,f)=>t+toNum(f.len),0);
     glaz = FACADES.reduce((t,f)=>t+facGlaz(f),0)*mult;
-    facs = FACADES.map(f=>({o:f.o, len:+f.len||0, gross:(+f.len||0)*h*n, glaz:facGlaz(f)*mult}));
+    facs = FACADES.map(f=>({o:f.o, len:toNum(f.len), gross:toNum(f.len)*h*n, glaz:facGlaz(f)*mult}));
   }
 
   /* محیط هر طبقه: اگر طبقه محیط اختصاصی دارد همان، وگرنه محیط نماها */
@@ -758,7 +865,10 @@ function recalc(){
   const ho=$('hClearOut');
   if(ho) ho.innerHTML = `ارتفاع خالص دیوار: <b>${fmt(hCL(),2)}</b> m`;
   const sf=$('subFac'); if(sf) sf.textContent = FACADES.length+' نما';
-  const ss=$('subStruct'); if(ss) ss.textContent = STRUCT.length? fmt(structArea(),1)+' m²' : 'ثبت نشده';
+  const ss=$('subStruct');
+  if(ss) ss.textContent = STRUCT.length
+    ? fmt(STRUCT.reduce((s,x)=>s+structRowArea(x),0),1)+' m² در '+FA(new Set(STRUCT.map(x=>x.s||'wall')).size)+' سطح'
+    : 'ثبت نشده';
   bridgeCheck(g);
   renderSections();
   return g;
@@ -788,9 +898,13 @@ const CATALOGUE=[
    def:[['اندود',20],['عایق حرارتی',100]]},
   {k:'roofSemi',  rIdx:4,    area:'manual',  cats:SLABG,  name:'سقف مجاور فضای نیمه‌باز کنترل‌نشده',
    def:[['اندود',20],['عایق حرارتی',80]]},
-  {k:'floorAir',  rIdx:5,    area:'manual',  cats:FLOORG, name:'کف مجاور هوای آزاد',
+  /* کف روی پیلوت دو حالت دارد و سطر جدول ۱۹-۵-۱ آن فرق می‌کند:
+     پیلوت باز = مجاور هوای آزاد (سطر ۶) · پارکینگ سرپوشیده = نیمه‌باز (سطر ۷) */
+  {k:'floorAir',  rIdx:5,    area:'manual',  cats:FLOORG,
+   name:'کف روی پیلوت باز — مجاور هوای آزاد (کنسول و پیش‌آمدگی هم همین است)',
    def:[['عایق حرارتی',50]]},
-  {k:'floorSemi', rIdx:6,    area:'manual',  cats:FLOORG, name:'کف مجاور فضای نیمه‌باز کنترل‌نشده',
+  {k:'floorSemi', rIdx:6,    area:'manual',  cats:FLOORG,
+   name:'کف روی پارکینگ یا انباری سرپوشیده — مجاور فضای نیمه‌باز کنترل‌نشده',
    def:[['عایق حرارتی',40]]},
   {k:'floorSoil', rIdx:7,    area:'plan',    cats:FLOORG, name:'کف مجاور خاک',
    def:[['عایق حرارتی',30]]},
@@ -838,12 +952,12 @@ function areaOfEl(el,g,basis){
     return g.plan;
   }
   if(el.areaMode==='between') return g.between;
-  return +el.manual||0;
+  return toNum(el.manual);
 }
 
 function rOf(el){
   return el.layers.reduce((s,L)=>{
-    const m=MATS[L.mi]; const lam=m?m.lam:0; const t=(L.t||0)/1000;
+    const m=MATS[L.mi]; const lam=m?m.lam:0; const t=toNum(L.t)/1000;
     return s + (lam>0 ? t/lam : 0);
   },0);
 }
@@ -855,10 +969,18 @@ function rReq(el){
 
 const BASIS_N={gross:'ناخالص (بدون کسر)', noStruct:'کسر بازشو', net:'کسر بازشو و سازه'};
 
+/* کسر بازشو فقط روی جداره‌های نما معنا دارد. کف مجاور خاک پنجره ندارد،
+   پس نباید برچسب «کسر بازشو» زیرش بنشیند — حتی وقتی آن فهرست غیرفعال است. */
+function NOCUT_N(el){
+  if(el.areaMode==='plan')    return 'تمام مساحت پلان — بدون کسر';
+  if(el.areaMode==='between') return 'پلان × (طبقات−۱) — بدون کسر';
+  return 'مساحتی که دستی وارد کرده‌اید';
+}
+
 function renderEls(){
   const g=geom();
   $('addSel').innerHTML=CATALOGUE.map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('');
-  $('elList').innerHTML=state.map((el,i)=>{
+  setHTML($('elList'), state.map((el,i)=>{
     const R=rOf(el), req=rReq(el);
     const st = req==null ? '<span class="wait">بدون الزام حرارتی</span>'
              : (R>=req ? `<span class="ok">منطبق</span>` : `<span class="no">کمتر از حد مجاز</span>`);
@@ -872,8 +994,8 @@ function renderEls(){
 
       ${el.areaMode==='manual' ? `<div class="f" style="max-width:260px;margin-bottom:12px">
         <label>مساحت این جداره (m²)</label>
-        <input type="number" min="0" step="0.1" value="${el.manual}"
-          oninput="state[${i}].manual=+this.value;renderEls()">
+        <input type="text" inputmode="decimal" value="${esc(el.manual)}" data-k="el-${i}-manual"
+          oninput="state[${i}].manual=this.value;renderEls()">
       </div>` : `<p class="h" style="font-size:12px;margin:0 0 12px">
         مساحت از ${el.areaMode==='facade'?'هندسه نماها':el.areaMode==='plan'?'مساحت پلان':'پلان × (طبقات−۱)'} گرفته می‌شود.</p>`}
 
@@ -899,14 +1021,16 @@ function renderEls(){
           </div>
           <div class="f">
             <label>ضخامت (mm)</label>
-            <input type="number" min="0" step="1" value="${L.t}"
-              oninput="state[${i}].layers[${j}].t=+this.value;renderEls()">
+            <input type="text" inputmode="decimal" value="${esc(L.t)}" data-k="el-${i}-l${j}-t"
+              oninput="state[${i}].layers[${j}].t=this.value;renderEls()">
           </div>
           <div class="f">
             <label>مبنای مساحت</label>
-            <select ${isFac?'':'disabled'} onchange="state[${i}].layers[${j}].basis=this.value;renderEls()">
-              ${Object.keys(BASIS_N).map(b=>`<option value="${b}" ${b===L.basis?'selected':''}>${BASIS_N[b]}</option>`).join('')}
-            </select>
+            ${isFac
+              ? `<select onchange="state[${i}].layers[${j}].basis=this.value;renderEls()">
+                   ${Object.keys(BASIS_N).map(b=>`<option value="${b}" ${b===L.basis?'selected':''}>${BASIS_N[b]}</option>`).join('')}
+                 </select>`
+              : `<select disabled title="کسر بازشو فقط برای جداره‌های نما معنا دارد"><option>${esc(NOCUT_N(el))}</option></select>`}
           </div>
           <button class="x" onclick="delLayer(${i},${j})" aria-label="حذف لایه">×</button>
         </div>`;
@@ -918,7 +1042,7 @@ function renderEls(){
         ${sectionSVG(el,i)}
       </div>
     </div>`;
-  }).join('');
+  }).join(''));
   recalc();
 }
 function renderSections(){ /* مقطع‌ها همراه renderEls ساخته می‌شوند */ }
@@ -953,12 +1077,12 @@ function hatchDefs(uid){
   </defs>`;
 }
 function sectionSVG(el,uid){
-  const Ls=el.layers.filter(L=>(L.t||0)>0);
+  const Ls=el.layers.filter(L=>toNum(L.t)>0);
   if(!Ls.length) return '<p class="h" style="font-size:12px">لایه‌ای با ضخامت بزرگ‌تر از صفر ثبت نشده است.</p>';
   const W=760, H=132, pad=12, top=30, boxH=62;
-  const tot=Ls.reduce((s,L)=>s+(L.t||0),0);
+  const tot=Ls.reduce((s,L)=>s+toNum(L.t),0);
   const minW=40, avail=W-2*pad;
-  let raw=Ls.map(L=>(L.t||0)/tot*avail);
+  let raw=Ls.map(L=>toNum(L.t)/tot*avail);
   const deficit=raw.reduce((s,w)=>s+Math.max(0,minW-w),0);
   const surplus=raw.reduce((s,w)=>s+Math.max(0,w-minW),0);
   if(surplus>0) raw=raw.map(w=>w<minW?minW:w-(w-minW)/surplus*Math.min(deficit,surplus));
@@ -968,7 +1092,7 @@ function sectionSVG(el,uid){
     const m=MATS[L.mi], w=raw[i], hp=GRP(L.g).h;
     x-=w;
     out+=`<rect x="${x.toFixed(1)}" y="${top}" width="${w.toFixed(1)}" height="${boxH}" fill="url(#p-${hp}-${uid})" stroke="rgba(255,255,255,.32)" stroke-width="1"/>`;
-    out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+17}" text-anchor="middle" font-size="10.5" fill="#8A9894" font-family="inherit">${FA(L.t)}</text>`;
+    out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+17}" text-anchor="middle" font-size="10.5" fill="#8A9894" font-family="inherit">${FA(toNum(L.t))}</text>`;
     if(w>64) out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+31}" text-anchor="middle" font-size="10" fill="#A8B5B1" font-family="inherit">${esc((m?groupOf(m):L.g).slice(0,16))}</text>`;
   });
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="مقطع لایه‌های جداره">
@@ -983,7 +1107,7 @@ function sectionSVG(el,uid){
 /* ===================== نرخ‌ها ===================== */
 $('rateBox').innerHTML=RATES.map((r,i)=>`<div class="f">
   <label>${esc(r.n)}</label>
-  <input type="number" min="0" step="10000" value="${r.v}" oninput="RATES[${i}].v=+this.value">
+  <input type="text" inputmode="decimal" value="${esc(r.v)}" data-k="rate-${i}" oninput="RATES[${i}].v=this.value">
   <span class="h">تومان — داده نمونه</span>
 </div>`).join('');
 
@@ -1134,7 +1258,7 @@ function report(){
     el.layers.forEach(L=>{
       const m=MATS[L.mi]; if(!m) return;
       const A=areaOfEl(el,g,L.basis);
-      const vol=A*(L.t||0)/1000*waste;
+      const vol=A*toNum(L.t)/1000*waste;
       const isIns=m.cat.indexOf('عایق')>=0;
       if(isIns){ insVol+=vol; if(m.d) insWt+=vol*m.d; else noDens++; }
       const k=el.k;
@@ -1142,15 +1266,14 @@ function report(){
                  : k.indexOf('roof')===0 ? RATES.find(r=>r.k==='roof')
                  : k.indexOf('floor')===0 ? RATES.find(r=>r.k==='floor')
                  : RATES.find(r=>r.k==='wall');
-      const c = isIns ? vol*rate.v : A*rate.v/Math.max(1,el.layers.length);
+      const c = isIns ? vol*toNum(rate.v) : A*toNum(rate.v)/Math.max(1,el.layers.length);
       cost+=c;
-      rows.push({el:el.name, g:L.g, m:m.n, t:L.t, basis:L.basis, A, vol, wt:m.d?vol*m.d:null, c});
+      rows.push({el:el.name, g:L.g, m:m.n, t:toNum(L.t), basis: el.areaMode==='facade' ? BASIS_N[L.basis] : NOCUT_N(el), A, vol, wt:m.d?vol*m.d:null, c});
     });
   });
-  const glazCost=g.glaz*RATES.find(r=>r.k==='glaz').v;
+  const glazCost=g.glaz*toNum(RATES.find(r=>r.k==='glaz').v);
   cost+=glazCost;
 
-  const br = g.grossWall>0 ? structArea()/g.grossWall*100 : 0;
 
   const facTable = `<div class="rsec"><h4>نماها <span>${FA(g.facs.length)} نما</span></h4>
     <div class="tscroll"><table>
@@ -1165,13 +1288,30 @@ function report(){
         <td class="num"><b>${g.grossWall>0?fmt(g.glaz/g.grossWall*100,1)+'٪':'—'}</b></td></tr>
       </tbody></table></div></div>`;
 
-  const bridge = MODE==='simple' ? '' : `<div class="rsec">
-    <h4>کنترل پل حرارتی <span>حد ۵٪</span></h4>
-    <div class="${br>5?'warn':'note'}">
-      مساحت ستون و دیوار برشی در صفحه نما: <b>${fmt(structArea(),2)} m²</b> —
-      معادل <b>${fmt(br,2)}٪</b> از مساحت ناخالص دیوار خارجی.
-      ${br>5 ? 'بیشتر از حد ۵٪ که جدول ۱۹-۵-۱ بر مبنای آن محاسبه شده است؛ مقاومت‌های جدول در این شرایط معتبر نیستند.'
-             : 'در محدوده فرض جدول ۱۹-۵-۱ (عایق‌کاری پیوسته خارجی با حداکثر ۵٪ پل حرارتی).'}
+  const brRows = MODE==='simple' ? [] : BR_SURF.map(s=>{
+    const a=structAreaOn(s.k); if(a<=0) return null;
+    const base=surfArea(s.k,g);
+    return {n:s.n, a, base, r: base>0 ? a/base*100 : null};
+  }).filter(Boolean);
+  const brOver = brRows.some(x=>x.r!=null && x.r>5);
+
+  const bridge = (MODE==='simple' || !brRows.length) ? '' : `<div class="rsec">
+    <h4>کنترل پل حرارتی <span>حد ۵٪ برای هر سطح</span></h4>
+    <div class="tscroll"><table>
+      <thead><tr><th>سطح</th><th class="num">پل حرارتی (m²)</th>
+        <th class="num">مساحت سطح (m²)</th><th class="num">نسبت</th><th>وضعیت</th></tr></thead>
+      <tbody>${brRows.map(x=>`<tr>
+        <td>${esc(x.n)}</td><td class="num">${fmt(x.a,2)}</td>
+        <td class="num">${x.base>0?fmt(x.base,1):'—'}</td>
+        <td class="num"><b>${x.r==null?'—':fmt(x.r,2)+'٪'}</b></td>
+        <td>${x.r==null?'<span class="wait">مساحت سطح وارد نشده</span>'
+            :(x.r>5?'<span class="no">بیش از ۵٪</span>':'<span class="ok">مجاز</span>')}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+    <div class="${brOver?'warn':'note'}" style="margin-top:12px">
+      ${brOver ? 'دست‌کم یک سطح از ۵٪ گذشته است؛ مقاومت‌های جدول ۱۹-۵-۱ در این شرایط معتبر نیستند و اثر پل حرارتی باید جداگانه محاسبه شود.'
+               : 'همه سطوح در محدوده فرض جدول ۱۹-۵-۱ هستند: عایق‌کاری پیوسته خارجی با حداکثر ۵٪ پل حرارتی در هر سطح.'}
+      این ۵٪ رواداری یا ضریب اطمینان نیست؛ فرضی است که خودِ جدول بر پایه آن بسته شده.
     </div></div>`;
 
   $('out').innerHTML = `
@@ -1209,7 +1349,7 @@ function report(){
           <th class="num">وزن (kg)</th></tr></thead>
         <tbody>${rows.map(r=>`<tr>
           <td>${esc(r.el)}</td><td>${esc(r.g)}</td><td>${esc(r.m)}</td>
-          <td class="num">${FA(r.t)}</td><td style="font-size:12px">${BASIS_N[r.basis]}</td>
+          <td class="num">${FA(r.t)}</td><td style="font-size:12px">${esc(r.basis)}</td>
           <td class="num">${fmt(r.A,1)}</td><td class="num">${fmt(r.vol,2)}</td>
           <td class="num">${r.wt==null?'—':fmt(r.wt,0)}</td></tr>`).join('')}</tbody>
       </table></div>
