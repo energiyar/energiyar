@@ -122,7 +122,10 @@
   .fac-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
   .fac-h select{width:auto;min-width:140px}
   .fac-h input{width:110px}
-  .fac-s{margin-inline-start:auto;font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+  /* با افزوده‌شدن فهرست مجاورت، سطر عنوان نما شلوغ شد. خلاصه با پایه ۲۶۰
+     می‌شکند تا دکمه حذف همراه خودش برود، نه تنها روی سطر بعد. */
+  .fac-s{margin-inline-start:auto;flex:1 1 260px;text-align:start;
+         font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
 
   /* جداره‌ها */
   .el{border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
@@ -263,8 +266,10 @@
 
       <div id="floorsBox" style="display:none;margin-top:12px">
         <p class="h" style="font-size:12.5px;color:var(--ink-faint);line-height:1.9;margin:0 0 10px">
-          مساحت هر طبقه را وارد کنید. اگر محیط یک طبقه با بقیه فرق دارد (مثلاً طبقه اول عقب‌نشینی دارد)،
-          محیط آن طبقه را هم بنویسید؛ خالی بگذارید تا محیط نماهای بخش ۰۲ استفاده شود.
+          مساحت هر طبقه را وارد کنید. ستون محیط را که خالی بگذارید، از روی نسبت مساحت همان طبقه
+          به مساحت پلان مرجع تخمین زده می‌شود (محیط با ریشه مساحت تغییر می‌کند)، و عدد تخمینی
+          به‌صورت کم‌رنگ داخل خانه دیده می‌شود. این تخمین برای عقب‌نشینی‌ای که فقط یک ضلع را
+          کوتاه می‌کند درست نیست؛ در آن حالت محیط واقعی همان طبقه را بنویسید تا جای تخمین بنشیند.
         </p>
         <div class="tscroll">
           <table>
@@ -281,6 +286,7 @@
       </div>
 
       <div class="note" id="geoSum"></div>
+      <div id="geoCheck"></div>
     </div></div></div>
   </section>
 
@@ -296,6 +302,14 @@
       <p class="note">هر ضلع بیرونی پلان یک ردیف است. برای پلان‌هایی که شکست دارند،
         هر قطعه را با جهت خودش اضافه کنید — جهت نما هم در مساحت و هم در نسبت بازشو اثر دارد.</p>
 
+      <p class="note"><b>پشت هر نما چیست؟</b> سومین فهرست هر ردیف مجاورت را تعیین می‌کند و
+        سطر جدول ۱۹-۵-۱ را از همان‌جا می‌گیرد: مجاور فضای باز (سطر ۱)، مجاور فضای نیمه‌باز
+        کنترل‌نشده مثل پارکینگ سرپوشیده یا نورگیر (سطر ۲)، یا دیوار مشترک با فضای گرم همسایه
+        (بدون الزام حرارتی، فقط متره). جداره متناظر در بخش ۰۴ مساحتش را از همین‌جا می‌گیرد،
+        پس <b>لازم نیست دوباره مساحت دستی بنویسید</b> — و همین دوباره‌نویسی بود که باعث
+        دو بار متره‌شدن می‌شد. دیوار مجاور خاک اینجا نمی‌آید: آن زیر تراز زمین است،
+        ارتفاعش عمق خاک‌ریز است نه ارتفاع طبقه، و مساحتش در بخش ۰۴ دستی وارد می‌شود.</p>
+
       <label class="chk">
         <input type="checkbox" id="winPerFloor" checked>
         <span>بازشوها برای <b>یک طبقه نمونه</b> وارد شده‌اند و در تعداد طبقات ضرب می‌شوند
@@ -303,6 +317,8 @@
       </label>
 
       <div id="facList"></div>
+      <div id="missEl"></div>
+      <div id="wwrLive"></div>
       <div class="row">
         <button class="btn btn-g btn-s" onclick="addFacade()">+ افزودن نما</button>
         <button class="btn btn-g btn-s" onclick="resetFacades()">بازگشت به چهار نمای پیش‌فرض</button>
@@ -387,6 +403,16 @@
         سنجیده شود، نه با مساحت دیوار. برای همین هر ردیف سطح خودش را دارد.
         برای این ردیف‌ها، عمق عضو در راستای عبور از عایق را در ستون «ارتفاع یا عمق» بنویسید.</p>
 
+      <div class="note" style="margin:0 0 16px">
+        <b>کل یک سطح، پل حرارتی نیست.</b>
+        کف روی پیلوت نمونه روشن آن است: تمام آن کف یک <b>جداره</b> است و سطر ۶ جدول ۱۹-۵-۱
+        («کف مجاور هوای آزاد») برایش حداقل مقاومت حرارتی تعیین کرده — مساحت و لایه‌هایش در
+        بخش ۰۴ وارد می‌شود، نه اینجا. آنچه اینجا ثبت می‌شود فقط جاهایی است که لایه عایق
+        <b>قطع</b> می‌شود: تیرهای زیر دال، لبه دال و شناژ، و سر ستون‌ها.
+        اگر عایق پیوسته از <b>زیر</b> تیرها عبور کند، روی این سطح پل حرارتی‌ای برای ثبت نمی‌ماند
+        و ردیفی لازم نیست. همین منطق برای سقف زیرزمین و کف مجاور خاک هم برقرار است.
+      </div>
+
       <div class="tscroll">
         <table>
           <thead><tr>
@@ -400,8 +426,8 @@
       <div class="row">
         <button class="btn btn-g btn-s" onclick="addStruct('ستون','wall')">+ ستون نما</button>
         <button class="btn btn-g btn-s" onclick="addStruct('دیوار برشی','wall')">+ دیوار برشی</button>
-        <button class="btn btn-g btn-s" onclick="addStruct('تیر سقف زیرزمین','floorSoil')">+ تیر مجاور خاک</button>
-        <button class="btn btn-g btn-s" onclick="addStruct('تیر کف روی پیلوت','floorAir')">+ تیر کف پیلوت</button>
+        <button class="btn btn-g btn-s" onclick="addStruct('تیر قطع‌کننده عایق سقف زیرزمین','floorSoil')">+ تیر مجاور خاک</button>
+        <button class="btn btn-g btn-s" onclick="addStruct('تیر زیر کف پیلوت','floorAir')">+ تیر زیر کف پیلوت</button>
       </div>
 
       <div id="bridgeBox"></div>
@@ -422,7 +448,7 @@
       <div id="elList"></div>
       <div class="row">
         <select id="addSel" style="max-width:360px"></select>
-        <button class="btn btn-g btn-s" onclick="addElement()">+ افزودن جداره</button>
+        <button class="btn btn-g btn-s" id="addElBtn" onclick="addElement()">+ افزودن جداره</button>
       </div>
     </div></div></div>
   </section>
@@ -629,17 +655,30 @@ const ORIENT=[
 ];
 const oName = k => (ORIENT.find(o=>o.k===k)||ORIENT[0]).n;
 
+/* مجاورتِ پشت هر نما. تا پیش از این، تمام محیط «مجاور فضای باز» فرض می‌شد و
+   هر دیوار نیمه‌باز یا مشترک با همسایه ناچار با مساحت دستی در بخش ۰۴ وارد
+   می‌شد — که همان مترمربع‌ها را دو بار متره می‌کرد. حالا مجاورت همین‌جا
+   تعیین می‌شود و جداره متناظر مساحتش را از همین هندسه می‌گیرد.
+   کلیدها عمداً همان کلید جداره در CATALOGUE است تا نگاشت یک‌به‌یک بماند. */
+const FAC_ADJ=[
+  {k:'wall',     n:'مجاور فضای باز'},
+  {k:'wallSemi', n:'مجاور فضای نیمه‌باز کنترل‌نشده'},
+  {k:'wallWarm', n:'مجاور فضای گرم — دیوار مشترک'}
+];
+const adjName = k => (FAC_ADJ.find(a=>a.k===k)||FAC_ADJ[0]).n;
+const facAdj  = f => (f && FAC_ADJ.some(a=>a.k===f.adj)) ? f.adj : 'wall';
+
 let FACADES=[];
 function defFacades(){
   return [
-    {o:'N', len:20, wins:[{t:'پنجره', w:1.6, h:1.3, n:3}]},
-    {o:'E', len:10, wins:[{t:'پنجره', w:1.2, h:1.3, n:2}]},
-    {o:'S', len:20, wins:[{t:'پنجره', w:1.8, h:1.5, n:4}]},
-    {o:'W', len:10, wins:[{t:'پنجره', w:1.2, h:1.3, n:2}]}
+    {o:'N', adj:'wall', len:20, wins:[{t:'پنجره', w:1.6, h:1.3, n:3}]},
+    {o:'E', adj:'wall', len:10, wins:[{t:'پنجره', w:1.2, h:1.3, n:2}]},
+    {o:'S', adj:'wall', len:20, wins:[{t:'پنجره', w:1.8, h:1.5, n:4}]},
+    {o:'W', adj:'wall', len:10, wins:[{t:'پنجره', w:1.2, h:1.3, n:2}]}
   ];
 }
 function resetFacades(){ FACADES=defFacades(); renderFacades(); }
-function addFacade(){ FACADES.push({o:'N', len:0, wins:[]}); renderFacades(); }
+function addFacade(){ FACADES.push({o:'N', adj:'wall', len:0, wins:[]}); renderFacades(); }
 function delFacade(i){ FACADES.splice(i,1); renderFacades(); }
 function addWin(i){ FACADES[i].wins.push({t:'پنجره', w:1.2, h:1.2, n:1}); renderFacades(); }
 function delWin(i,j){ FACADES[i].wins.splice(j,1); renderFacades(); }
@@ -653,16 +692,21 @@ function renderFacades(){
     const glaz=facGlaz(f)*mult;
     const wwr = gross>0 ? glaz/gross*100 : 0;
     const bad = wwr>100;
+    const adj=facAdj(f);
     return `<div class="fac">
       <div class="fac-h">
-        <select onchange="FACADES[${i}].o=this.value;renderFacades()">
+        <select onchange="FACADES[${i}].o=this.value;renderFacades()" aria-label="جهت نما">
           ${ORIENT.map(o=>`<option value="${o.k}" ${o.k===f.o?'selected':''}>${o.n}</option>`).join('')}
         </select>
         <input type="text" inputmode="decimal" value="${esc(f.len)}" aria-label="طول نما"
           data-k="fac-${i}-len" oninput="FACADES[${i}].len=this.value;renderFacades()">
         <span class="h" style="font-size:12px">متر طول</span>
+        <select data-k="fac-${i}-adj" onchange="FACADES[${i}].adj=this.value;renderFacades();renderEls()"
+          aria-label="پشت این نما چیست" style="min-width:210px">
+          ${FAC_ADJ.map(a=>`<option value="${a.k}" ${a.k===adj?'selected':''}>${a.n}</option>`).join('')}
+        </select>
         <span class="fac-s">ناخالص ${fmt(gross,0)} m² · بازشو ${fmt(glaz,1)} m² ·
-          نسبت <b class="${bad?'no':''}">${fmt(wwr,1)}٪</b></span>
+          نسبت <b class="${bad?'no':''}">${fmt(wwr,1)}٪</b>${adj!=='wall'?' · '+esc(adjName(adj)):''}</span>
         <button class="x" onclick="delFacade(${i})" aria-label="حذف نما">×</button>
       </div>
       ${bad?'<div class="warn">مساحت بازشو از مساحت ناخالص این نما بیشتر شده است.</div>':''}
@@ -775,17 +819,26 @@ function bridgeCheck(g){
 
   if(!rows.length){ box.innerHTML=''; return null; }
   const anyOver = rows.some(x=>x.r!=null && x.r>5);
+  /* سطحی که مساحت مرجع ندارد، «زیر ۵٪» نیست — سنجیده نشده. اعلام سلامت
+     برای کل ساختمان تا وقتی همه سطوح سنجیده نشده‌اند، اطمینان کاذب است. */
+  const anyUnknown = rows.some(x=>x.r==null);
 
-  box.innerHTML = `<div class="${anyOver?'warn':'note'}">
+  box.innerHTML = `<div class="${anyOver||anyUnknown?'warn':'note'}">
     <b>نسبت پل حرارتی هر سطح</b>
     <ul style="margin:8px 0 0;padding-inline-start:20px">
       ${rows.map(x=>x.r==null
-        ? `<li>${x.n}: ${fmt(x.a,1)} m² — مساحت این سطح هنوز وارد نشده، پس نسبت قابل محاسبه نیست.</li>`
+        ? `<li>${x.n}: ${fmt(x.a,1)} m² — این سطح هنوز به‌عنوان جداره در بخش ۰۴ تعریف نشده،
+             پس مساحت مرجعی برای سنجیدن نسبت وجود ندارد.
+             ${CATALOGUE.some(c=>c.k===x.k) && !state.some(e=>e.k===x.k)
+               ? `<button class="btn btn-g btn-s" style="margin-inline-start:8px"
+                    onclick="addElementByKey('${x.k}')">افزودن این جداره به بخش ۰۴</button>` : ''}</li>`
         : `<li>${x.n}: <b class="${x.r>5?'no':'ok'}">${fmt(x.r,2)}٪</b>
              (${fmt(x.a,1)} از ${fmt(x.base,0)} m²)</li>`).join('')}
     </ul>
     <p style="margin:10px 0 0">${anyOver
       ? 'دست‌کم یک سطح از ۵٪ گذشته است. مقاومت‌های جدول ۱۹-۵-۱ بر فرض حداکثر ۵٪ پل حرارتی در هر سطح به‌دست آمده‌اند؛ بالاتر از آن، عددهای جدول دیگر معتبر نیستند و باید اثر پل حرارتی جداگانه محاسبه شود.'
+      : anyUnknown
+      ? 'سطوحی که سنجیده شدند زیر ۵٪ هستند، اما دست‌کم یک سطح هنوز مساحت مرجع ندارد و بررسی ناقص است. تا تعریف آن جداره، نمی‌توان گفت عددهای جدول ۱۹-۵-۱ برای کل ساختمان معتبرند.'
       : 'همه سطوح زیر ۵٪ هستند و عددهای جدول ۱۹-۵-۱ معتبرند.'}</p>
     <p class="h" style="font-size:12px;margin:8px 0 0">این ۵٪ رواداری یا ضریب اطمینان نیست؛ فرضی است که خودِ جدول ۱۹-۵-۱ بر پایه آن بسته شده: حداکثر پنج درصد از مساحت هر سطح خارجی می‌تواند عایق‌بریده باشد.</p>
   </div>`;
@@ -799,8 +852,25 @@ function bridgeCheck(g){
 function hFF(){ return Math.max(0, num('hgt')); }
 function hCL(){ return Math.max(0, hFF() - Math.max(0, num('slabT'))); }
 
-/* ===================== مساحت طبقات ===================== */
+/* ===================== مساحت طبقات =====================
+   محیط طبقه‌ای که مساحتش با پلان مرجع فرق دارد نمی‌تواند همان محیط باشد.
+   برای شکل‌های متشابه محیط با ریشه مساحت تغییر می‌کند (P ∝ √A)، پس محیط
+   خودکار هر طبقه = محیط نماها × √(مساحت طبقه ÷ مساحت پلان مرجع).
+   این یک تخمین است، نه اندازه‌برداری: عقب‌نشینی‌ای که فقط یک ضلع را کوتاه
+   می‌کند از این رابطه پیروی نمی‌کند. برای همین ستون محیط باز مانده و هر
+   عددی که کاربر بنویسد بر این تخمین مقدم است. */
 let FLOORS=[];
+function perimRef(){
+  const pf = FACADES.reduce((t,f)=>t+toNum(f.len),0);
+  const ar = MODE==='simple' ? 0 : num('planArea');
+  return {pf, ar};
+}
+function autoPerim(area){
+  const {pf, ar} = perimRef();
+  if(pf<=0) return 0;
+  if(ar<=0 || area<=0) return pf;
+  return pf*Math.sqrt(area/ar);
+}
 function floorRows(){
   const n=Math.max(1,num('floors'));
   const base = MODE==='simple' ? (num('totalArea')/n) : num('planArea');
@@ -809,8 +879,9 @@ function floorRows(){
   for(let i=0;i<n;i++){
     const r = per ? (FLOORS[i]||{}) : {};
     const a = per ? (r.a==='' || r.a==null ? base : toNum(r.a)) : base;
-    const p = per && r.p!=='' && r.p!=null && toNum(r.p)>0 ? toNum(r.p) : null;
-    out.push({a, p});
+    const typed = per && r.p!=='' && r.p!=null && toNum(r.p)>0;
+    const p = typed ? toNum(r.p) : (per ? autoPerim(a) : null);
+    out.push({a, p, auto:!typed});
   }
   return out;
 }
@@ -827,16 +898,17 @@ function renderFloors(){
   const n=Math.max(1,num('floors'));
   while(FLOORS.length<n) FLOORS.push({a:num('planArea'), p:''});
   FLOORS.length=n;
-  const pf = FACADES.reduce((t,f)=>t+toNum(f.len),0);
+  const rows=floorRows();
   setHTML($('floorsBody'), FLOORS.map((r,i)=>{
-    const p = (r.p===''||r.p==null) ? pf : toNum(r.p);
+    const row = rows[i] || {p:0, auto:true};
+    const auto = autoPerim(row.a);
     return `<tr>
       <td>طبقه ${FA(i+1)}</td>
       <td class="num"><input type="text" inputmode="decimal" value="${esc(r.a)}" data-k="fl-${i}-a"
         oninput="FLOORS[${i}].a=this.value;renderFloors()"></td>
-      <td class="num"><input type="text" inputmode="decimal" value="${esc(r.p)}" placeholder="${fmt(pf,1)}" data-k="fl-${i}-p"
+      <td class="num"><input type="text" inputmode="decimal" value="${esc(r.p)}" placeholder="${fmt(auto,1)}" data-k="fl-${i}-p"
         oninput="FLOORS[${i}].p=this.value;renderFloors()"></td>
-      <td class="num">${fmt(p*hFF(),1)}</td>
+      <td class="num">${fmt(row.p*hFF(),1)}${row.auto?' <span class="h" style="font-size:11px;color:var(--ink-faint)">تخمینی</span>':''}</td>
     </tr>`;
   }).join(''));
   recalc();
@@ -858,8 +930,9 @@ function geom(){
     const mult = $('winPerFloor').checked ? n : 1;
     perimFac = FACADES.reduce((t,f)=>t+toNum(f.len),0);
     glaz = FACADES.reduce((t,f)=>t+facGlaz(f),0)*mult;
-    facs = FACADES.map(f=>({o:f.o, len:toNum(f.len), gross:toNum(f.len)*h*n, glaz:facGlaz(f)*mult}));
+    facs = FACADES.map(f=>({o:f.o, adj:facAdj(f), len:toNum(f.len), gross:toNum(f.len)*h*n, glaz:facGlaz(f)*mult}));
   }
+  facs = facs.map(f=>({...f, adj:f.adj||'wall'}));
 
   /* محیط هر طبقه: اگر طبقه محیط اختصاصی دارد همان، وگرنه محیط نماها */
   const perimSum = rows.reduce((t,r)=> t + (r.p!=null ? r.p : perimFac), 0);
@@ -874,8 +947,28 @@ function geom(){
   glaz = Math.min(glaz, grossFF);
   const struct = MODE==='simple' ? 0 : Math.min(structArea(), Math.max(0, grossCL-glaz));
 
+  /* تفکیک دیوار نما بر پایه مجاورت پشت هر نما. سهم هر مجاورت از ارتفاع خالص
+     و از ستون و دیوار برشی، به نسبت سهمش از دیوار ناخالص توزیع می‌شود:
+     ستون روی نما می‌ایستد، صرف‌نظر از اینکه پشت آن نما چیست. */
+  const wallByAdj={};
+  FAC_ADJ.forEach(a=>{
+    const mine = facs.filter(f=>f.adj===a.k);
+    const gr   = mine.reduce((t,f)=>t+f.gross,0);
+    const gl   = Math.min(mine.reduce((t,f)=>t+f.glaz,0), gr);
+    const sh   = grossFF>0 ? gr/grossFF : 0;
+    const grCL = grossCL*sh;
+    const st   = struct*sh;
+    wallByAdj[a.k]={
+      gross: gr, glaz: gl, struct: st, grossCL: grCL,
+      noStruct: Math.max(0, gr-gl),
+      net:      Math.max(0, grCL-gl-st),
+      used:     mine.length>0 && gr>0
+    };
+  });
+
   const plan = rows[0].a;
   return {
+    wallByAdj,
     n, h, hc, perim, perimSum, grossWall:grossFF, grossCL, glaz, plan, struct, approx, facs,
     wallNoStruct: Math.max(0, grossFF-glaz),
     wallNet:      Math.max(0, grossCL-glaz-struct),
@@ -884,6 +977,48 @@ function geom(){
     between:   rows.slice(0, Math.max(0,n-1)).reduce((t,r)=>t+r.a,0),
     totalArea: rows.reduce((t,r)=>t+r.a,0)
   };
+}
+
+/* سازگاری محیط و مساحت. برای هر شکل بسته A ≤ P²/(4π) و برای هر مستطیل
+   A ≤ P²/16. محیطی که از مساحت پلان کوچک‌تر از این حد باشد یعنی یکی از دو
+   عدد اشتباه وارد شده — معمولاً طول یک ضلع جا افتاده یا مساحت کل ساختمان
+   به‌جای مساحت یک طبقه نوشته شده. فرم نباید روی عدد ناممکن حساب کند و
+   چیزی نگوید. */
+function shapeNote(g){
+  const {pf, ar} = perimRef();
+  if(pf<=0 || ar<=0) return '';
+  const maxRect = pf*pf/16, maxAny = pf*pf/(4*Math.PI);
+  if(ar<=maxRect) return '';
+  return `<div class="warn" style="margin-top:12px"><b>محیط نماها با مساحت پلان نمی‌خواند.</b>
+    با محیط ${fmt(pf,1)} m، بزرگ‌ترین پلان مستطیلی ممکن ${fmt(maxRect,1)} m² است
+    (و حتی یک دایره کامل بیش از ${fmt(maxAny,1)} m² نمی‌شود)، اما مساحت پلان
+    ${fmt(ar,1)} m² وارد شده. معمولاً یعنی طول یکی از نماها جا افتاده، یا مساحت
+    کل ساختمان به‌جای مساحت یک طبقه نوشته شده. تا اصلاح نشود، دیوار ناخالص و
+    متره عایق کمتر از واقع خواهند بود.</div>`;
+}
+
+/* نمایی که مجاورتش علامت خورده ولی جداره‌اش در بخش ۰۴ ساخته نشده، مساحتش
+   در دیوار ناخالص هست اما هیچ لایه‌ای رویش متره نمی‌شود — کسری خاموش در
+   متره عایق. همان‌جا اعلام و با یک کلیک قابل رفع می‌شود. */
+function missingElNote(g){
+  const miss=FAC_ADJ.filter(a=>g.wallByAdj && g.wallByAdj[a.k] && g.wallByAdj[a.k].used
+                            && !state.some(e=>e.k===a.k));
+  if(!miss.length) return '';
+  return `<div class="warn" style="margin-top:12px"><b>جداره این نماها هنوز ساخته نشده.</b>
+    ${miss.map(a=>`${esc(a.n)} (${fmt(g.wallByAdj[a.k].gross,0)} m²)`).join(' · ')} —
+    مساحتشان در دیوار ناخالص هست، اما لایه‌ای رویشان تعریف نشده، پس در متره عایق و
+    مصالح شمرده نمی‌شوند.
+    ${miss.map(a=>`<button class="btn btn-g btn-s" style="margin:8px 0 0 8px"
+        onclick="addElementByKey('${a.k}')">افزودن «${esc(a.n)}»</button>`).join('')}</div>`;
+}
+
+/* وقتی بیش از یک مجاورت روی نماها به کار رفته، تفکیک را نشان بده؛ وگرنه
+   یک خط اضافه بی‌فایده است. */
+function adjSplit(g){
+  const used=FAC_ADJ.filter(a=>g.wallByAdj && g.wallByAdj[a.k] && g.wallByAdj[a.k].used);
+  if(used.length<2) return '';
+  return '<br>تفکیک دیوار ناخالص: ' +
+    used.map(a=>`${a.n} <b>${fmt(g.wallByAdj[a.k].gross,0)}</b> m²`).join(' · ');
 }
 
 function recalc(){
@@ -896,10 +1031,20 @@ function recalc(){
     : `محیط ${fmt(g.perim,1)} m · ارتفاع خالص ${fmt(g.hc,2)} m ·
        دیوار ناخالص (کف‌تاکف) <b>${fmt(g.grossWall,0)}</b> m² ·
        بازشو <b>${fmt(g.glaz,0)}</b> m² · ستون و دیوار برشی <b>${fmt(g.struct,1)}</b> m² ·
-       دیوار خالص بنایی <b>${fmt(g.wallNet,0)}</b> m² · زیربنای کل ${fmt(g.totalArea,0)} m²`;
+       دیوار خالص بنایی <b>${fmt(g.wallNet,0)}</b> m² · زیربنای کل ${fmt(g.totalArea,0)} m²${adjSplit(g)}`;
   const ho=$('hClearOut');
   if(ho) ho.innerHTML = `ارتفاع خالص دیوار: <b>${fmt(hCL(),2)}</b> m`;
-  const sf=$('subFac'); if(sf) sf.textContent = FACADES.length+' نما';
+  const sf=$('subFac');
+  if(sf){
+    const w=wwrOver(g);
+    const flag = w.tot>50 ? ' — بیش از حد ۵۰٪'
+               : w.per.length ? ' — '+FA(w.per.length)+' نما بیش از ۵۰٪' : '';
+    sf.textContent = FACADES.length+' نما · بازشو '+fmt(w.tot,1)+'٪'+flag;
+    sf.classList.toggle('no', w.over);
+  }
+  const wn=$('wwrLive'); if(wn) wn.innerHTML = MODE==='simple' ? '' : wwrNote(g);
+  const gc=$('geoCheck'); if(gc) gc.innerHTML = MODE==='simple' ? '' : shapeNote(g);
+  const mn=$('missEl'); if(mn) mn.innerHTML = MODE==='simple' ? '' : missingElNote(g);
   const ss=$('subStruct');
   if(ss) ss.textContent = STRUCT.length
     ? fmt(STRUCT.reduce((s,x)=>s+structRowArea(x),0),1)+' m² در '+FA(new Set(STRUCT.map(x=>x.s||'wall')).size)+' سطح'
@@ -964,7 +1109,26 @@ function mkEl(k){
           layers:c.def.map(l=>mkLayer(l[0],l[1]))};
 }
 function initElements(){ state=['wall','roof','floorSoil'].map(mkEl); renderEls(); }
-function addElement(){ state.push(mkEl($('addSel').value)); renderEls(); }
+function addElement(){
+  const k=$('addSel').value;
+  if(!k || state.some(e=>e.k===k)) return;
+  state.push(mkEl(k)); renderEls();
+}
+/* از جعبه نسبت پل حرارتی صدا زده می‌شود: سطحی که ردیف پل دارد ولی جداره‌اش
+   تعریف نشده، با یک کلیک اضافه و همان‌جا باز می‌شود. */
+function addElementByKey(k){
+  if(!CATALOGUE.some(c=>c.k===k) || state.some(e=>e.k===k)) return;
+  state.push(mkEl(k));
+  renderEls();
+  const sec=$('sec-el');
+  if(sec && !sec.classList.contains('open')){
+    const btn=document.querySelector('[onclick*="sec-el"]');
+    if(btn) toggleSec('sec-el', btn);
+  }
+  const cards=document.querySelectorAll('#elList .el');
+  const last=cards[cards.length-1];
+  if(last) last.scrollIntoView({behavior:'smooth', block:'center'});
+}
 function delEl(i){ state.splice(i,1); renderEls(); }
 function addLayer(i){ state[i].layers.push(mkLayer(state[i].cats[0],50)); renderEls(); }
 function delLayer(i,j){ state[i].layers.splice(j,1); renderEls(); }
@@ -975,11 +1139,20 @@ function setGroup(i,j,g){
   renderEls();
 }
 
+/* آیا مساحت این جداره را می‌شود از هندسه نماها گرفت؟ فقط وقتی دست‌کم یک نما
+   با همین مجاورت علامت خورده باشد. اگر هیچ نمایی علامت نخورده، دیوار از محیط
+   پلان بیرون است (مثلاً جدار یک نورگیر داخلی) و مساحت دستی سر جای خود می‌ماند. */
+function facadeDriven(el,g){
+  const w=g.wallByAdj && g.wallByAdj[el.k];
+  return !!(w && w.used);
+}
 function areaOfEl(el,g,basis){
-  if(el.areaMode==='facade'){
-    if(basis==='gross') return g.grossWall;
-    if(basis==='net')   return g.wallNet;
-    return g.wallNoStruct;
+  if(el.areaMode==='facade' || facadeDriven(el,g)){
+    const w=(g.wallByAdj && g.wallByAdj[el.k]) || null;
+    if(!w) return 0;
+    if(basis==='gross') return w.gross;
+    if(basis==='net')   return w.net;
+    return w.noStruct;
   }
   if(el.areaMode==='plan'){
     if(el.k==='roof' || el.k==='roofSemi')  return g.roof;       // بام = مساحت بالاترین طبقه
@@ -1014,12 +1187,25 @@ function NOCUT_N(el){
 
 function renderEls(){
   const g=geom();
-  $('addSel').innerHTML=CATALOGUE.map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('');
+  /* هر جداره فقط یک بار. دو ردیف «دیوار خارجی» هر دو تمام مساحت نما را
+     برمی‌دارند و همان مترمربع‌ها دو بار متره می‌شوند — همان خطایی که در
+     مساحت دستی نیمه‌باز رخ می‌داد. جداره‌ای که اضافه شده از فهرست کنار
+     می‌رود تا بازگشتش فقط با حذف ردیف ممکن باشد. */
+  const left=CATALOGUE.filter(c=>!state.some(e=>e.k===c.k));
+  const sel=$('addSel'), btn=$('addElBtn');
+  sel.innerHTML = left.length
+    ? left.map(c=>`<option value="${c.k}">${esc(c.name)}</option>`).join('')
+    : '<option value="">همه جداره‌ها اضافه شده‌اند</option>';
+  sel.disabled = left.length===0;
+  if(btn) btn.disabled = left.length===0;
   setHTML($('elList'), state.map((el,i)=>{
     const R=rOf(el), req=rReq(el);
     const st = req==null ? '<span class="wait">بدون الزام حرارتی</span>'
              : (R>=req ? `<span class="ok">منطبق</span>` : `<span class="no">کمتر از حد مجاز</span>`);
-    const isFac = el.areaMode==='facade';
+    const fromFac = el.areaMode==='facade' || facadeDriven(el,g);
+    const isFac = fromFac;
+    const adjEntry = FAC_ADJ.find(a=>a.k===el.k);
+    const areaNow = areaOfEl(el,g,'noStruct');
     return `<div class="el">
       <div class="el-h">
         <span class="el-n">${esc(el.name)}</span>
@@ -1027,12 +1213,18 @@ function renderEls(){
         <button class="x" onclick="delEl(${i})" aria-label="حذف جداره">×</button>
       </div>
 
-      ${el.areaMode==='manual' ? `<div class="f" style="max-width:260px;margin-bottom:12px">
+      ${!fromFac && el.areaMode==='manual' ? `<div class="f" style="max-width:300px;margin-bottom:12px">
         <label>مساحت این جداره (m²)</label>
         <input type="text" inputmode="decimal" value="${esc(el.manual)}" data-k="el-${i}-manual"
           oninput="state[${i}].manual=this.value;renderEls()">
+        ${adjEntry ? `<span class="h">هیچ نمایی با مجاورت «${esc(adjEntry.n)}» علامت نخورده است.
+          اگر این دیوار جزو محیط پلان است، مجاورتش را در بخش ۰۲ تعیین کنید تا مساحتش
+          از همان‌جا بیاید و دو بار متره نشود.</span>` : ''}
       </div>` : `<p class="h" style="font-size:12px;margin:0 0 12px">
-        مساحت از ${el.areaMode==='facade'?'هندسه نماها':el.areaMode==='plan'?'مساحت پلان':'پلان × (طبقات−۱)'} گرفته می‌شود.</p>`}
+        مساحت از ${fromFac
+          ? `نماهای علامت‌خورده «${esc(adjEntry?adjEntry.n:'مجاور فضای باز')}» در بخش ۰۲`
+          : el.areaMode==='plan' ? 'مساحت پلان' : 'پلان × (طبقات−۱)'} گرفته می‌شود —
+        <b>${fmt(areaNow,1)}</b> m² پس از کسر بازشو.</p>`}
 
       ${el.layers.map((L,j)=>{
         const list=matsIn(L.g);
@@ -1265,7 +1457,9 @@ function info(){
 function applyTrace(){
   const S=segs(); if(S.length<3) return;
   const A=planAreaPx()/(pxPerM*pxPerM);
-  FACADES = S.map(s=>({o:s.o, len:+s.len.toFixed(2), wins:[]}));
+  /* مجاورت از روی تصویر قابل تشخیص نیست؛ همه نماها مجاور فضای باز ساخته
+     می‌شوند و کاربر هر ضلعی را که نیست، خودش در همان ردیف تغییر می‌دهد. */
+  FACADES = S.map(s=>({o:s.o, adj:'wall', len:+s.len.toFixed(2), wins:[]}));
   $('planArea').value = A.toFixed(1);
   if(MODE!=='exact') setMode('exact');
   if($('diffFloors').checked) renderFloors();
@@ -1278,6 +1472,25 @@ function toggleSec(id, btn){
   const b=$(id); const open=b.classList.toggle('open');
   btn.setAttribute('aria-expanded', String(open));
   if(id==='sec-report' && open) report();
+}
+
+/* نسبت جداره نورگذر به نما: اگر از ۵۰٪ بگذرد — در کل ساختمان یا حتی در یک
+   نما — روش تجویزی مجاز نیست و پروژه باید با شبیه‌سازی کنترل شود. این یک
+   کنترل مسیر است، نه یک هشدار عددی: تا امروز فرم آن را اعلام نمی‌کرد. */
+function wwrOver(g){
+  const tot = g.grossWall>0 ? g.glaz/g.grossWall*100 : 0;
+  const per = g.facs.filter(f=>f.gross>0 && f.glaz/f.gross*100>50)
+                    .map(f=>oName(f.o));
+  return {tot, over: tot>50 || per.length>0, per};
+}
+function wwrNote(g){
+  const w=wwrOver(g);
+  if(!w.over) return `<div class="note" style="margin-top:12px">نسبت جداره نورگذر به نما
+    <b>${fmt(w.tot,1)}٪</b> است و زیر حد ۵۰٪ می‌ماند، پس مسیر تجویزی از این بابت بسته نیست.</div>`;
+  return `<div class="warn" style="margin-top:12px"><b>روش تجویزی از این بابت مجاز نیست.</b>
+    نسبت جداره نورگذر به نما ${w.tot>50?`در کل ساختمان <b>${fmt(w.tot,1)}٪</b>`:''}${w.tot>50&&w.per.length?' و ':''}${w.per.length?`در نمای ${w.per.map(esc).join('، ')}`:''}
+    از ۵۰٪ گذشته است. در این حالت کنترل انطباق باید با <b>روش شبیه‌سازی</b> انجام شود؛
+    متره و کنترل R این صفحه سر جای خود می‌ماند، اما به‌تنهایی مدرک انطباق نیست.</div>`;
 }
 
 function report(){
@@ -1301,7 +1514,9 @@ function report(){
                  : RATES.find(r=>r.k==='wall');
       const c = isIns ? vol*toNum(rate.v) : A*toNum(rate.v)/Math.max(1,el.layers.length);
       cost+=c;
-      rows.push({el:el.name, g:L.g, m:m.n, t:toNum(L.t), basis: el.areaMode==='facade' ? BASIS_N[L.basis] : NOCUT_N(el), A, vol, wt:m.d?vol*m.d:null, c});
+      rows.push({el:el.name, g:L.g, m:m.n, t:toNum(L.t),
+        basis: (el.areaMode==='facade'||facadeDriven(el,g)) ? BASIS_N[L.basis] : NOCUT_N(el),
+        A, vol, wt:m.d?vol*m.d:null, c});
     });
   });
   const glazCost=g.glaz*toNum(RATES.find(r=>r.k==='glaz').v);
@@ -1310,16 +1525,20 @@ function report(){
 
   const facTable = `<div class="rsec"><h4>نماها <span>${FA(g.facs.length)} نما</span></h4>
     <div class="tscroll"><table>
-      <thead><tr><th>جهت</th><th class="num">طول (m)</th><th class="num">ناخالص (m²)</th>
+      <thead><tr><th>جهت</th><th>مجاورت</th><th class="num">طول (m)</th><th class="num">ناخالص (m²)</th>
         <th class="num">بازشو (m²)</th><th class="num">نسبت بازشو</th></tr></thead>
       <tbody>${g.facs.map(f=>`<tr><td>${oName(f.o)}</td>
+        <td>${esc(adjName(f.adj||'wall'))}</td>
         <td class="num">${fmt(f.len,1)}</td><td class="num">${fmt(f.gross,1)}</td>
         <td class="num">${fmt(f.glaz,1)}</td>
         <td class="num">${f.gross>0?fmt(f.glaz/f.gross*100,1)+'٪':'—'}</td></tr>`).join('')}
-      <tr><td><b>جمع</b></td><td class="num"><b>${fmt(g.perim,1)}</b></td>
+      <tr><td><b>جمع</b></td>
+        <td style="font-size:12px;color:var(--ink-faint)">محیط مؤثر ${fmt(g.perim,1)} m</td>
+        <td class="num"><b>${fmt(g.facs.reduce((t,f)=>t+f.len,0),1)}</b></td>
         <td class="num"><b>${fmt(g.grossWall,1)}</b></td><td class="num"><b>${fmt(g.glaz,1)}</b></td>
         <td class="num"><b>${g.grossWall>0?fmt(g.glaz/g.grossWall*100,1)+'٪':'—'}</b></td></tr>
-      </tbody></table></div></div>`;
+      </tbody></table></div>
+    ${wwrNote(g)}</div>`;
 
   const brRows = MODE==='simple' ? [] : BR_SURF.map(s=>{
     const a=structAreaOn(s.k); if(a<=0) return null;
@@ -1327,6 +1546,7 @@ function report(){
     return {n:s.n, a, base, r: base>0 ? a/base*100 : null};
   }).filter(Boolean);
   const brOver = brRows.some(x=>x.r!=null && x.r>5);
+  const brUnknown = brRows.some(x=>x.r==null);
 
   const bridge = (MODE==='simple' || !brRows.length) ? '' : `<div class="rsec">
     <h4>کنترل پل حرارتی <span>حد ۵٪ برای هر سطح</span></h4>
@@ -1341,8 +1561,9 @@ function report(){
             :(x.r>5?'<span class="no">بیش از ۵٪</span>':'<span class="ok">مجاز</span>')}</td>
       </tr>`).join('')}</tbody>
     </table></div>
-    <div class="${brOver?'warn':'note'}" style="margin-top:12px">
+    <div class="${brOver||brUnknown?'warn':'note'}" style="margin-top:12px">
       ${brOver ? 'دست‌کم یک سطح از ۵٪ گذشته است؛ مقاومت‌های جدول ۱۹-۵-۱ در این شرایط معتبر نیستند و اثر پل حرارتی باید جداگانه محاسبه شود.'
+               : brUnknown ? 'سطوحی که سنجیده شدند در محدوده مجازند، اما دست‌کم یک سطح مساحت مرجع ندارد و بررسی ناقص است؛ این گزارش درباره کل ساختمان حکم نمی‌دهد.'
                : 'همه سطوح در محدوده فرض جدول ۱۹-۵-۱ هستند: عایق‌کاری پیوسته خارجی با حداکثر ۵٪ پل حرارتی در هر سطح.'}
       این ۵٪ رواداری یا ضریب اطمینان نیست؛ فرضی است که خودِ جدول بر پایه آن بسته شده.
     </div></div>`;
