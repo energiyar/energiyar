@@ -9,163 +9,216 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* ==================================================================
+     هم‌رنگ با بقیه سایت: همان توکن‌های styles.css و articles.css.
+     تفاوت یک چیز است — این صفحه فرم است، نه مقاله. پس زمینه کاغذِ
+     سفیدِ یکدستِ صفحه‌های دیگر نیست: یک میزِ خاکستریِ بسیار روشن است
+     که پنل‌های سفیدِ فرم روی آن می‌نشینند. همین جداشدنِ پنل از زمینه
+     است که به چشم «فرم» می‌آید، نه «صفحه متن».
+     ================================================================== */
   :root{
-    --bg:#232A2D; --bg-2:#2B3336; --bg-3:#323B3E;
-    --ink:#E9F0EC; --ink-soft:#A8B5B1; --ink-faint:#8A9894;
-    --emerald:#12A874; --emerald-br:#2FD69B; --emerald-deep:#0B3C2E; --emerald-dim:#1B6B50;
-    --line:rgba(255,255,255,.10); --line-str:rgba(255,255,255,.18);
-    --amber:#E0A94B; --amber-bg:rgba(224,169,75,.10);
-    --pass:#3FD9A0; --fail:#FF6B52;
-    --sans:'IBM Plex Sans Arabic','Vazirmatn',sans-serif;
-    --r:10px; --r-sm:7px;
+    --desk:#F2F5F3;                /* میز کار — پشتِ پنل‌ها */
+    --paper:#FFFFFF;               /* پنل فرم */
+    --paper-soft:#F6F8F7;          /* گروه‌های تودرتو: نما، جداره، سر جدول */
+    --ink:#16201B; --ink-soft:#56635B; --ink-faint:#8D9A92;
+    --emerald:#0E9468; --emerald-deep:#0A2C22; --emerald-pale:#E8F5EF;
+    --emerald-mid:#0B7A55;
+    --line:#E4E7E5; --line-str:#D3D8D5; --line-in:#CBD3CE;
+    --clay:#B9803A; --clay-bg:#FDF4E8; --clay-line:#EBD9BE;
+    --pass:#0E7A55; --fail:#C0341C; --fail-bg:#FDF1EE; --fail-line:#F2D3CA;
+    --sans:'Vazirmatn','IranianSans','IBM Plex Sans Arabic',sans-serif;
+    --r:14px; --r-sm:9px;
+    --shadow:0 1px 2px rgba(16,32,25,.04), 0 10px 26px -18px rgba(16,32,25,.28);
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.9;
+  body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--sans);line-height:1.9;
     font-size:15px;-webkit-font-smoothing:antialiased}
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 
   /* سربرگ */
-  .top{padding:44px 0 26px;border-bottom:1px solid var(--line)}
-  .kick{font-size:12px;font-weight:600;letter-spacing:.07em;color:var(--emerald-br);margin:0 0 12px}
-  h1{font-size:clamp(25px,3.4vw,34px);font-weight:800;line-height:1.4;letter-spacing:-.015em;
-    margin:0 0 12px;color:#fff;max-width:22ch}
+  .top{padding:46px 0 30px}
+  .kick{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.05em;
+    color:var(--emerald-deep);background:var(--emerald-pale);border-radius:999px;
+    padding:5px 13px;margin:0 0 16px}
+  h1{font-size:clamp(26px,3.4vw,35px);font-weight:800;line-height:1.38;letter-spacing:-.018em;
+    margin:0 0 12px;color:var(--ink);max-width:22ch}
   .lead{font-size:15px;line-height:1.95;color:var(--ink-soft);max-width:680px;margin:0}
 
-  /* آکاردئون */
-  .ac{border-bottom:1px solid var(--line)}
+  /* ---- هر بخش یک پنل سفید، نه یک سطرِ جداشده با خط ---- */
+  .ac{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
   .ac-head{all:unset;display:flex;align-items:center;gap:14px;width:100%;cursor:pointer;
-    padding:22px 2px;font-family:inherit;transition:color .18s}
-  .ac-head:hover{color:#fff}
-  .ac-head:focus-visible{outline:2px solid var(--emerald-br);outline-offset:-4px}
-  .ac-n{font-size:12px;font-weight:700;color:var(--emerald-br);min-width:26px;
-    font-variant-numeric:tabular-nums}
-  .ac-t{flex:1;font-size:16.5px;font-weight:700;color:var(--ink);text-align:start}
-  .ac-sub{font-size:12.5px;color:var(--ink-faint);font-weight:500}
+    padding:20px 22px;font-family:inherit;transition:background .18s}
+  .ac-head:hover{background:var(--paper-soft)}
+  .ac-head:focus-visible{outline:2px solid var(--emerald);outline-offset:-3px}
+  .ac-n{display:grid;place-items:center;width:30px;height:30px;flex:0 0 auto;border-radius:8px;
+    background:var(--emerald-pale);color:var(--emerald-deep);
+    font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
+  .ac-head[aria-expanded="true"] .ac-n{background:var(--emerald);color:#fff}
+  .ac-t{flex:1;font-size:16.5px;font-weight:800;color:var(--ink);text-align:start;letter-spacing:-.01em}
+  .ac-sub{font-size:12.5px;color:var(--ink-faint);font-weight:500;font-variant-numeric:tabular-nums}
+  .ac-sub.no{color:var(--fail);font-weight:700}
   .ac-ch{width:20px;height:20px;flex:0 0 auto;color:var(--ink-faint);transition:transform .28s ease}
-  .ac-head[aria-expanded="true"] .ac-ch{transform:rotate(180deg);color:var(--emerald-br)}
+  .ac-head[aria-expanded="true"] .ac-ch{transform:rotate(180deg);color:var(--emerald)}
   .ac-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s cubic-bezier(.22,.61,.36,1)}
   .ac-body.open{grid-template-rows:1fr}
   .ac-body > div{overflow:hidden;min-height:0}
-  .ac-in{padding:4px 2px 30px}
+  .ac-in{padding:6px 22px 28px;border-top:1px solid var(--line)}
   .ac.off{display:none}
 
-  /* ورودی‌ها */
-  .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 20px}
-  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 20px}
-  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 20px}
+  /* ---- ورودی‌ها ---- */
+  .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px 20px}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 20px}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 20px}
   @media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr}}
-  .f{display:flex;flex-direction:column;gap:7px}
-  .f label{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
-  .f .h{font-size:11.5px;color:var(--ink-faint);line-height:1.7}
-  input,select{font-family:inherit;font-size:14px;color:var(--ink);background:var(--bg-2);
-    border:1px solid var(--line-str);border-radius:var(--r-sm);padding:10px 12px;
-    min-height:44px;width:100%;transition:border-color .18s,background .18s}
-  input:hover,select:hover{background:var(--bg-3)}
-  input:focus,select:focus{outline:none;border-color:var(--emerald);background:var(--bg-3)}
-  input[type=number]{font-variant-numeric:tabular-nums}
-  input[type=file]{padding:8px 10px;font-size:12.5px}
-  select option,select optgroup{background:var(--bg-2);color:var(--ink)}
-  input[type=checkbox]{width:auto;min-height:0;margin:0}
-  .chk{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-soft);
-    cursor:pointer;padding:8px 0}
+  .f{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .f label{font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+  .f .h{font-size:11.5px;color:var(--ink-faint);line-height:1.75}
+  input,select{font-family:inherit;font-size:14px;color:var(--ink);background:var(--paper);
+    border:1px solid var(--line-in);border-radius:var(--r-sm);padding:10px 13px;
+    min-height:44px;width:100%;
+    transition:border-color .16s,box-shadow .16s}
+  input:hover,select:hover{border-color:#B6C2BB}
+  input:focus,select:focus{outline:none;border-color:var(--emerald);
+    box-shadow:0 0 0 3px var(--emerald-pale)}
+  input::placeholder{color:#A9B5AE}
+  input[inputmode="decimal"],input[inputmode="numeric"]{font-variant-numeric:tabular-nums}
+  input[type=file]{padding:8px 10px;font-size:12.5px;background:var(--paper-soft)}
+  input[type=checkbox]{width:auto;min-height:0;margin:0;accent-color:var(--emerald)}
+  /* فلشِ بومیِ select در فرم تیره‌رو درست دیده نمی‌شد و جایش هم ثابت نبود.
+     فلش خودمان همیشه سمت چپِ خانه می‌نشیند، چون جهت صفحه راست‌به‌چپ است. */
+  select{appearance:none;-webkit-appearance:none;padding-inline-end:36px;
+    background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%2356635B' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:left 10px center;
+    text-overflow:ellipsis}
+  select[disabled]{background-color:var(--paper-soft);color:var(--ink-faint);cursor:not-allowed}
+  .chk{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink-soft);
+    cursor:pointer;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);
+    background:var(--paper-soft);margin-bottom:10px;line-height:1.8}
+  .chk input{margin-top:5px}
+  .chk b{color:var(--ink)}
 
-  /* دکمه‌ها */
+  /* ---- دکمه‌ها ---- */
   .btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;
     justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:var(--r-sm);
-    font-family:inherit;font-size:13.5px;font-weight:700;transition:background .18s,color .18s}
-  .btn-p{background:var(--emerald);color:#06231A}
-  .btn-p:hover{background:var(--emerald-br)}
-  .btn-g{background:transparent;color:var(--ink-soft);border:1px solid var(--line-str)}
-  .btn-g:hover{background:var(--bg-2);color:var(--ink)}
+    font-family:inherit;font-size:13.5px;font-weight:700;
+    transition:background .16s,color .16s,border-color .16s}
+  .btn:focus-visible{outline:2px solid var(--emerald);outline-offset:2px}
+  .btn-p{background:var(--emerald);color:#fff}
+  .btn-p:hover{background:var(--emerald-mid)}
+  .btn-g{background:var(--paper);color:var(--ink-soft);border:1px solid var(--line-in)}
+  .btn-g:hover{background:var(--paper-soft);color:var(--ink);border-color:#B6C2BB}
   .btn-s{min-height:36px;padding:0 14px;font-size:12.5px}
-  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
   .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
-  .x{all:unset;cursor:pointer;color:var(--ink-faint);font-size:18px;padding:0 8px;line-height:1}
-  .x:hover{color:var(--fail)}
+  .x{all:unset;cursor:pointer;color:var(--ink-faint);font-size:17px;padding:2px 8px;line-height:1;
+    border-radius:6px;transition:color .16s,background .16s}
+  .x:hover{color:var(--fail);background:var(--fail-bg)}
+  .x:focus-visible{outline:2px solid var(--emerald);outline-offset:1px}
 
-  /* انتخاب حالت */
+  /* ---- انتخاب حالت ---- */
   .modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 6px}
   @media(max-width:700px){.modes{grid-template-columns:1fr}}
   .mode{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:18px 20px;
-    border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
-    transition:border-color .18s,background .18s}
-  .mode:hover{background:var(--bg-3)}
-  .mode[aria-pressed="true"]{border-color:var(--emerald);background:var(--emerald-deep)}
-  .mode .mt{display:block;font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:5px}
-  .mode .md{display:block;font-size:12.5px;color:var(--ink-faint);line-height:1.8}
-  .mode[aria-pressed="true"] .mt{color:#fff}
+    border:1px solid var(--line-str);border-radius:var(--r);background:var(--paper);
+    transition:border-color .16s,background .16s,box-shadow .16s}
+  .mode:hover{border-color:#B6C2BB;background:var(--paper-soft)}
+  .mode:focus-visible{outline:2px solid var(--emerald);outline-offset:2px}
+  .mode[aria-pressed="true"]{border-color:var(--emerald);background:var(--emerald-pale);
+    box-shadow:inset 0 0 0 1px var(--emerald)}
+  .mode .mt{display:block;font-size:14.5px;font-weight:800;color:var(--ink);margin-bottom:5px}
+  .mode .md{display:block;font-size:12.5px;color:var(--ink-soft);line-height:1.8}
+  .mode[aria-pressed="true"] .mt{color:var(--emerald-deep)}
 
-  /* جعبه‌ها */
-  .note{background:var(--bg-2);border-inline-start:2px solid var(--emerald);border-radius:0 var(--r-sm) var(--r-sm) 0;
-    padding:14px 16px;font-size:13px;line-height:1.95;color:var(--ink-soft);margin:18px 0}
-  .note b{color:var(--ink)}
-  .demo{background:var(--amber-bg);border:1px solid rgba(224,169,75,.28);border-radius:var(--r-sm);
-    padding:13px 16px;font-size:12.5px;line-height:1.95;color:var(--amber);margin:0 0 18px}
-  .demo b{color:#F0C87A}
-  .warn{background:rgba(255,107,82,.09);border:1px solid rgba(255,107,82,.3);border-radius:var(--r-sm);
-    padding:13px 16px;font-size:12.5px;line-height:1.95;color:#FFB4A4;margin:14px 0}
+  /* ---- جعبه‌های پیام ---- */
+  .note{background:var(--emerald-pale);border-inline-start:3px solid var(--emerald);
+    border-radius:0 var(--r-sm) var(--r-sm) 0;
+    padding:14px 17px;font-size:13px;line-height:1.95;color:var(--ink-soft);margin:18px 0}
+  .note b{color:var(--emerald-deep)}
+  .demo{background:var(--clay-bg);border:1px solid var(--clay-line);border-radius:var(--r-sm);
+    padding:13px 16px;font-size:12.5px;line-height:1.95;color:#7A5520;margin:0 0 18px}
+  .demo b{color:#6A4615}
+  .warn{background:var(--fail-bg);border:1px solid var(--fail-line);border-radius:var(--r-sm);
+    padding:13px 16px;font-size:12.5px;line-height:1.95;color:#8A3220;margin:14px 0}
   .warn b{color:var(--fail)}
 
+  /* ---- جدول‌ها ---- */
   table{width:100%;border-collapse:collapse}
-  th{font-size:11.5px;font-weight:600;color:var(--ink-faint);text-align:start;
-    padding:10px 8px;border-bottom:1px solid var(--line-str)}
-  td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)}
+  th{font-size:11.5px;font-weight:700;color:var(--ink-soft);text-align:start;
+    padding:11px 10px;background:var(--paper-soft);border-bottom:1px solid var(--line-str);
+    white-space:nowrap}
+  th:first-child{border-start-start-radius:var(--r-sm)}
+  th:last-child{border-start-end-radius:var(--r-sm)}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)}
+  tbody tr:hover td{background:#FAFCFB}
   td.num,th.num{text-align:end;font-variant-numeric:tabular-nums}
-  table input,table select{min-height:36px;padding:7px 9px;font-size:13px}
-  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table input,table select{min-height:38px;padding:7px 10px;font-size:13px}
+  table select{padding-inline-end:30px;background-position:left 7px center}
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;
+    border:1px solid var(--line);border-radius:var(--r-sm)}
   .tscroll table{min-width:620px}
+  .tscroll td:last-child,.tscroll th:last-child{border-inline-end:0}
 
-  /* نماها */
-  .fac{border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
+  /* ---- نماها ---- */
+  .fac{border:1px solid var(--line-str);border-radius:var(--r);background:var(--paper-soft);
     padding:16px 18px;margin-bottom:12px}
   .fac-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-  .fac-h select{width:auto;min-width:140px}
-  .fac-h input{width:110px}
+  .fac-h select{width:auto;min-width:150px;background-color:var(--paper)}
+  /* فهرست مجاورت عرض ثابت دارد تا همه ردیف‌های نما هم‌تراز بمانند و
+     بلندترین گزینه به فلش نچسبد. */
+  .fac-h select.adj-sel{width:276px;min-width:0}
+  @media(max-width:560px){.fac-h select.adj-sel{width:100%}}
+  .fac-h input{width:112px;background-color:var(--paper)}
   /* با افزوده‌شدن فهرست مجاورت، سطر عنوان نما شلوغ شد. خلاصه با پایه ۲۶۰
      می‌شکند تا دکمه حذف همراه خودش برود، نه تنها روی سطر بعد. */
   .fac-s{margin-inline-start:auto;flex:1 1 260px;text-align:start;
          font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+  .fac .tscroll{background:var(--paper)}
 
-  /* جداره‌ها */
-  .el{border:1px solid var(--line-str);border-radius:var(--r);background:var(--bg-2);
+  /* ---- جداره‌ها ---- */
+  .el{border:1px solid var(--line-str);border-radius:var(--r);background:var(--paper-soft);
     padding:18px 20px;margin-bottom:14px}
   .el-h{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;
-    padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--line)}
-  .el-n{font-size:14.5px;font-weight:700;color:var(--ink)}
+    padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--line-str)}
+  .el-n{font-size:14.5px;font-weight:800;color:var(--ink)}
   .el-s{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+  .el input,.el select{background-color:var(--paper)}
   .lay{display:grid;grid-template-columns:1fr 1.6fr .6fr .9fr auto;gap:10px;align-items:end;
-    padding:10px 0;border-bottom:1px solid var(--line)}
+    padding:12px 0;border-bottom:1px solid var(--line)}
+  .lay:last-of-type{border-bottom:0}
   @media(max-width:900px){.lay{grid-template-columns:1fr 1fr}}
   .ok{color:var(--pass);font-weight:700}
   .no{color:var(--fail);font-weight:700}
   .wait{color:var(--ink-faint);font-weight:600}
 
-  /* مقطع شماتیک */
-  .sect{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-  .sect-t{font-size:11.5px;font-weight:600;color:var(--ink-faint);margin:0 0 9px}
-  .sect svg{display:block;width:100%;height:auto;border-radius:var(--r-sm);background:#1C2224}
+  /* ---- مقطع شماتیک ---- */
+  .sect{margin-top:16px;padding-top:14px;border-top:1px solid var(--line-str)}
+  .sect-t{font-size:11.5px;font-weight:700;color:var(--ink-soft);margin:0 0 9px}
+  .sect svg{display:block;width:100%;height:auto;border-radius:var(--r-sm);
+    background:var(--paper);border:1px solid var(--line)}
 
-  /* بوم پلان */
+  /* ---- بوم پلان ---- */
   .canvwrap{position:relative;border:1px solid var(--line-str);border-radius:var(--r);
-    background:#1C2224;overflow:hidden;margin:14px 0}
+    background:#EDF1EF;overflow:hidden;margin:14px 0}
   #planCanvas{display:block;width:100%;height:auto;cursor:crosshair;touch-action:none}
   .steps{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px}
-  .step{font-size:12px;padding:7px 12px;border-radius:999px;border:1px solid var(--line-str);
-    color:var(--ink-faint)}
-  .step.on{border-color:var(--emerald);color:var(--emerald-br);background:var(--emerald-deep)}
+  .step{font-size:12px;font-weight:600;padding:7px 13px;border-radius:999px;
+    border:1px solid var(--line-str);color:var(--ink-faint);background:var(--paper)}
+  .step.on{border-color:var(--emerald);color:var(--emerald-deep);background:var(--emerald-pale)}
 
-  /* نتیجه */
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 24px}
+  /* ---- نتیجه ---- */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 26px}
   @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
-  .kpi{background:var(--bg-2);border:1px solid var(--line-str);border-radius:var(--r-sm);padding:17px 19px}
-  .kpi .v{font-size:25px;font-weight:700;color:var(--emerald-br);line-height:1.25;
+  .kpi{background:var(--paper);border:1px solid var(--line-str);border-radius:var(--r-sm);
+    padding:17px 19px;border-top:3px solid var(--emerald)}
+  .kpi .v{font-size:25px;font-weight:800;color:var(--emerald-deep);line-height:1.25;
     font-variant-numeric:tabular-nums}
   .kpi .l{font-size:11.5px;color:var(--ink-faint);margin-top:6px;line-height:1.6}
   .rsec{margin-bottom:28px}
-  .rsec h4{display:flex;align-items:baseline;gap:10px;font-size:14px;font-weight:700;color:var(--ink);
+  .rsec h4{display:flex;align-items:baseline;gap:10px;font-size:14px;font-weight:800;color:var(--ink);
     margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line-str)}
-  .rsec h4 span{font-size:11.5px;font-weight:600;color:var(--emerald-br)}
+  .rsec h4 span{font-size:11.5px;font-weight:700;color:var(--emerald)}
   .foot{font-size:12px;line-height:1.95;color:var(--ink-faint);padding:22px 0 50px}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
@@ -701,8 +754,9 @@ function renderFacades(){
         <input type="text" inputmode="decimal" value="${esc(f.len)}" aria-label="طول نما"
           data-k="fac-${i}-len" oninput="FACADES[${i}].len=this.value;renderFacades()">
         <span class="h" style="font-size:12px">متر طول</span>
-        <select data-k="fac-${i}-adj" onchange="FACADES[${i}].adj=this.value;renderFacades();renderEls()"
-          aria-label="پشت این نما چیست" style="min-width:210px">
+        <select class="adj-sel" data-k="fac-${i}-adj"
+          onchange="FACADES[${i}].adj=this.value;renderFacades();renderEls()"
+          aria-label="پشت این نما چیست">
           ${FAC_ADJ.map(a=>`<option value="${a.k}" ${a.k===adj?'selected':''}>${a.n}</option>`).join('')}
         </select>
         <span class="fac-s">ناخالص ${fmt(gross,0)} m² · بازشو ${fmt(glaz,1)} m² ·
@@ -1273,31 +1327,34 @@ function renderEls(){
 function renderSections(){ /* مقطع‌ها همراه renderEls ساخته می‌شوند */ }
 
 /* ---- مقطع شماتیک ---- */
+/* هاشورها روی زمینه تیره با سفیدِ کم‌رنگ کشیده می‌شدند. حالا زمینه مقطع
+   سفید است، پس همان هاشورها باید تیره باشند وگرنه هیچ دیده نمی‌شوند.
+   نسبت روشنی هر هاشور نسبت به بقیه حفظ شده تا لایه‌ها از هم تفکیک بمانند. */
 function hatchDefs(uid){
   return `<defs>
     <pattern id="p-ins-${uid}" width="12" height="10" patternUnits="userSpaceOnUse">
-      <path d="M0 5 q3 -5 6 0 q3 5 6 0" fill="none" stroke="rgba(47,214,155,.55)" stroke-width="1.1"/>
+      <path d="M0 5 q3 -5 6 0 q3 5 6 0" fill="none" stroke="rgba(14,148,104,.75)" stroke-width="1.1"/>
     </pattern>
     <pattern id="p-brick-${uid}" width="22" height="14" patternUnits="userSpaceOnUse">
       <rect width="22" height="14" fill="none"/>
-      <path d="M0 7h22M0 0h22M11 0v7M0 7v7M22 7v7" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <path d="M0 7h22M0 0h22M11 0v7M0 7v7M22 7v7" stroke="rgba(22,32,27,.30)" stroke-width="1"/>
     </pattern>
     <pattern id="p-conc-${uid}" width="14" height="14" patternUnits="userSpaceOnUse">
-      <circle cx="3" cy="4" r="1.1" fill="rgba(255,255,255,.34)"/>
-      <circle cx="10" cy="9" r="1.1" fill="rgba(255,255,255,.34)"/>
-      <path d="M7 2l2 3H5z" fill="rgba(255,255,255,.22)"/>
+      <circle cx="3" cy="4" r="1.1" fill="rgba(22,32,27,.38)"/>
+      <circle cx="10" cy="9" r="1.1" fill="rgba(22,32,27,.38)"/>
+      <path d="M7 2l2 3H5z" fill="rgba(22,32,27,.26)"/>
     </pattern>
     <pattern id="p-plaster-${uid}" width="7" height="7" patternUnits="userSpaceOnUse">
-      <path d="M0 7L7 0" stroke="rgba(255,255,255,.22)" stroke-width="0.9"/>
+      <path d="M0 7L7 0" stroke="rgba(22,32,27,.24)" stroke-width="0.9"/>
     </pattern>
     <pattern id="p-wood-${uid}" width="18" height="9" patternUnits="userSpaceOnUse">
-      <path d="M0 2h18M0 6h18" stroke="rgba(224,169,75,.4)" stroke-width="1"/>
+      <path d="M0 2h18M0 6h18" stroke="rgba(185,128,58,.65)" stroke-width="1"/>
     </pattern>
     <pattern id="p-metal-${uid}" width="8" height="8" patternUnits="userSpaceOnUse">
-      <rect width="8" height="8" fill="rgba(255,255,255,.14)"/>
+      <rect width="8" height="8" fill="rgba(22,32,27,.11)"/>
     </pattern>
     <pattern id="p-other-${uid}" width="10" height="10" patternUnits="userSpaceOnUse">
-      <circle cx="5" cy="5" r="1" fill="rgba(255,255,255,.26)"/>
+      <circle cx="5" cy="5" r="1" fill="rgba(22,32,27,.28)"/>
     </pattern>
   </defs>`;
 }
@@ -1316,15 +1373,15 @@ function sectionSVG(el,uid){
   Ls.forEach((L,i)=>{
     const m=MATS[L.mi], w=raw[i], hp=GRP(L.g).h;
     x-=w;
-    out+=`<rect x="${x.toFixed(1)}" y="${top}" width="${w.toFixed(1)}" height="${boxH}" fill="url(#p-${hp}-${uid})" stroke="rgba(255,255,255,.32)" stroke-width="1"/>`;
-    out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+17}" text-anchor="middle" font-size="10.5" fill="#8A9894" font-family="inherit">${FA(toNum(L.t))}</text>`;
-    if(w>64) out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+31}" text-anchor="middle" font-size="10" fill="#A8B5B1" font-family="inherit">${esc((m?groupOf(m):L.g).slice(0,16))}</text>`;
+    out+=`<rect x="${x.toFixed(1)}" y="${top}" width="${w.toFixed(1)}" height="${boxH}" fill="url(#p-${hp}-${uid})" stroke="rgba(22,32,27,.34)" stroke-width="1"/>`;
+    out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+17}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#56635B" font-family="inherit">${FA(toNum(L.t))}</text>`;
+    if(w>64) out+=`<text x="${(x+w/2).toFixed(1)}" y="${top+boxH+31}" text-anchor="middle" font-size="10" fill="#8D9A92" font-family="inherit">${esc((m?groupOf(m):L.g).slice(0,16))}</text>`;
   });
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="مقطع لایه‌های جداره">
     ${hatchDefs(uid)}
-    <text x="${W-46}" y="20" text-anchor="middle" font-size="11" fill="#2FD69B" font-family="inherit">بیرون</text>
-    <text x="40" y="20" text-anchor="middle" font-size="11" fill="#8A9894" font-family="inherit">داخل</text>
-    <text x="${W/2}" y="20" text-anchor="middle" font-size="10" fill="#6B7976" font-family="inherit">ضخامت بر حسب میلی‌متر</text>
+    <text x="${W-46}" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#0A2C22" font-family="inherit">بیرون</text>
+    <text x="40" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#56635B" font-family="inherit">داخل</text>
+    <text x="${W/2}" y="20" text-anchor="middle" font-size="10" fill="#8D9A92" font-family="inherit">ضخامت بر حسب میلی‌متر</text>
     ${out}
   </svg>`;
 }
@@ -1389,38 +1446,45 @@ function undoPt(){ if(tmode==='scale') scalePts.pop(); else pts.pop();
   $('btnApply').disabled = pts.length<3; draw(); }
 function clearTrace(){ pts=[]; $('btnApply').disabled=true; draw(); }
 
+/* بوم هم روشن شد. نقشه‌ها معمولاً خط تیره روی کاغذ سفیدند، پس زمینه روشن
+   طبیعی‌تر است؛ در عوض خطوط رویه — مقیاس، محیط، نقطه‌ها — باید تیره شوند
+   وگرنه روی نقشه گم می‌شوند. نقطه‌ها دور سفید می‌گیرند تا روی خطوط نقشه
+   هم دیده شوند. */
 function draw(){
   ctx.clearRect(0,0,cv.width,cv.height);
-  ctx.fillStyle='#1C2224'; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#EDF1EF'; ctx.fillRect(0,0,cv.width,cv.height);
   if(img) ctx.drawImage(img, fit.dx, fit.dy, img.width*fit.s, img.height*fit.s);
   // scale line
   if(scalePts.length){
-    ctx.strokeStyle='#E0A94B'; ctx.lineWidth=2; ctx.beginPath();
+    ctx.strokeStyle='#B9803A'; ctx.lineWidth=2.4; ctx.beginPath();
     scalePts.forEach((p,i)=> i? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y));
     ctx.stroke();
-    scalePts.forEach(p=>dot(p,'#E0A94B'));
+    scalePts.forEach(p=>dot(p,'#B9803A'));
   }
   // polygon
   if(pts.length){
-    ctx.strokeStyle='#2FD69B'; ctx.lineWidth=2; ctx.beginPath();
+    ctx.strokeStyle='#0A2C22'; ctx.lineWidth=2.4; ctx.beginPath();
     pts.forEach((p,i)=> i? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y));
     if(pts.length>2) ctx.closePath();
     ctx.stroke();
-    if(pts.length>2){ ctx.fillStyle='rgba(47,214,155,.10)'; ctx.fill(); }
-    pts.forEach(p=>dot(p,'#2FD69B'));
+    if(pts.length>2){ ctx.fillStyle='rgba(14,148,104,.14)'; ctx.fill(); }
+    pts.forEach(p=>dot(p,'#0E9468'));
     if(pxPerM>0 && pts.length>1) labelSegs();
   }
   info();
 }
 function dot(p,c){ ctx.fillStyle=c; ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,7); ctx.fill();
-  ctx.strokeStyle='#1C2224'; ctx.lineWidth=1.5; ctx.stroke(); }
+  ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=1.8; ctx.stroke(); }
 function labelSegs(){
-  ctx.font='12px sans-serif'; ctx.textAlign='center';
+  ctx.font='600 12px sans-serif'; ctx.textAlign='center';
   segs().forEach(s=>{
-    ctx.fillStyle='#0B3C2E'; const t=s.len.toFixed(1)+' m';
-    const w=ctx.measureText(t).width+10;
-    ctx.fillRect(s.mx-w/2, s.my-9, w, 17);
-    ctx.fillStyle='#2FD69B'; ctx.fillText(t, s.mx, s.my+4);
+    ctx.fillStyle='#0A2C22'; const t=s.len.toFixed(1)+' m';
+    const w=ctx.measureText(t).width+12;
+    ctx.beginPath();
+    (ctx.roundRect ? ctx.roundRect(s.mx-w/2, s.my-10, w, 19, 5)
+                   : ctx.rect(s.mx-w/2, s.my-10, w, 19));
+    ctx.fill();
+    ctx.fillStyle='#FFFFFF'; ctx.fillText(t, s.mx, s.my+4);
   });
 }
 function segs(){
